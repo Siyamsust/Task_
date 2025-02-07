@@ -1,0 +1,36 @@
+/* Preferences Section */
+.preferences {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+  
+  .preferences h3 {
+    font-size: 24px;
+    margin-bottom: 15px;
+  }
+  
+  .favorites ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .favorites li {
+    background-color: #f4f4f9;
+    padding: 8px;
+    margin: 5px 0;
+    border-radius: 6px;
+  }
+  
+  .favorites li:hover {
+    background-color: #e9e9e9;
+  }
+  
+  .travel-interest input {
+    padding: 8px;
+    width: 100%;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+  }
+  

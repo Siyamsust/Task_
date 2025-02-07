@@ -1,0 +1,81 @@
+.package-details {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+  }
+  
+  .details-header {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 30px;
+  }
+  
+  .details-image {
+    width: 400px;
+    height: auto;
+    border-radius: 8px;
+    object-fit: cover;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .details-info {
+    flex-grow: 1;
+  }
+  
+  .details-info h2 {
+    font-size: 2em;
+    margin-bottom: 10px;
+    color: #333;
+  }
+  
+  .details-info p {
+    font-size: 1.1em;
+    margin: 5px 0;
+    color: #555;
+  }
+  
+  .book-now {
+    background-color: #28a745;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1em;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background-color 0.3s;
+  }
+  
+  .book-now:hover {
+    background-color: #218838;
+  }
+  
+  .details-content {
+    margin-top: 20px;
+  }
+  
+  .details-content h3 {
+    font-size: 1.5em;
+    margin-bottom: 10px;
+    color: #333;
+  }
+  
+  .details-content p {
+    font-size: 1em;
+    margin-bottom: 15px;
+    color: #666;
+    line-height: 1.6;
+  }
+  
+  .details-content ul {
+    list-style: disc;
+    margin-left: 20px;
+  }
+  
+  .details-content li {
+    font-size: 1em;
+    color: #555;
+    margin-bottom: 5px;
+  }
+  
