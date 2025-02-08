@@ -1,27 +1,38 @@
-import './App.css';
-import Navbar from './Components/Navbar/Navbar';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import LoginSignup from './Pages/LoginSignup';
-import Search from './Components/Search/Search';
-import ProfilePage from './Pages/ProfilePage';
-import TourDetails from './Components/TourDetails/TourDetails';
-import { ToursProvider } from './Context/ToursContext'; // Import the ToursProvider
+import Navbar from './Components/Navbar/Navbar';
+import Homepage from './Pages/Homepage/Homepage';
+import PackageDetails from './Pages/PackageDetails/PackageDetails';
+import LoginSignup from './Pages/LoginSignup/LoginSignup';
+import ProfilePage from './Pages/ProfilePage/ProfilePage';
+import { ToursProvider } from './Context/ToursContext';
+import { AuthProvider } from './Context/AuthContext';
+import PrivateRoute from './Components/PrivateRoute/PrivateRoute';
+import './App.css';
 
 function App() {
   return (
-    <ToursProvider> {/* Wrap everything that needs access to ToursContext */}
-      <div>
+    <AuthProvider>
+      <ToursProvider>
         <BrowserRouter>
-          <Navbar />
-          <Routes>
-            <Route path='/login' element={<LoginSignup />} />
-            <Route path='/' element={<Search />} />
-            <Route path='/profile' element={<ProfilePage />} />
-            <Route path="/tourDetails/:tourId" element={<TourDetails />} />
-          </Routes>
+          <div className="App">
+            <Navbar />
+            <Routes>
+              <Route path="/" element={<Homepage />} />
+              <Route path="/package/:id" element={<PackageDetails />} />
+              <Route path="/login" element={<LoginSignup />} />
+              <Route 
+                path="/profile" 
+                element={
+                  <PrivateRoute>
+                    <ProfilePage />
+                  </PrivateRoute>
+                } 
+              />
+            </Routes>
+          </div>
         </BrowserRouter>
-      </div>
-    </ToursProvider>
+      </ToursProvider>
+    </AuthProvider>
   );
 }
 

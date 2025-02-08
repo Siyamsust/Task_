@@ -1,0 +1,34 @@
+.profile-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--light-gray);
+}
+
+.tab-btn {
+  flex: 1;
+  padding: 15px;
+  border: none;
+  background: none;
+  font-weight: 500;
+  color: #666;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+}
+
+.tab-btn.active {
+  color: var(--primary-color);
+  border-bottom: 2px solid var(--primary-color);
+}
+
+.tab-btn i {
+  font-size: 1.1rem;
+}
+
+@media (max-width: 480px) {
+  .tab-btn span {
+    display: none;
+  }
+} 
