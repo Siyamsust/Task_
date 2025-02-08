@@ -48,11 +48,21 @@ const tourSchema = new mongoose.Schema({
   duration: {
     days: {
       type: Number,
-      required: true
+      required: true,
+      min: 1,
+      validate: {
+        validator: Number.isInteger,
+        message: 'Days must be a whole number'
+      }
     },
     nights: {
       type: Number,
-      required: true
+      required: true,
+      min: 0,
+      validate: {
+        validator: Number.isInteger,
+        message: 'Nights must be a whole number'
+      }
     }
   },
   startDate: {
@@ -132,6 +142,11 @@ const tourSchema = new mongoose.Schema({
   cancellationPolicy: {
     type: String
   },
+  status: {
+    type: String,
+    enum: ['draft', 'pending', 'approved'],
+    default: 'draft'
+  },
   createdAt: {
     type: Date,
     default: Date.now
@@ -158,14 +173,17 @@ app.post('/api/tours', upload.array('images'), async (req, res) => {
       tourData.images = req.files.map(file => file.path);
     }
 
-    // Convert string numbers to actual numbers
-    tourData.price = Number(tourData.price);
-    if (tourData.maxGroupSize) tourData.maxGroupSize = Number(tourData.maxGroupSize);
-    if (tourData.availableSeats) tourData.availableSeats = Number(tourData.availableSeats);
+    // Parse duration values properly
+    const duration = JSON.parse(req.body.duration);
     tourData.duration = {
-      days: Number(tourData.duration.days),
-      nights: Number(tourData.duration.nights)
+      days: parseInt(duration.days) || 0,
+      nights: parseInt(duration.nights) || 0
     };
+
+    // Convert other string numbers to actual numbers
+    tourData.price = Number(tourData.price) || 0;
+    if (tourData.maxGroupSize) tourData.maxGroupSize = parseInt(tourData.maxGroupSize) || 0;
+    if (tourData.availableSeats) tourData.availableSeats = parseInt(tourData.availableSeats) || 0;
 
     // Create new tour
     const newTour = new Tour(tourData);
@@ -220,6 +238,126 @@ app.get('/api/tours/:id', async (req, res) => {
     res.status(500).json({
       success: false,
       error: 'Failed to fetch tour'
+    });
+  }
+});
+
+// Delete tour
+app.delete('/api/tours/:id', async (req, res) => {
+  try {
+    const tour = await Tour.findById(req.params.id);
+    if (!tour) {
+      return res.status(404).json({
+        success: false,
+        error: 'Tour not found'
+      });
+    }
+
+    // Delete associated images
+    tour.images.forEach(imagePath => {
+      try {
+        fs.unlinkSync(imagePath);
+      } catch (err) {
+        console.error('Error deleting image:', err);
+      }
+    });
+
+    await Tour.findByIdAndDelete(req.params.id);
+    res.json({
+      success: true,
+      message: 'Tour deleted successfully'
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: 'Failed to delete tour'
+    });
+  }
+});
+
+// Update tour status
+app.patch('/api/tours/:id/status', async (req, res) => {
+  try {
+    const { status } = req.body;
+    const tour = await Tour.findByIdAndUpdate(
+      req.params.id,
+      { status },
+      { new: true }
+    );
+
+    if (!tour) {
+      return res.status(404).json({
+        success: false,
+        error: 'Tour not found'
+      });
+    }
+
+    res.json({
+      success: true,
+      tour
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: 'Failed to update tour status'
+    });
+  }
+});
+
+// Update tour
+app.put('/api/tours/:id', upload.array('newImages'), async (req, res) => {
+  try {
+    const tourId = req.params.id;
+    const tourData = { ...req.body };
+    
+    // Handle existing and new images
+    const existingImages = JSON.parse(req.body.existingImages || '[]');
+    const newImagePaths = req.files ? req.files.map(file => file.path) : [];
+    tourData.images = [...existingImages, ...newImagePaths];
+
+    // Parse JSON strings back to objects
+    tourData.destinations = JSON.parse(req.body.destinations);
+    tourData.meals = JSON.parse(req.body.meals);
+    tourData.transportation = JSON.parse(req.body.transportation);
+    tourData.includes = JSON.parse(req.body.includes);
+    tourData.excludes = JSON.parse(req.body.excludes);
+
+    // Convert string numbers to actual numbers
+    tourData.price = Number(tourData.price);
+    if (tourData.maxGroupSize) tourData.maxGroupSize = Number(tourData.maxGroupSize);
+    if (tourData.availableSeats) tourData.availableSeats = Number(tourData.availableSeats);
+    tourData.duration = {
+      days: Number(tourData.duration.days),
+      nights: Number(tourData.duration.nights)
+    };
+
+    // Remove fields that shouldn't be updated directly
+    delete tourData.existingImages;
+    delete tourData.newImages;
+
+    const updatedTour = await Tour.findByIdAndUpdate(
+      tourId,
+      tourData,
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedTour) {
+      return res.status(404).json({
+        success: false,
+        error: 'Tour not found'
+      });
+    }
+
+    res.json({
+      success: true,
+      message: 'Tour updated successfully',
+      tour: updatedTour
+    });
+  } catch (error) {
+    console.error('Error updating tour:', error);
+    res.status(400).json({
+      success: false,
+      error: error.message || 'Failed to update tour'
     });
   }
 });

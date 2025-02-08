@@ -1,7 +1,29 @@
-import React, { useState } from 'react';
-import './UploadTour.css';  // Import the CSS file for styling
+import React, { useEffect, useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import './EditTour.css';
 
-const UploadTour = () => {
+const EditTour = () => {
+  const { tourId } = useParams();
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const packageTypes = [
+    'Single',
+    'Group',
+    'Couple (Honeymoon)',
+    'Family',
+    'Organizational'
+  ];
+
+  const transportationTypes = [
+    'Bus',
+    'Mini Bus',
+    'Car',
+    'Premium Car',
+    'Other'
+  ];
+
   const [tourDetails, setTourDetails] = useState({
     name: '',
     packageType: '',
@@ -30,27 +52,96 @@ const UploadTour = () => {
       stayDuration: '' 
     }],
     images: [],
-    includes: [''], // Additional included services
-    excludes: [''], // What's not included
+    includes: [''],
+    excludes: [''],
     specialNote: '',
     cancellationPolicy: ''
   });
 
-  const packageTypes = [
-    'Single',
-    'Group',
-    'Couple (Honeymoon)',
-    'Family',
-    'Organizational'
-  ];
+  useEffect(() => {
+    fetchTourDetails();
+  }, [tourId]);
 
-  const transportationTypes = [
-    'Bus',
-    'Mini Bus',
-    'Car',
-    'Premium Car',
-    'Other'
-  ];
+  const fetchTourDetails = async () => {
+    try {
+      const response = await fetch(`http://localhost:4000/api/tours/${tourId}`);
+      const data = await response.json();
+
+      if (data.success) {
+        const tour = data.tour;
+        setTourDetails({
+          ...tourDetails,
+          ...tour,
+          duration: {
+            days: tour.duration?.days || '',
+            nights: tour.duration?.nights || ''
+          },
+          startDate: tour.startDate ? tour.startDate.split('T')[0] : '',
+          endDate: tour.endDate ? tour.endDate.split('T')[0] : '',
+          meals: {
+            breakfast: tour.meals?.breakfast || false,
+            lunch: tour.meals?.lunch || false,
+            dinner: tour.meals?.dinner || false
+          },
+          transportation: {
+            type: tour.transportation?.type || '',
+            details: tour.transportation?.details || ''
+          },
+          destinations: tour.destinations || [{ name: '', description: '', stayDuration: '' }],
+          includes: tour.includes || [''],
+          excludes: tour.excludes || [''],
+          images: tour.images || []
+        });
+      } else {
+        throw new Error(data.error || 'Failed to fetch tour details');
+      }
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const formData = new FormData();
+
+    // Append all the tour details
+    Object.keys(tourDetails).forEach(key => {
+      if (key === 'images') {
+        // Handle images
+        tourDetails.images.forEach(image => {
+          if (image instanceof File) {
+            formData.append('images', image);
+          } else {
+            formData.append('existingImages', image);
+          }
+        });
+      } else if (typeof tourDetails[key] === 'object') {
+        formData.append(key, JSON.stringify(tourDetails[key]));
+      } else {
+        formData.append(key, tourDetails[key]);
+      }
+    });
+
+    try {
+      const response = await fetch(`http://localhost:4000/api/tours/${tourId}`, {
+        method: 'PUT',
+        body: formData,
+      });
+
+      const result = await response.json();
+      if (response.ok) {
+        alert('Tour updated successfully');
+        navigate('/manage-tours');
+      } else {
+        alert(`Failed to update tour: ${result.error}`);
+      }
+    } catch (error) {
+      console.error('Error updating tour:', error);
+      alert('An error occurred while updating the tour');
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -95,22 +186,6 @@ const UploadTour = () => {
     });
   };
 
-  const handleArrayFieldChange = (index, field, value) => {
-    const updatedArray = [...tourDetails[field]];
-    updatedArray[index] = value;
-    setTourDetails({
-      ...tourDetails,
-      [field]: updatedArray
-    });
-  };
-
-  const addArrayField = (field) => {
-    setTourDetails({
-      ...tourDetails,
-      [field]: [...tourDetails[field], '']
-    });
-  };
-
   const handleDestinationsChange = (e, index, field) => {
     const { value } = e.target;
     const newDestinations = [...tourDetails.destinations];
@@ -136,50 +211,6 @@ const UploadTour = () => {
     });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const formData = new FormData();
-  
-    formData.append('name', tourDetails.name);
-    formData.append('packageType', tourDetails.packageType);
-    formData.append('duration', JSON.stringify(tourDetails.duration));
-    formData.append('startDate', tourDetails.startDate);
-    formData.append('endDate', tourDetails.endDate);
-    formData.append('meals', JSON.stringify(tourDetails.meals));
-    formData.append('transportation', JSON.stringify(tourDetails.transportation));
-    formData.append('tourGuide', tourDetails.tourGuide);
-    formData.append('price', tourDetails.price);
-    formData.append('maxGroupSize', tourDetails.maxGroupSize);
-    formData.append('availableSeats', tourDetails.availableSeats);
-    formData.append('destinations', JSON.stringify(tourDetails.destinations));
-    formData.append('includes', JSON.stringify(tourDetails.includes));
-    formData.append('excludes', JSON.stringify(tourDetails.excludes));
-    formData.append('specialNote', tourDetails.specialNote);
-    formData.append('cancellationPolicy', tourDetails.cancellationPolicy);
-    
-    tourDetails.images.forEach((image) => {
-      formData.append('images', image);
-    });
-  
-    try {
-      const response = await fetch('http://localhost:4000/api/tours', {
-        method: 'POST',
-        body: formData,
-      });
-  
-      const result = await response.json();
-      if (response.ok) {
-        alert('Tour uploaded successfully');
-        console.log(result);
-      } else {
-        alert(`Failed to upload tour: ${result.error}`);
-      }
-    } catch (error) {
-      console.error('Error uploading tour:', error);
-      alert('An error occurred while uploading the tour');
-    }
-  };
-
   const handleRemoveImage = (index) => {
     const updatedImages = tourDetails.images.filter((_, i) => i !== index);
     setTourDetails({
@@ -188,9 +219,12 @@ const UploadTour = () => {
     });
   };
 
+  if (loading) return <div className="loading">Loading tour details...</div>;
+  if (error) return <div className="error">Error: {error}</div>;
+
   return (
     <div className="upload-tour">
-      <h1>Create New Tour Package</h1>
+      <h1>Edit Tour Package</h1>
       <form onSubmit={handleSubmit}>
         <div className="form-section">
           <h2>Basic Information</h2>
@@ -220,7 +254,7 @@ const UploadTour = () => {
               type="number"
               name="days"
               placeholder="Days"
-              value={tourDetails.duration.days}
+              value={tourDetails.duration?.days || ''}
               onChange={handleDurationChange}
               min="1"
               step="1"
@@ -230,7 +264,7 @@ const UploadTour = () => {
               type="number"
               name="nights"
               placeholder="Nights"
-              value={tourDetails.duration.nights}
+              value={tourDetails.duration?.nights || ''}
               onChange={handleDurationChange}
               min="0"
               step="1"
@@ -367,10 +401,20 @@ const UploadTour = () => {
                 type="text"
                 placeholder="What's Included?"
                 value={item}
-                onChange={(e) => handleArrayFieldChange(index, 'includes', e.target.value)}
+                onChange={(e) => {
+                  const newIncludes = [...tourDetails.includes];
+                  newIncludes[index] = e.target.value;
+                  setTourDetails({ ...tourDetails, includes: newIncludes });
+                }}
               />
             ))}
-            <button type="button" onClick={() => addArrayField('includes')}>
+            <button 
+              type="button" 
+              onClick={() => setTourDetails({
+                ...tourDetails,
+                includes: [...tourDetails.includes, '']
+              })}
+            >
               Add Included Item
             </button>
           </div>
@@ -382,10 +426,20 @@ const UploadTour = () => {
                 type="text"
                 placeholder="What's Not Included?"
                 value={item}
-                onChange={(e) => handleArrayFieldChange(index, 'excludes', e.target.value)}
+                onChange={(e) => {
+                  const newExcludes = [...tourDetails.excludes];
+                  newExcludes[index] = e.target.value;
+                  setTourDetails({ ...tourDetails, excludes: newExcludes });
+                }}
               />
             ))}
-            <button type="button" onClick={() => addArrayField('excludes')}>
+            <button 
+              type="button" 
+              onClick={() => setTourDetails({
+                ...tourDetails,
+                excludes: [...tourDetails.excludes, '']
+              })}
+            >
               Add Excluded Item
             </button>
           </div>
@@ -427,7 +481,7 @@ const UploadTour = () => {
               {tourDetails.images.map((image, index) => (
                 <div key={index} className="image-preview-item">
                   <img
-                    src={URL.createObjectURL(image)}
+                    src={image instanceof File ? URL.createObjectURL(image) : `http://localhost:4000/${image}`}
                     alt={`preview-${index}`}
                     className="image-thumbnail"
                   />
@@ -444,10 +498,10 @@ const UploadTour = () => {
           </div>
         </div>
 
-        <button type="submit" className="submit-button">Create Package</button>
+        <button type="submit" className="submit-button">Update Package</button>
       </form>
     </div>
   );
 };
 
-export default UploadTour;
+export default EditTour; 
