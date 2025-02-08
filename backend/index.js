@@ -22,82 +22,204 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Serve images from the 'upload/images' directory
 
-// Define Mongoose Schema
-const tourSchema = new mongoose.Schema({
-    name: String,
-    itinerary: String,
-    price: Number,
-    availability: String,
-    startDate: Date,
-    endDate: Date,
-    destinations: [
-      {
-        name: String,
-        description: String,
-      },
-    ],
-    images: [String],
-    discount: String,
-    category: [String],
+// Configure multer for image upload
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'uploads/');
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + '-' + file.originalname);
+  }
 });
+
+const upload = multer({ storage: storage });
+
+// Update Tour Schema
+const tourSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true
+  },
+  packageType: {
+    type: String,
+    required: true,
+    enum: ['Single', 'Group', 'Couple (Honeymoon)', 'Family', 'Organizational']
+  },
+  duration: {
+    days: {
+      type: Number,
+      required: true
+    },
+    nights: {
+      type: Number,
+      required: true
+    }
+  },
+  startDate: {
+    type: Date,
+    required: function() { return this.packageType === 'Group'; }
+  },
+  endDate: {
+    type: Date,
+    required: function() { return this.packageType === 'Group'; }
+  },
+  meals: {
+    breakfast: {
+      type: Boolean,
+      default: false
+    },
+    lunch: {
+      type: Boolean,
+      default: false
+    },
+    dinner: {
+      type: Boolean,
+      default: false
+    }
+  },
+  transportation: {
+    type: {
+      type: String,
+      required: true
+    },
+    details: {
+      type: String
+    }
+  },
+  tourGuide: {
+    type: Boolean,
+    default: false
+  },
+  price: {
+    type: Number,
+    required: true
+  },
+  maxGroupSize: {
+    type: Number,
+    required: function() { return this.packageType === 'Group'; }
+  },
+  availableSeats: {
+    type: Number,
+    required: function() { return this.packageType === 'Group'; }
+  },
+  destinations: [{
+    name: {
+      type: String,
+      required: true
+    },
+    description: {
+      type: String,
+      required: true
+    },
+    stayDuration: {
+      type: String,
+      required: true
+    }
+  }],
+  images: [{
+    type: String,  // This will store the image file paths
+    required: true
+  }],
+  includes: [{
+    type: String
+  }],
+  excludes: [{
+    type: String
+  }],
+  specialNote: {
+    type: String
+  },
+  cancellationPolicy: {
+    type: String
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now
+  }
+});
+
 const Tour = mongoose.model('Tour', tourSchema);
 
-// Image upload configuration
-var storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, 'uploads')
-    },
-    filename: (req, file, cb) => {
-        cb(null, file.fieldname + '-' + Date.now())
+// Create new tour API endpoint
+app.post('/api/tours', upload.array('images'), async (req, res) => {
+  try {
+    // Process the uploaded data
+    const tourData = {
+      ...req.body,
+      destinations: JSON.parse(req.body.destinations),
+      meals: JSON.parse(req.body.meals),
+      transportation: JSON.parse(req.body.transportation),
+      includes: JSON.parse(req.body.includes),
+      excludes: JSON.parse(req.body.excludes)
+    };
+
+    // Add image paths to the tour data
+    if (req.files) {
+      tourData.images = req.files.map(file => file.path);
     }
-});
-const uploads = multer({ storage });
 
-// Create a New Tour
-app.post('/api/tours', uploads.array('images', 10), async (req, res) => {
-    try {
-        const {
-            name,
-            itinerary,
-            price,
-            availability,
-            startDate,
-            endDate,
-            destinations,
-            discount,
-            category,
-        } = req.body;
+    // Convert string numbers to actual numbers
+    tourData.price = Number(tourData.price);
+    if (tourData.maxGroupSize) tourData.maxGroupSize = Number(tourData.maxGroupSize);
+    if (tourData.availableSeats) tourData.availableSeats = Number(tourData.availableSeats);
+    tourData.duration = {
+      days: Number(tourData.duration.days),
+      nights: Number(tourData.duration.nights)
+    };
 
-        const imagePaths = req.files.map((file) => file.path.replace('uploads/', ''));  // Strip 'upload/' for URL
+    // Create new tour
+    const newTour = new Tour(tourData);
+    await newTour.validate(); // Validate before saving
+    const savedTour = await newTour.save();
 
-        const newTour = new Tour({
-            name,
-            itinerary,
-            price,
-            availability,
-            startDate,
-            endDate,
-            destinations: JSON.parse(destinations),
-            images: imagePaths,
-            discount,
-            category: JSON.parse(category),
-        });
-
-        await newTour.save();
-        res.status(201).json({ message: 'Tour created successfully', tour: newTour });
-    } catch (error) {
-        console.error('Error creating tour:', error);
-        res.status(500).json({ error: 'Failed to create tour' });
-    }
+    res.status(201).json({
+      success: true,
+      message: 'Tour created successfully',
+      tour: savedTour
+    });
+  } catch (error) {
+    console.error('Error creating tour:', error);
+    res.status(400).json({
+      success: false,
+      error: error.message || 'Failed to create tour'
+    });
+  }
 });
 
-// Get All Tours
+// Get all tours
 app.get('/api/tours', async (req, res) => {
-    try {
-        const tours = await Tour.find();
-        res.status(200).json(tours);
-    } catch (error) {
-        console.error('Error fetching tours:', error);
-        res.status(500).json({ error: 'Failed to fetch tours' });
+  try {
+    const tours = await Tour.find();
+    res.json({
+      success: true,
+      tours
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: 'Failed to fetch tours'
+    });
+  }
+});
+
+// Get single tour
+app.get('/api/tours/:id', async (req, res) => {
+  try {
+    const tour = await Tour.findById(req.params.id);
+    if (!tour) {
+      return res.status(404).json({
+        success: false,
+        error: 'Tour not found'
+      });
     }
+    res.json({
+      success: true,
+      tour
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: 'Failed to fetch tour'
+    });
+  }
 });

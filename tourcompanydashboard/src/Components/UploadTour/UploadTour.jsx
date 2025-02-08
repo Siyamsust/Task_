@@ -4,18 +4,53 @@ import './UploadTour.css';  // Import the CSS file for styling
 const UploadTour = () => {
   const [tourDetails, setTourDetails] = useState({
     name: '',
-    itinerary: '',
-    price: '',
-    availability: '',
+    packageType: '',
+    duration: {
+      days: '',
+      nights: ''
+    },
     startDate: '',
     endDate: '',
-    destinations: [{ name: '', description: '' }],
+    meals: {
+      breakfast: false,
+      lunch: false,
+      dinner: false
+    },
+    transportation: {
+      type: '',
+      details: ''
+    },
+    tourGuide: false,
+    price: '',
+    maxGroupSize: '',
+    availableSeats: '',
+    destinations: [{ 
+      name: '', 
+      description: '',
+      stayDuration: '' 
+    }],
     images: [],
-    discount: '',
-    category: [],  // New property for categories
+    includes: [''], // Additional included services
+    excludes: [''], // What's not included
+    specialNote: '',
+    cancellationPolicy: ''
   });
 
-  const categoriesList = ['Adventure', 'Relaxation', 'Cultural', 'Family', 'Romantic']; // Example categories
+  const packageTypes = [
+    'Single',
+    'Group',
+    'Couple (Honeymoon)',
+    'Family',
+    'Organizational'
+  ];
+
+  const transportationTypes = [
+    'Bus',
+    'Mini Bus',
+    'Car',
+    'Premium Car',
+    'Other'
+  ];
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -25,19 +60,52 @@ const UploadTour = () => {
     });
   };
 
-  const handleCategoryChange = (e) => {
-    const { value, checked } = e.target;
-    if (checked) {
-      setTourDetails({
-        ...tourDetails,
-        category: [...tourDetails.category, value]
-      });
-    } else {
-      setTourDetails({
-        ...tourDetails,
-        category: tourDetails.category.filter((cat) => cat !== value)
-      });
-    }
+  const handleDurationChange = (e) => {
+    const { name, value } = e.target;
+    setTourDetails({
+      ...tourDetails,
+      duration: {
+        ...tourDetails.duration,
+        [name]: value
+      }
+    });
+  };
+
+  const handleMealChange = (meal) => {
+    setTourDetails({
+      ...tourDetails,
+      meals: {
+        ...tourDetails.meals,
+        [meal]: !tourDetails.meals[meal]
+      }
+    });
+  };
+
+  const handleTransportationChange = (e) => {
+    const { name, value } = e.target;
+    setTourDetails({
+      ...tourDetails,
+      transportation: {
+        ...tourDetails.transportation,
+        [name]: value
+      }
+    });
+  };
+
+  const handleArrayFieldChange = (index, field, value) => {
+    const updatedArray = [...tourDetails[field]];
+    updatedArray[index] = value;
+    setTourDetails({
+      ...tourDetails,
+      [field]: updatedArray
+    });
+  };
+
+  const addArrayField = (field) => {
+    setTourDetails({
+      ...tourDetails,
+      [field]: [...tourDetails[field], '']
+    });
   };
 
   const handleDestinationsChange = (e, index, field) => {
@@ -53,7 +121,7 @@ const UploadTour = () => {
   const addDestination = () => {
     setTourDetails({
       ...tourDetails,
-      destinations: [...tourDetails.destinations, { name: '', description: '' }]
+      destinations: [...tourDetails.destinations, { name: '', description: '', stayDuration: '' }]
     });
   };
 
@@ -70,14 +138,21 @@ const UploadTour = () => {
     const formData = new FormData();
   
     formData.append('name', tourDetails.name);
-    formData.append('itinerary', tourDetails.itinerary);
-    formData.append('price', tourDetails.price);
-    formData.append('availability', tourDetails.availability);
+    formData.append('packageType', tourDetails.packageType);
+    formData.append('duration', JSON.stringify(tourDetails.duration));
     formData.append('startDate', tourDetails.startDate);
     formData.append('endDate', tourDetails.endDate);
-    formData.append('discount', tourDetails.discount);
-    formData.append('category', JSON.stringify(tourDetails.category)); // Add categories
+    formData.append('meals', JSON.stringify(tourDetails.meals));
+    formData.append('transportation', JSON.stringify(tourDetails.transportation));
+    formData.append('tourGuide', tourDetails.tourGuide);
+    formData.append('price', tourDetails.price);
+    formData.append('maxGroupSize', tourDetails.maxGroupSize);
+    formData.append('availableSeats', tourDetails.availableSeats);
     formData.append('destinations', JSON.stringify(tourDetails.destinations));
+    formData.append('includes', JSON.stringify(tourDetails.includes));
+    formData.append('excludes', JSON.stringify(tourDetails.excludes));
+    formData.append('specialNote', tourDetails.specialNote);
+    formData.append('cancellationPolicy', tourDetails.cancellationPolicy);
     
     tourDetails.images.forEach((image) => {
       formData.append('images', image);
@@ -112,124 +187,259 @@ const UploadTour = () => {
 
   return (
     <div className="upload-tour">
-      <h1>Upload New Tour</h1>
+      <h1>Create New Tour Package</h1>
       <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          name="name"
-          placeholder="Tour Name"
-          value={tourDetails.name}
-          onChange={handleChange}
-        />
-        <textarea
-          name="itinerary"
-          placeholder="Itinerary"
-          value={tourDetails.itinerary}
-          onChange={handleChange}
-        />
-        <input
-          type="number"
-          name="price"
-          placeholder="Price"
-          value={tourDetails.price}
-          onChange={handleChange}
-        />
-        <input
-          type="text"
-          name="availability"
-          placeholder="Availability (e.g., available, sold out)"
-          value={tourDetails.availability}
-          onChange={handleChange}
-        />
-        <input
-          type="date"
-          name="startDate"
-          placeholder="Start Date"
-          value={tourDetails.startDate}
-          onChange={handleChange}
-        />
-        <input
-          type="date"
-          name="endDate"
-          placeholder="End Date"
-          value={tourDetails.endDate}
-          onChange={handleChange}
-        />
-        
-        {/* Categories */}
-        <div className="categories">
-          <h3>Categories</h3>
-          {categoriesList.map((category, index) => (
-            <label key={index}>
+        <div className="form-section">
+          <h2>Basic Information</h2>
+          <input
+            type="text"
+            name="name"
+            placeholder="Package Name"
+            value={tourDetails.name}
+            onChange={handleChange}
+            required
+          />
+
+          <select
+            name="packageType"
+            value={tourDetails.packageType}
+            onChange={handleChange}
+            required
+          >
+            <option value="">Select Package Type</option>
+            {packageTypes.map((type) => (
+              <option key={type} value={type}>{type}</option>
+            ))}
+          </select>
+
+          <div className="duration-inputs">
+            <input
+              type="number"
+              name="days"
+              placeholder="Days"
+              value={tourDetails.duration.days}
+              onChange={handleDurationChange}
+              min="1"
+              required
+            />
+            <input
+              type="number"
+              name="nights"
+              placeholder="Nights"
+              value={tourDetails.duration.nights}
+              onChange={handleDurationChange}
+              min="0"
+              required
+            />
+          </div>
+
+          {tourDetails.packageType === 'Group' && (
+            <div className="group-details">
               <input
-                type="checkbox"
-                value={category}
-                checked={tourDetails.category.includes(category)}
-                onChange={handleCategoryChange}
+                type="number"
+                name="maxGroupSize"
+                placeholder="Maximum Group Size"
+                value={tourDetails.maxGroupSize}
+                onChange={handleChange}
+                min="1"
               />
-              {category}
-            </label>
-          ))}
+              <input
+                type="number"
+                name="availableSeats"
+                placeholder="Available Seats"
+                value={tourDetails.availableSeats}
+                onChange={handleChange}
+                min="0"
+              />
+              <input
+                type="date"
+                name="startDate"
+                value={tourDetails.startDate}
+                onChange={handleChange}
+                required
+              />
+              <input
+                type="date"
+                name="endDate"
+                value={tourDetails.endDate}
+                onChange={handleChange}
+                required
+              />
+            </div>
+          )}
         </div>
 
-        {/* Destinations */}
-        <div className="destinations">
-          <h3>Destinations</h3>
+        <div className="form-section">
+          <h2>Services & Amenities</h2>
+          <div className="meals-section">
+            <h3>Meals Included</h3>
+            <div className="checkbox-group">
+              {Object.keys(tourDetails.meals).map((meal) => (
+                <label key={meal}>
+                  <input
+                    type="checkbox"
+                    checked={tourDetails.meals[meal]}
+                    onChange={() => handleMealChange(meal)}
+                  />
+                  {meal.charAt(0).toUpperCase() + meal.slice(1)}
+                </label>
+              ))}
+            </div>
+          </div>
+
+          <div className="transportation-section">
+            <h3>Transportation</h3>
+            <select
+              name="type"
+              value={tourDetails.transportation.type}
+              onChange={handleTransportationChange}
+              required
+            >
+              <option value="">Select Transportation Type</option>
+              {transportationTypes.map((type) => (
+                <option key={type} value={type}>{type}</option>
+              ))}
+            </select>
+            <input
+              type="text"
+              name="details"
+              placeholder="Transportation Details"
+              value={tourDetails.transportation.details}
+              onChange={handleTransportationChange}
+            />
+          </div>
+
+          <div className="tour-guide-section">
+            <label>
+              <input
+                type="checkbox"
+                checked={tourDetails.tourGuide}
+                onChange={(e) => setTourDetails({
+                  ...tourDetails,
+                  tourGuide: e.target.checked
+                })}
+              />
+              Tour Guide Available
+            </label>
+          </div>
+        </div>
+
+        <div className="form-section">
+          <h2>Destinations</h2>
           {tourDetails.destinations.map((destination, index) => (
-            <div key={index} className="destination">
+            <div key={index} className="destination-input">
               <input
                 type="text"
                 placeholder="Destination Name"
                 value={destination.name}
                 onChange={(e) => handleDestinationsChange(e, index, 'name')}
+                required
               />
               <textarea
                 placeholder="Destination Description"
                 value={destination.description}
                 onChange={(e) => handleDestinationsChange(e, index, 'description')}
+                required
+              />
+              <input
+                type="text"
+                placeholder="Stay Duration (e.g., 2 days)"
+                value={destination.stayDuration}
+                onChange={(e) => handleDestinationsChange(e, index, 'stayDuration')}
+                required
               />
             </div>
           ))}
           <button type="button" onClick={addDestination}>Add Destination</button>
         </div>
-        
-        {/* Multiple Image Upload */}
-        <div className="file-upload">
-          <input
-            type="file"
-            multiple
-            onChange={handleFileChange}
-          />
-          <div className="image-preview">
-            {tourDetails.images.map((image, index) => (
-              <div key={index} className="image-preview-item">
-                <img
-                  src={URL.createObjectURL(image)}
-                  alt={`preview-${index}`}
-                  className="image-thumbnail"
-                />
-                <button
-                  type="button"
-                  onClick={() => handleRemoveImage(index)}
-                  className="remove-image-button"
-                >
-                  Remove
-                </button>
-              </div>
+
+        <div className="form-section">
+          <h2>Package Details</h2>
+          <div className="includes-section">
+            {tourDetails.includes.map((item, index) => (
+              <input
+                key={index}
+                type="text"
+                placeholder="What's Included?"
+                value={item}
+                onChange={(e) => handleArrayFieldChange(index, 'includes', e.target.value)}
+              />
             ))}
+            <button type="button" onClick={() => addArrayField('includes')}>
+              Add Included Item
+            </button>
+          </div>
+
+          <div className="excludes-section">
+            {tourDetails.excludes.map((item, index) => (
+              <input
+                key={index}
+                type="text"
+                placeholder="What's Not Included?"
+                value={item}
+                onChange={(e) => handleArrayFieldChange(index, 'excludes', e.target.value)}
+              />
+            ))}
+            <button type="button" onClick={() => addArrayField('excludes')}>
+              Add Excluded Item
+            </button>
+          </div>
+
+          <textarea
+            name="specialNote"
+            placeholder="Special Notes"
+            value={tourDetails.specialNote}
+            onChange={handleChange}
+          />
+
+          <textarea
+            name="cancellationPolicy"
+            placeholder="Cancellation Policy"
+            value={tourDetails.cancellationPolicy}
+            onChange={handleChange}
+          />
+
+          <input
+            type="number"
+            name="price"
+            placeholder="Package Price"
+            value={tourDetails.price}
+            onChange={handleChange}
+            required
+          />
+        </div>
+
+        <div className="form-section">
+          <h2>Images</h2>
+          <div className="file-upload">
+            <input
+              type="file"
+              multiple
+              onChange={handleFileChange}
+              accept="image/*"
+            />
+            <div className="image-preview">
+              {tourDetails.images.map((image, index) => (
+                <div key={index} className="image-preview-item">
+                  <img
+                    src={URL.createObjectURL(image)}
+                    alt={`preview-${index}`}
+                    className="image-thumbnail"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveImage(index)}
+                    className="remove-image-button"
+                  >
+                    Remove
+                  </button>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
 
-        {/* Discount */}
-        <input
-          type="text"
-          name="discount"
-          placeholder="Discount (optional)"
-          value={tourDetails.discount}
-          onChange={handleChange}
-        />
-        
-        <button type="submit">Upload Tour</button>
+        <button type="submit" className="submit-button">Create Package</button>
       </form>
     </div>
   );
