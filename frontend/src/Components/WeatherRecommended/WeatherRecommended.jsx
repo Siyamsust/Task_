@@ -26,7 +26,6 @@ const WeatherRecommended = () => {
   return (
     <section className="weather-recommended">
       <div className="section-header">
-        <h2>Weather-based Recommendations</h2>
         <p>Perfect destinations for current weather conditions</p>
       </div>
 

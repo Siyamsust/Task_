@@ -1,16 +1,39 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../Context/AuthContext';
 import './Navbar.css';
 
 const Navbar = () => {
   const { user, logout } = useAuth();
+  const location = useLocation();
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const handleLogout = () => {
     logout();
     navigate('/');
+  };
+
+  const scrollToSection = (sectionId) => {
+    if (location.pathname !== '/') {
+      window.location.href = '/#' + sectionId;
+      return;
+    }
+
+    const section = document.getElementById(sectionId);
+    const navbar = document.querySelector('.navbar');
+    if (section && navbar) {
+      const navbarHeight = navbar.offsetHeight;
+      const sectionTop = sectionId === 'contact-section' 
+        ? section.offsetTop
+        : section.offsetTop - navbarHeight;
+      
+      window.scrollTo({
+        top: sectionTop,
+        behavior: 'smooth'
+      });
+    }
+    setIsMenuOpen(false);
   };
 
   return (
@@ -25,15 +48,30 @@ const Navbar = () => {
           <Link to="/" className="nav-item">
             <i className="fas fa-home"></i> Home
           </Link>
-          <Link to="/destinations" className="nav-item">
-            <i className="fas fa-map-marker-alt"></i> Destinations
-          </Link>
-          <div className="nav-item">
-            <i className="fas fa-umbrella-beach"></i> Categories
-          </div>
-          <Link to="/packages" className="nav-item">
-            <i className="fas fa-suitcase"></i> Packages
-          </Link>
+          <button 
+            className="nav-item"
+            onClick={() => scrollToSection('popular-section')}
+          >
+            <i className="fas fa-fire"></i> Popular
+          </button>
+          <button 
+            className="nav-item"
+            onClick={() => scrollToSection('categories-section')}
+          >
+            <i className="fas fa-compass"></i> Explore
+          </button>
+          <button 
+            className="nav-item"
+            onClick={() => scrollToSection('trending-section')}
+          >
+            <i className="fas fa-chart-line"></i> Trending
+          </button>
+          <button 
+            className="nav-item"
+            onClick={() => scrollToSection('contact-section')}
+          >
+            <i className="fas fa-envelope"></i> Contact
+          </button>
         </div>
 
         <div className="nav-auth">

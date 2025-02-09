@@ -50,7 +50,6 @@ const TrendingDestinations = () => {
     <section className="trending-destinations">
       <div className="section-header">
         <div className="header-content">
-          <h2>Trending Destinations</h2>
           <p>Most popular choices for travelers this month</p>
         </div>
         <Link to="/destinations" className="view-all">

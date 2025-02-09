@@ -6,7 +6,7 @@
 .main-content {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 40px 20px;
+  padding: 80px 20px 40px;
 }
 
 .section-header {
@@ -44,12 +44,28 @@
 
 section {
   margin-bottom: 60px;
+  scroll-margin-top: 80px;
 }
 
 section h2 {
   font-size: 2rem;
   color: var(--text-color);
   margin-bottom: 30px;
+}
+
+.main-content h2 {
+  margin-top: 60px;
+  margin-bottom: 30px;
+  font-size: 2rem;
+  color: var(--text-color);
+}
+
+.popular-section,
+.categories-section,
+.weather-section,
+.trending-section {
+  position: relative;
+  padding-top: 20px;
 }
 
 @media (max-width: 768px) {
@@ -61,5 +77,9 @@ section h2 {
 
   section h2 {
     font-size: 1.5rem;
+  }
+
+  .main-content {
+    padding: 60px 20px 40px;
   }
 } 
