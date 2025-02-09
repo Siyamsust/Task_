@@ -1,0 +1,133 @@
+.package-info {
+  margin-bottom: 40px;
+}
+
+.package-header {
+  margin-bottom: 20px;
+}
+
+.package-header h1 {
+  font-size: 2.5rem;
+  margin-bottom: 15px;
+  color: var(--text-color);
+}
+
+.meta-info {
+  display: flex;
+  gap: 20px;
+  color: #666;
+}
+
+.meta-info span {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.meta-info i {
+  color: var(--primary-color);
+}
+
+.description {
+  line-height: 1.6;
+  margin-bottom: 30px;
+  color: #4b5563;
+}
+
+.company-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  background: #f8fafc;
+  border-radius: 12px;
+  margin-bottom: 30px;
+}
+
+.company-details {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.company-details img {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.company-details h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: var(--text-color);
+}
+
+.company-details p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.chat-btn {
+  padding: 10px 20px;
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.chat-btn:hover {
+  background: var(--secondary-color);
+}
+
+.included-section h2 {
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+  color: var(--text-color);
+}
+
+.included-section ul {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+  list-style: none;
+  padding: 0;
+}
+
+.included-section li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #4b5563;
+}
+
+.included-section i {
+  color: var(--primary-color);
+}
+
+@media (max-width: 768px) {
+  .package-header h1 {
+    font-size: 2rem;
+  }
+
+  .meta-info {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .company-info {
+    flex-direction: column;
+    gap: 20px;
+    text-align: center;
+  }
+
+  .included-section ul {
+    grid-template-columns: 1fr;
+  }
+} 

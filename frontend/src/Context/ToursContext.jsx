@@ -18,16 +18,17 @@ export const ToursProvider = ({ children }) => {
         throw new Error('Failed to fetch tours');
       }
       const data = await response.json();
-      setTours(data);
+      setTours(Array.isArray(data) ? data : []);
       setLoading(false);
     } catch (err) {
       setError(err.message);
       setLoading(false);
+      setTours([]);
     }
   };
 
   return (
-    <ToursContext.Provider value={{ tours, loading, error }}>
+    <ToursContext.Provider value={{ tours, loading, error, fetchTours }}>
       {children}
     </ToursContext.Provider>
   );

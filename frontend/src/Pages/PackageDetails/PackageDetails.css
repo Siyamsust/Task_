@@ -44,6 +44,13 @@
   gap: 30px;
 }
 
+.main-content {
+  background: white;
+  border-radius: 15px;
+  padding: 30px;
+  box-shadow: var(--shadow-sm);
+}
+
 .package-info h1 {
   font-size: 2.5rem;
   margin-bottom: 15px;
@@ -167,11 +174,13 @@
   background: #f8f8f8;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .package-content {
     grid-template-columns: 1fr;
   }
+}
 
+@media (max-width: 768px) {
   .main-image {
     height: 300px;
   }

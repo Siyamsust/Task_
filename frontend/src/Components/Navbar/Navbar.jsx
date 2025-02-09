@@ -18,7 +18,7 @@ const Navbar = () => {
       <div className="nav-container">
         <Link to="/" className="nav-logo">
           <i className="fas fa-globe-americas"></i>
-          TourPlanner
+          Task
         </Link>
 
         <div className={`nav-menu ${isMenuOpen ? 'active' : ''}`}>

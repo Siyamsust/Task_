@@ -5,12 +5,24 @@ const multer = require('multer');
 const cors = require('cors');
 const path = require('path');
 const fs = require('fs');
+const http = require('http');
+const socketIO = require('socket.io');
+const Message = require('./models/Message');
+const chatRoutes = require('./routes/chatRoutes');
 
 const app = express();
-const PORT = 4000;
+const server = http.createServer(app);
+const io = socketIO(server, {
+  cors: {
+    origin: "http://localhost:3000",
+    methods: ["GET", "POST"]
+  }
+});
 
-app.listen(PORT, ()=> {
-    console.log(`Server is running on port ${PORT}`);
+const PORT = process.env.PORT || 4000;
+
+server.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });
 
 mongoose.connect("mongodb+srv://kaoser614:0096892156428@cluster0.2awol.mongodb.net/")
@@ -361,3 +373,37 @@ app.put('/api/tours/:id', upload.array('newImages'), async (req, res) => {
     });
   }
 });
+
+// Socket.IO connection handling
+io.on('connection', (socket) => {
+  const userId = socket.handshake.query.userId;
+  
+  socket.join(userId);
+  
+  socket.on('send_message', async (data) => {
+    try {
+      const { chatId, content, recipientId } = data;
+      
+      // Save message to database
+      const message = await Message.create({
+        chatId,
+        senderId: userId,
+        content
+      });
+
+      // Emit to recipient
+      io.to(recipientId).emit('receive_message', message);
+      
+      // Emit to sender
+      socket.emit('receive_message', message);
+    } catch (error) {
+      console.error('Error sending message:', error);
+    }
+  });
+
+  socket.on('disconnect', () => {
+    console.log('User disconnected:', userId);
+  });
+});
+
+app.use('/api/chats', chatRoutes);

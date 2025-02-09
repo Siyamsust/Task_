@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../../Context/AuthContext';
 import AuthForm from '../../Components/AuthForm/AuthForm';
 import AuthTabs from '../../Components/AuthTabs/AuthTabs';
 import SocialLogin from '../../Components/SocialLogin/SocialLogin';
@@ -8,6 +9,8 @@ import './LoginSignup.css';
 const LoginSignup = () => {
   const [isLogin, setIsLogin] = useState(true);
   const navigate = useNavigate();
+  const location = useLocation();
+  const { login } = useAuth();
   
   const [formData, setFormData] = useState({
     email: '',
@@ -19,7 +22,22 @@ const LoginSignup = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     // Handle authentication logic here
-    navigate('/profile');
+    handleLogin(formData);
+  };
+
+  const handleLogin = async (credentials) => {
+    try {
+      await login(credentials);
+      
+      // After successful login, redirect to the intended page or chat
+      if (location.state?.from) {
+        navigate(location.state.from);
+      } else {
+        navigate('/');
+      }
+    } catch (error) {
+      console.error('Login failed:', error);
+    }
   };
 
   return (
@@ -29,6 +47,12 @@ const LoginSignup = () => {
           <h2>{isLogin ? 'Welcome Back!' : 'Create Account'}</h2>
           <p>{isLogin ? 'Login to access your account' : 'Sign up to get started'}</p>
         </div>
+
+        {location.state?.message && (
+          <div className="login-message">
+            {location.state.message}
+          </div>
+        )}
 
         <AuthTabs isLogin={isLogin} setIsLogin={setIsLogin} />
         

@@ -4,34 +4,42 @@ import Homepage from './Pages/Homepage/Homepage';
 import PackageDetails from './Pages/PackageDetails/PackageDetails';
 import LoginSignup from './Pages/LoginSignup/LoginSignup';
 import ProfilePage from './Pages/ProfilePage/ProfilePage';
+import ChatPage from './Pages/ChatPage/ChatPage';
 import { ToursProvider } from './Context/ToursContext';
 import { AuthProvider } from './Context/AuthContext';
+import { SocketProvider } from './Context/SocketContext';
 import PrivateRoute from './Components/PrivateRoute/PrivateRoute';
+import { ChatProvider } from './Context/ChatContext';
 import './App.css';
 
 function App() {
   return (
     <AuthProvider>
-      <ToursProvider>
-        <BrowserRouter>
-          <div className="App">
-            <Navbar />
-            <Routes>
-              <Route path="/" element={<Homepage />} />
-              <Route path="/package/:id" element={<PackageDetails />} />
-              <Route path="/login" element={<LoginSignup />} />
-              <Route 
-                path="/profile" 
-                element={
-                  <PrivateRoute>
-                    <ProfilePage />
-                  </PrivateRoute>
-                } 
-              />
-            </Routes>
-          </div>
-        </BrowserRouter>
-      </ToursProvider>
+      <SocketProvider>
+        <ChatProvider>
+          <ToursProvider>
+            <BrowserRouter>
+              <div className="App">
+                <Navbar />
+                <Routes>
+                  <Route path="/" element={<Homepage />} />
+                  <Route path="/package/:id" element={<PackageDetails />} />
+                  <Route path="/login" element={<LoginSignup />} />
+                  <Route path="/chat" element={<ChatPage />} />
+                  <Route 
+                    path="/profile" 
+                    element={
+                      <PrivateRoute>
+                        <ProfilePage />
+                      </PrivateRoute>
+                    } 
+                  />
+                </Routes>
+              </div>
+            </BrowserRouter>
+          </ToursProvider>
+        </ChatProvider>
+      </SocketProvider>
     </AuthProvider>
   );
 }
