@@ -54,10 +54,6 @@ const Homepage = () => {
             <WeatherRecommended />
           </section>
 
-          <section id="trending-section" className="trending-section">
-            <h2>Trending Destinations</h2>
-            <TrendingDestinations />
-          </section>
         </div>
       </div>
       <Footer />

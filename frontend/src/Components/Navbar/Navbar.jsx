@@ -56,15 +56,9 @@ const Navbar = () => {
           </button>
           <button 
             className="nav-item"
-            onClick={() => scrollToSection('categories-section')}
+            onClick={() => navigate('/explore')}
           >
             <i className="fas fa-compass"></i> Explore
-          </button>
-          <button 
-            className="nav-item"
-            onClick={() => scrollToSection('trending-section')}
-          >
-            <i className="fas fa-chart-line"></i> Trending
           </button>
           <button 
             className="nav-item"

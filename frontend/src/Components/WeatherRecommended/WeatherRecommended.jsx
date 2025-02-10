@@ -1,7 +1,10 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import './WeatherRecommended.css';
 
 const WeatherRecommended = () => {
+  const navigate = useNavigate();
+
   const recommendations = [
     {
       id: 1,
@@ -22,6 +25,10 @@ const WeatherRecommended = () => {
       price: 1299
     }
   ];
+
+  const handleExplore = (packageId) => {
+    navigate(`/package/${packageId}`);
+  };
 
   return (
     <section className="weather-recommended">
@@ -44,7 +51,12 @@ const WeatherRecommended = () => {
               <p><i className="fas fa-map-marker-alt"></i> {item.location}</p>
               <div className="recommendation-footer">
                 <span className="price">From ${item.price}</span>
-                <button className="explore-btn">Explore</button>
+                <button 
+                  className="explore-btn"
+                  onClick={() => handleExplore(item.id)}
+                >
+                   Explore Now <i className="fas fa-arrow-right"></i>
+                </button>
               </div>
             </div>
           </div>

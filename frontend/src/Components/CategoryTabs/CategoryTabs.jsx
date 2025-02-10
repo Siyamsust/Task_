@@ -1,9 +1,7 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import './Categories.css';
+import './CategoryTabs.css';
 
-const Categories = () => {
-  const navigate = useNavigate();
+const CategoryTabs = ({ activeCategory, onCategoryChange }) => {
   const categories = [
     { id: 'adventure', name: 'Adventure', icon: 'mountain', color: '#f97316' },
     { id: 'beach', name: 'Beach', icon: 'umbrella-beach', color: '#0ea5e9' },
@@ -14,23 +12,20 @@ const Categories = () => {
   ];
 
   return (
-    <div className="categories-container">
+    <div className="category-tabs">
       {categories.map(category => (
-        <div 
-          key={category.id} 
-          className="category-card"
+        <button
+          key={category.id}
+          className={`category-tab ${activeCategory === category.id ? 'active' : ''}`}
+          onClick={() => onCategoryChange(category.id)}
           style={{ '--category-color': category.color }}
-          onClick={() => navigate(`/explore/${category.id}`)}
         >
-          <div className="category-icon">
-            <i className={`fas fa-${category.icon}`}></i>
-          </div>
-          <h3>{category.name}</h3>
-          <span className="tour-count">15 Tours</span>
-        </div>
+          <i className={`fas fa-${category.icon}`}></i>
+          <span>{category.name}</span>
+        </button>
       ))}
     </div>
   );
 };
 
-export default Categories; 
+export default CategoryTabs; 
