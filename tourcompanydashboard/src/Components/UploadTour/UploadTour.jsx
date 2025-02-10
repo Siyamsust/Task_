@@ -4,7 +4,12 @@ import './UploadTour.css';  // Import the CSS file for styling
 const UploadTour = () => {
   const [tourDetails, setTourDetails] = useState({
     name: '',
-    packageType: '',
+    packageCategories: [],
+    customCategory: '',
+    tourType: {
+      single: false,
+      group: false
+    },
     duration: {
       days: '',
       nights: ''
@@ -36,12 +41,14 @@ const UploadTour = () => {
     cancellationPolicy: ''
   });
 
-  const packageTypes = [
-    'Single',
-    'Group',
-    'Couple (Honeymoon)',
+  const packageCategories = [
+    'Adventure',
+    'Cultural',
+    'Nature & Eco',
     'Family',
-    'Organizational'
+    'Honeymoon',
+    'Educational',
+    'Seasonal'
   ];
 
   const transportationTypes = [
@@ -136,12 +143,45 @@ const UploadTour = () => {
     });
   };
 
+  const handleCategoryChange = (category) => {
+    setTourDetails(prev => ({
+      ...prev,
+      packageCategories: prev.packageCategories.includes(category)
+        ? prev.packageCategories.filter(c => c !== category)
+        : [...prev.packageCategories, category]
+    }));
+  };
+
+  const handleTourTypeChange = (type) => {
+    setTourDetails(prev => ({
+      ...prev,
+      tourType: {
+        ...prev.tourType,
+        [type]: !prev.tourType[type]
+      }
+    }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData();
   
+    // Add validation for tour type
+    if (!tourDetails.tourType.single && !tourDetails.tourType.group) {
+      alert('Please select at least one tour type (Single or Group)');
+      return;
+    }
+
+    // Add validation for categories
+    if (tourDetails.packageCategories.length === 0 && !tourDetails.customCategory) {
+      alert('Please select at least one category or add a custom category');
+      return;
+    }
+
     formData.append('name', tourDetails.name);
-    formData.append('packageType', tourDetails.packageType);
+    formData.append('packageCategories', JSON.stringify(tourDetails.packageCategories));
+    formData.append('customCategory', tourDetails.customCategory);
+    formData.append('tourType', JSON.stringify(tourDetails.tourType));
     formData.append('duration', JSON.stringify(tourDetails.duration));
     formData.append('startDate', tourDetails.startDate);
     formData.append('endDate', tourDetails.endDate);
@@ -203,17 +243,50 @@ const UploadTour = () => {
             required
           />
 
-          <select
-            name="packageType"
-            value={tourDetails.packageType}
-            onChange={handleChange}
-            required
-          >
-            <option value="">Select Package Type</option>
-            {packageTypes.map((type) => (
-              <option key={type} value={type}>{type}</option>
-            ))}
-          </select>
+          <div className="categories-section">
+            <h3>Package Categories</h3>
+            <div className="checkbox-group categories">
+              {packageCategories.map((category) => (
+                <label key={category}>
+                  <input
+                    type="checkbox"
+                    checked={tourDetails.packageCategories.includes(category)}
+                    onChange={() => handleCategoryChange(category)}
+                  />
+                  {category}
+                </label>
+              ))}
+            </div>
+            <input
+              type="text"
+              name="customCategory"
+              placeholder="Custom Category (optional)"
+              value={tourDetails.customCategory}
+              onChange={handleChange}
+            />
+          </div>
+
+          <div className="tour-type-section">
+            <h3>Tour Type</h3>
+            <div className="checkbox-group">
+              <label>
+                <input
+                  type="checkbox"
+                  checked={tourDetails.tourType.single}
+                  onChange={() => handleTourTypeChange('single')}
+                />
+                Single
+              </label>
+              <label>
+                <input
+                  type="checkbox"
+                  checked={tourDetails.tourType.group}
+                  onChange={() => handleTourTypeChange('group')}
+                />
+                Group
+              </label>
+            </div>
+          </div>
 
           <div className="duration-inputs">
             <input
@@ -238,7 +311,7 @@ const UploadTour = () => {
             />
           </div>
 
-          {tourDetails.packageType === 'Group' && (
+          {tourDetails.tourType.group && (
             <div className="group-details">
               <input
                 type="number"

@@ -1,15 +1,110 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import './Navbar.css'; // For styling
+import React, { useState, useRef, useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { 
+  FaHome, 
+  FaSuitcase, 
+  FaUpload, 
+  FaChartBar, 
+  FaEnvelope, 
+  FaIdCard, 
+  FaUserCircle,
+  FaCog,
+  FaBell,
+  FaSignOutAlt
+} from 'react-icons/fa';
+import './Navbar.css';
 
 const Navbar = () => {
+  const location = useLocation();
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [showProfile, setShowProfile] = useState(false);
+  
+  const notificationRef = useRef(null);
+  const profileRef = useRef(null);
+
+  const notifications = [
+    { id: 1, text: 'New booking request', time: '5 min ago' },
+    { id: 2, text: 'Tour package approved', time: '1 hour ago' },
+    { id: 3, text: 'New customer review', time: '2 hours ago' }
+  ];
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (notificationRef.current && !notificationRef.current.contains(event.target)) {
+        setShowNotifications(false);
+      }
+      if (profileRef.current && !profileRef.current.contains(event.target)) {
+        setShowProfile(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   return (
     <nav className="navbar">
-      <ul>
-        <li><Link to="/dashboard" className="navbar-item">Dashboard</Link></li>
-        <li><Link to="/upload-tour" className="navbar-item">Upload Tour</Link></li>
-        <li><Link to="/manage-tours" className="navbar-item">Manage Tours</Link></li>
-      </ul>
+      <div className="navbar-brand">
+        <h1>SS Tours</h1>
+      </div>
+
+      <div className="navbar-links">
+        <Link to="/dashboard" className={location.pathname === '/dashboard' ? 'active' : ''}>
+          <FaHome /> <span>Dashboard</span>
+        </Link>
+        <Link to="/manage-tours" className={location.pathname === '/manage-tours' ? 'active' : ''}>
+          <FaSuitcase /> <span>Manage Tours</span>
+        </Link>
+        <Link to="/upload-tour" className={location.pathname === '/upload-tour' ? 'active' : ''}>
+          <FaUpload /> <span>Upload Tour</span>
+        </Link>
+        <Link to="/analytics" className={location.pathname === '/analytics' ? 'active' : ''}>
+          <FaChartBar /> <span>Analytics</span>
+        </Link>
+        <Link to="/messages" className={location.pathname === '/messages' ? 'active' : ''}>
+          <FaEnvelope /> <span>Messages</span>
+        </Link>
+        <Link to="/license" className={location.pathname === '/license' ? 'active' : ''}>
+          <FaIdCard /> <span>License</span>
+        </Link>
+      </div>
+
+      <div className="navbar-actions">
+        <div ref={notificationRef} className="notification-bell" onClick={() => setShowNotifications(!showNotifications)}>
+          <FaBell />
+          <span className="notification-badge">3</span>
+          {showNotifications && (
+            <div className="notifications-dropdown">
+              <h3>Notifications</h3>
+              {notifications.map(notification => (
+                <div key={notification.id} className="notification-item">
+                  <p>{notification.text}</p>
+                  <span>{notification.time}</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <div ref={profileRef} className="profile-menu" onClick={() => setShowProfile(!showProfile)}>
+          <FaUserCircle />
+          {showProfile && (
+            <div className="profile-dropdown">
+              <Link to="/profile">
+                <FaUserCircle /> Profile
+              </Link>
+              <Link to="/settings">
+                <FaCog /> Settings
+              </Link>
+              <Link to="/logout">
+                <FaSignOutAlt /> Logout
+              </Link>
+            </div>
+          )}
+        </div>
+      </div>
     </nav>
   );
 };

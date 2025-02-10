@@ -8,12 +8,14 @@ const EditTour = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const packageTypes = [
-    'Single',
-    'Group',
-    'Couple (Honeymoon)',
+  const packageCategories = [
+    'Adventure',
+    'Cultural',
+    'Nature & Eco',
     'Family',
-    'Organizational'
+    'Honeymoon',
+    'Educational',
+    'Seasonal'
   ];
 
   const transportationTypes = [
@@ -26,7 +28,12 @@ const EditTour = () => {
 
   const [tourDetails, setTourDetails] = useState({
     name: '',
-    packageType: '',
+    packageCategories: [],
+    customCategory: '',
+    tourType: {
+      single: false,
+      group: false
+    },
     duration: {
       days: '',
       nights: ''
@@ -70,27 +77,17 @@ const EditTour = () => {
       if (data.success) {
         const tour = data.tour;
         setTourDetails({
-          ...tourDetails,
           ...tour,
-          duration: {
-            days: tour.duration?.days || '',
-            nights: tour.duration?.nights || ''
-          },
           startDate: tour.startDate ? tour.startDate.split('T')[0] : '',
           endDate: tour.endDate ? tour.endDate.split('T')[0] : '',
-          meals: {
-            breakfast: tour.meals?.breakfast || false,
-            lunch: tour.meals?.lunch || false,
-            dinner: tour.meals?.dinner || false
-          },
-          transportation: {
-            type: tour.transportation?.type || '',
-            details: tour.transportation?.details || ''
-          },
+          packageCategories: tour.packageCategories || [],
+          customCategory: tour.customCategory || '',
+          tourType: tour.tourType || { single: false, group: false },
+          meals: tour.meals || { breakfast: false, lunch: false, dinner: false },
+          transportation: tour.transportation || { type: '', details: '' },
           destinations: tour.destinations || [{ name: '', description: '', stayDuration: '' }],
           includes: tour.includes || [''],
-          excludes: tour.excludes || [''],
-          images: tour.images || []
+          excludes: tour.excludes || ['']
         });
       } else {
         throw new Error(data.error || 'Failed to fetch tour details');
@@ -106,17 +103,26 @@ const EditTour = () => {
     e.preventDefault();
     const formData = new FormData();
 
-    // Append all the tour details
+    if (!tourDetails.tourType.single && !tourDetails.tourType.group) {
+      alert('Please select at least one tour type (Single or Group)');
+      return;
+    }
+
+    if (tourDetails.packageCategories.length === 0 && !tourDetails.customCategory) {
+      alert('Please select at least one category or add a custom category');
+      return;
+    }
+
     Object.keys(tourDetails).forEach(key => {
       if (key === 'images') {
-        // Handle images
         tourDetails.images.forEach(image => {
           if (image instanceof File) {
-            formData.append('images', image);
-          } else {
-            formData.append('existingImages', image);
+            formData.append('newImages', image);
           }
         });
+        formData.append('existingImages', JSON.stringify(
+          tourDetails.images.filter(img => !(img instanceof File))
+        ));
       } else if (typeof tourDetails[key] === 'object') {
         formData.append(key, JSON.stringify(tourDetails[key]));
       } else {
@@ -153,7 +159,6 @@ const EditTour = () => {
 
   const handleDurationChange = (e) => {
     const { name, value } = e.target;
-    // Ensure value is a positive integer or empty string
     const parsedValue = value === '' ? '' : Math.max(0, parseInt(value) || 0);
     
     setTourDetails({
@@ -183,6 +188,41 @@ const EditTour = () => {
         ...tourDetails.transportation,
         [name]: value
       }
+    });
+  };
+
+  const handleCategoryChange = (category) => {
+    setTourDetails(prev => ({
+      ...prev,
+      packageCategories: prev.packageCategories.includes(category)
+        ? prev.packageCategories.filter(c => c !== category)
+        : [...prev.packageCategories, category]
+    }));
+  };
+
+  const handleTourTypeChange = (type) => {
+    setTourDetails(prev => ({
+      ...prev,
+      tourType: {
+        ...prev.tourType,
+        [type]: !prev.tourType[type]
+      }
+    }));
+  };
+
+  const handleArrayFieldChange = (index, field, value) => {
+    const updatedArray = [...tourDetails[field]];
+    updatedArray[index] = value;
+    setTourDetails({
+      ...tourDetails,
+      [field]: updatedArray
+    });
+  };
+
+  const addArrayField = (field) => {
+    setTourDetails({
+      ...tourDetails,
+      [field]: [...tourDetails[field], '']
     });
   };
 
@@ -237,17 +277,50 @@ const EditTour = () => {
             required
           />
 
-          <select
-            name="packageType"
-            value={tourDetails.packageType}
-            onChange={handleChange}
-            required
-          >
-            <option value="">Select Package Type</option>
-            {packageTypes.map((type) => (
-              <option key={type} value={type}>{type}</option>
-            ))}
-          </select>
+          <div className="categories-section">
+            <h3>Package Categories</h3>
+            <div className="checkbox-group categories">
+              {packageCategories.map((category) => (
+                <label key={category}>
+                  <input
+                    type="checkbox"
+                    checked={tourDetails.packageCategories.includes(category)}
+                    onChange={() => handleCategoryChange(category)}
+                  />
+                  {category}
+                </label>
+              ))}
+            </div>
+            <input
+              type="text"
+              name="customCategory"
+              placeholder="Custom Category (optional)"
+              value={tourDetails.customCategory}
+              onChange={handleChange}
+            />
+          </div>
+
+          <div className="tour-type-section">
+            <h3>Tour Type</h3>
+            <div className="checkbox-group">
+              <label>
+                <input
+                  type="checkbox"
+                  checked={tourDetails.tourType.single}
+                  onChange={() => handleTourTypeChange('single')}
+                />
+                Single
+              </label>
+              <label>
+                <input
+                  type="checkbox"
+                  checked={tourDetails.tourType.group}
+                  onChange={() => handleTourTypeChange('group')}
+                />
+                Group
+              </label>
+            </div>
+          </div>
 
           <div className="duration-inputs">
             <input
@@ -272,7 +345,7 @@ const EditTour = () => {
             />
           </div>
 
-          {tourDetails.packageType === 'Group' && (
+          {tourDetails.tourType.group && (
             <div className="group-details">
               <input
                 type="number"
@@ -401,19 +474,12 @@ const EditTour = () => {
                 type="text"
                 placeholder="What's Included?"
                 value={item}
-                onChange={(e) => {
-                  const newIncludes = [...tourDetails.includes];
-                  newIncludes[index] = e.target.value;
-                  setTourDetails({ ...tourDetails, includes: newIncludes });
-                }}
+                onChange={(e) => handleArrayFieldChange(index, 'includes', e.target.value)}
               />
             ))}
             <button 
               type="button" 
-              onClick={() => setTourDetails({
-                ...tourDetails,
-                includes: [...tourDetails.includes, '']
-              })}
+              onClick={() => addArrayField('includes')}
             >
               Add Included Item
             </button>
@@ -426,19 +492,12 @@ const EditTour = () => {
                 type="text"
                 placeholder="What's Not Included?"
                 value={item}
-                onChange={(e) => {
-                  const newExcludes = [...tourDetails.excludes];
-                  newExcludes[index] = e.target.value;
-                  setTourDetails({ ...tourDetails, excludes: newExcludes });
-                }}
+                onChange={(e) => handleArrayFieldChange(index, 'excludes', e.target.value)}
               />
             ))}
             <button 
               type="button" 
-              onClick={() => setTourDetails({
-                ...tourDetails,
-                excludes: [...tourDetails.excludes, '']
-              })}
+              onClick={() => addArrayField('excludes')}
             >
               Add Excluded Item
             </button>

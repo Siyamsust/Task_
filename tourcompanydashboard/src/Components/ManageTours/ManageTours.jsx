@@ -6,14 +6,17 @@ import './ManageTours.css';
 const ManageTours = () => {
   const { tours, loading, error, deleteTour, updateTourStatus } = useTours();
   const [activeCategory, setActiveCategory] = useState('all');
+  const [activeTourType, setActiveTourType] = useState('all');
   const navigate = useNavigate();
 
-  const packageTypes = [
-    'Single',
-    'Group',
-    'Couple (Honeymoon)',
+  const packageCategories = [
+    'Adventure',
+    'Cultural',
+    'Nature & Eco',
     'Family',
-    'Organizational'
+    'Honeymoon',
+    'Educational',
+    'Seasonal'
   ];
 
   const handleEdit = (tourId) => {
@@ -38,8 +41,20 @@ const ManageTours = () => {
 
   const filterTours = () => {
     if (!Array.isArray(tours)) return [];
-    if (activeCategory === 'all') return tours;
-    return tours.filter(tour => tour.packageType === activeCategory);
+
+    return tours.filter(tour => {
+      const categoryMatch =
+        activeCategory === 'all' ||
+        tour.packageCategories.includes(activeCategory) ||
+        (activeCategory === 'custom' && tour.customCategory);
+
+      const typeMatch =
+        activeTourType === 'all' ||
+        (activeTourType === 'single' && tour.tourType.single) ||
+        (activeTourType === 'group' && tour.tourType.group);
+
+      return categoryMatch && typeMatch;
+    });
   };
 
   const formatDate = (dateString) => {
@@ -65,22 +80,52 @@ const ManageTours = () => {
     <div className="manage-tours">
       <div className="manage-tours-header">
         <h1>Manage Tour Packages</h1>
-        <div className="category-filters">
-          <button
-            className={activeCategory === 'all' ? 'active' : ''}
-            onClick={() => setActiveCategory('all')}
-          >
-            All Packages
-          </button>
-          {packageTypes.map(type => (
+
+        <div className="filters">
+          <div className="category-filters">
             <button
-              key={type}
-              className={activeCategory === type ? 'active' : ''}
-              onClick={() => setActiveCategory(type)}
+              className={activeCategory === 'all' ? 'active' : ''}
+              onClick={() => setActiveCategory('all')}
             >
-              {type}
+              All Categories
             </button>
-          ))}
+            {packageCategories.map(category => (
+              <button
+                key={category}
+                className={activeCategory === category ? 'active' : ''}
+                onClick={() => setActiveCategory(category)}
+              >
+                {category}
+              </button>
+            ))}
+            <button
+              className={activeCategory === 'custom' ? 'active' : ''}
+              onClick={() => setActiveCategory('custom')}
+            >
+              Custom
+            </button>
+          </div>
+
+          <div className="type-filters">
+            <button
+              className={activeTourType === 'all' ? 'active' : ''}
+              onClick={() => setActiveTourType('all')}
+            >
+              All Types
+            </button>
+            <button
+              className={activeTourType === 'single' ? 'active' : ''}
+              onClick={() => setActiveTourType('single')}
+            >
+              Single
+            </button>
+            <button
+              className={activeTourType === 'group' ? 'active' : ''}
+              onClick={() => setActiveTourType('group')}
+            >
+              Group
+            </button>
+          </div>
         </div>
       </div>
 
@@ -89,40 +134,56 @@ const ManageTours = () => {
           <div key={tour._id} className="tour-card">
             <div className="tour-image">
               {tour.images && tour.images[0] ? (
-                <img 
-                  src={`http://localhost:4000/${tour.images[0]}`} 
-                  alt={tour.name} 
+                <img
+                  src={`http://localhost:4000/${tour.images[0]}`}
+                  alt={tour.name}
                   onError={(e) => {
                     e.target.src = 'https://via.placeholder.com/300x200?text=No+Image';
                   }}
                 />
               ) : (
-                <img 
-                  src="https://via.placeholder.com/300x200?text=No+Image" 
-                  alt="placeholder" 
+                <img
+                  src="https://via.placeholder.com/300x200?text=No+Image"
+                  alt="placeholder"
                 />
               )}
               <span className={`status ${tour.status || 'draft'}`}>
                 {tour.status || 'draft'}
               </span>
             </div>
-            
+
             <div className="tour-details">
               <h3>{tour.name || 'Untitled Tour'}</h3>
               <div className="tour-info">
-                <p><strong>Type:</strong> {tour.packageType || 'N/A'}</p>
+                <div className="categories-list">
+                  {tour.packageCategories?.map((category, index) => (
+                    <span key={index} className="category-tag">
+                      {category}
+                      {index < tour.packageCategories.length - 1 ? ' ' : ''}
+                    </span>
+                  ))}
+                  {tour.customCategory && (
+                    <span className="category-tag custom">
+                      {tour.customCategory}
+                    </span>
+                  )}
+                </div>
+                <div className="tour-type-tags">
+                  {tour.tourType?.single && <span className="type-tag">Single</span>}
+                  {tour.tourType?.group && <span className="type-tag">Group</span>}
+                </div>
                 <p><strong>Duration:</strong> {getDuration(tour)}</p>
                 <p><strong>Price:</strong> ${tour.price || 'N/A'}</p>
-                {tour.packageType === 'Group' && (
+                {tour.tourType.group && (
                   <p>
                     <strong>Available Seats:</strong> {' '}
-                    {tour.availableSeats !== undefined ? 
-                      `${tour.availableSeats}/${tour.maxGroupSize || 'N/A'}` : 
+                    {tour.availableSeats !== undefined ?
+                      `${tour.availableSeats}/${tour.maxGroupSize || 'N/A'}` :
                       'N/A'}
                   </p>
                 )}
               </div>
-              
+
               <div className="tour-dates">
                 {tour.startDate && (
                   <p>
@@ -132,21 +193,21 @@ const ManageTours = () => {
               </div>
 
               <div className="tour-actions">
-                <button 
+                <button
                   className="edit-btn"
                   onClick={() => handleEdit(tour._id)}
                 >
                   Edit
                 </button>
                 {(!tour.status || tour.status !== 'approved') && (
-                  <button 
+                  <button
                     className="approve-btn"
                     onClick={() => handleStatusUpdate(tour._id, 'pending')}
                   >
                     Send for Approval
                   </button>
                 )}
-                <button 
+                <button
                   className="delete-btn"
                   onClick={() => handleDelete(tour._id)}
                 >

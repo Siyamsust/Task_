@@ -58,10 +58,22 @@ const tourSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  packageType: {
+  packageCategories: [{
     type: String,
-    required: true,
-    enum: ['Single', 'Group', 'Couple (Honeymoon)', 'Family', 'Organizational']
+    required: true
+  }],
+  customCategory: {
+    type: String
+  },
+  tourType: {
+    single: {
+      type: Boolean,
+      default: false
+    },
+    group: {
+      type: Boolean,
+      default: false
+    }
   },
   duration: {
     days: {
