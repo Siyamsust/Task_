@@ -9,9 +9,24 @@ const http = require('http');
 const socketIO = require('socket.io');
 const Message = require('./models/Message');
 const chatRoutes = require('./routes/chatRoutes');
+const authRoutes = require('./routes/authRoutes');
+const errorHandler = require('./middleware/errorHandler');
+require('dotenv').config();
 
 const app = express();
 const server = http.createServer(app);
+
+// Middleware
+app.use(cors());
+app.use(express.json());
+app.use(bodyParser.json());
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+// Routes
+app.use('/api/auth', authRoutes);
+app.use('/api/chats', chatRoutes);
+
+// Socket.IO setup
 const io = socketIO(server, {
   cors: {
     origin: "http://localhost:3000",
@@ -21,18 +36,9 @@ const io = socketIO(server, {
 
 const PORT = process.env.PORT || 4000;
 
-server.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
-
-mongoose.connect("mongodb+srv://kaoser614:0096892156428@cluster0.2awol.mongodb.net/")
-
-// Middleware
-app.use(cors());
-app.use(bodyParser.json());
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-
-// Serve images from the 'upload/images' directory
+mongoose.connect(process.env.MONGODB_URI || "mongodb+srv://kaoser614:0096892156428@cluster0.2awol.mongodb.net/")
+  .then(() => console.log('Connected to MongoDB'))
+  .catch(err => console.error('MongoDB connection error:', err));
 
 // Configure multer for image upload
 const storage = multer.diskStorage({
@@ -406,4 +412,10 @@ io.on('connection', (socket) => {
   });
 });
 
-app.use('/api/chats', chatRoutes);
+// Add error handler
+app.use(errorHandler);
+
+// Start server
+server.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});

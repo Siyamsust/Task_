@@ -79,7 +79,7 @@ const Navbar = () => {
             <>
               <Link to="/profile" className="profile-btn">
                 <i className="fas fa-user"></i>
-                <span>Profile</span>
+                <span>{user.user?.name || 'Profile'}</span>
               </Link>
               <button onClick={handleLogout} className="logout-btn">
                 <i className="fas fa-sign-out-alt"></i>

@@ -1,24 +1,23 @@
-import React, { createContext, useState, useContext } from 'react';
+import React, { createContext, useState, useContext, useEffect } from 'react';
 
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(() => {
+    // Check if user data exists in localStorage
+    const savedUser = localStorage.getItem('user');
+    const savedToken = localStorage.getItem('token');
+    return savedUser ? JSON.parse(savedUser) : null;
+  });
   const [loading, setLoading] = useState(false);
 
-  const login = async (email, password) => {
-    setLoading(true);
+  const login = async (userData) => {
     try {
-      // Add your login API call here
-      const response = await fetch('http://localhost:4000/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      });
-      const data = await response.json();
-      setUser(data.user);
+      setLoading(true);
+      // Store user data and token in localStorage
+      localStorage.setItem('user', JSON.stringify(userData));
+      localStorage.setItem('token', userData.token);
+      setUser(userData);
     } catch (error) {
       console.error('Login error:', error);
       throw error;
@@ -28,8 +27,10 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = () => {
+    // Clear localStorage and state
+    localStorage.removeItem('user');
+    localStorage.removeItem('token');
     setUser(null);
-    // Add any cleanup logic here
   };
 
   const value = {

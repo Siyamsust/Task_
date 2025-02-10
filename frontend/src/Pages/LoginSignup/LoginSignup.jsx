@@ -19,24 +19,43 @@ const LoginSignup = () => {
     confirmPassword: ''
   });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle authentication logic here
-    handleLogin(formData);
-  };
-
-  const handleLogin = async (credentials) => {
+    
     try {
-      await login(credentials);
+      const endpoint = isLogin ? '/api/auth/login' : '/api/auth/register';
+      const response = await fetch(`http://localhost:4000${endpoint}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          password: formData.password
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Authentication failed');
+      }
+
+      // Pass the complete data object to login
+      await login(data);
       
-      // After successful login, redirect to the intended page or chat
+      // Redirect to intended page or home
       if (location.state?.from) {
         navigate(location.state.from);
       } else {
         navigate('/');
       }
+
     } catch (error) {
-      console.error('Login failed:', error);
+      console.error('Authentication error:', error);
+      // Here you should show an error message to the user
+      // You can add a state variable for error messages
     }
   };
 
