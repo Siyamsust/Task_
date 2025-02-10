@@ -18,10 +18,7 @@ const Homepage = () => {
         <HeroSection onSearch={setSearchQuery} />
         
         <div className="main-content">
-          <SearchFilters 
-            activeFilter={activeFilter} 
-            setActiveFilter={setActiveFilter}
-          />
+          
 
           <section id="popular-section" className="popular-section">
             <div className="section-header">

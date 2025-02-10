@@ -11,6 +11,7 @@ import { SocketProvider } from './Context/SocketContext';
 import PrivateRoute from './Components/PrivateRoute/PrivateRoute';
 import { ChatProvider } from './Context/ChatContext';
 import ExploreByCategory from './Pages/ExploreByCategory/ExploreByCategory';
+import SearchFilter from './Pages/SearchFilter/SearchFilter';
 import './App.css';
 
 function App() {
@@ -35,6 +36,7 @@ function App() {
                       </PrivateRoute>
                     } 
                   />
+                  <Route path="/search" element={<SearchFilter />} />
                   <Route path="/explore/:category?" element={<ExploreByCategory />} />
                 </Routes>
               </div>
