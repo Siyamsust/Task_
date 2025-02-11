@@ -1,10 +1,8 @@
-import React from 'react';
+import React , { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './WeatherRecommended.css';
-
 const WeatherRecommended = () => {
   const navigate = useNavigate();
-
   const recommendations = [
     {
       id: 1,

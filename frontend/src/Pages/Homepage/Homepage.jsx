@@ -16,42 +16,19 @@ const Homepage = () => {
     <>
       <div className="homepage">
         <HeroSection onSearch={setSearchQuery} />
-        
-        <div className="main-content">
-          
-
-          <section id="popular-section" className="popular-section">
-            <div className="section-header">
-              <h2>Popular Tour Packages</h2>
-              <div className="view-options">
-                <button className={activeFilter === 'all' ? 'active' : ''} 
-                        onClick={() => setActiveFilter('all')}>
-                  All
-                </button>
-                <button className={activeFilter === 'trending' ? 'active' : ''} 
-                        onClick={() => setActiveFilter('trending')}>
-                  Trending
-                </button>
-                <button className={activeFilter === 'featured' ? 'active' : ''} 
-                        onClick={() => setActiveFilter('featured')}>
-                  Featured
-                </button>
-              </div>
-            </div>
-            <PopularTours filter={activeFilter} searchQuery={searchQuery} />
-          </section>
-
+        <section id="popular-section" className="popular-section">
+          <h2>Popular Tour Packages</h2>
+          <PopularTours filter={activeFilter} searchQuery={searchQuery} />
+        </section>
           <section id="categories-section" className="categories-section">
             <h2>Explore by Categories</h2>
             <Categories />
           </section>
+        <section className="weather-section">
+          <h2>Weather based recommendations</h2>
+          <WeatherRecommended />
+        </section>
 
-          <section className="weather-section">
-            <h2>Weather based recommendations</h2>
-            <WeatherRecommended />
-          </section>
-
-        </div>
       </div>
       <Footer />
     </>

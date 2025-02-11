@@ -17,8 +17,6 @@ import './App.css';
 function App() {
   return (
     <AuthProvider>
-      <SocketProvider>
-        <ChatProvider>
           <ToursProvider>
             <BrowserRouter>
               <div className="App">
@@ -42,8 +40,6 @@ function App() {
               </div>
             </BrowserRouter>
           </ToursProvider>
-        </ChatProvider>
-      </SocketProvider>
     </AuthProvider>
   );
 }

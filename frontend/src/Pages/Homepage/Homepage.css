@@ -1,85 +1,85 @@
+/* General Page Styling */
 .homepage {
   min-height: 100vh;
   background-color: #f8fafc;
-}
-
-.main-content {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 80px 20px 40px;
-}
-
-.section-header {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
   align-items: center;
-  margin-bottom: 30px;
 }
 
-.section-header h2 {
-  font-size: 2rem;
-  color: var(--text-color);
-  margin: 0;
-}
-
-.view-options {
+/* Hero Section */
+.hero-section {
+  width: 100%;
+  min-height: 60vh;
   display: flex;
-  gap: 15px;
-}
-
-.view-options button {
-  padding: 8px 20px;
-  border: none;
-  border-radius: 25px;
-  background: white;
-  color: var(--text-color);
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.view-options button.active {
-  background: var(--primary-color);
+  align-items: center;
+  justify-content: center;
+  background: url('../../Components/Assets/hero-bg2.jpg');
   color: white;
+  padding: 50px 20px;
+  text-align: center;
+  object-fit: cover;
 }
 
-section {
-  margin-bottom: 60px;
-  scroll-margin-top: 80px;
-}
+/* Popular Tour Packages */
 
-section h2 {
+.popular-section h2 {
   font-size: 2rem;
-  color: var(--text-color);
-  margin-bottom: 30px;
+  margin: 20px;
+  color: #1e293b;
+  text-align: center;
 }
 
-.main-content h2 {
-  margin-top: 60px;
-  margin-bottom: 30px;
+/* Categories Section */
+.categories-section {
+  width: 100%;
+  max-width: 1200px;
+  padding: 40px 20px;
+  margin-top: 30px;
+}
+
+.categories-section h2 {
   font-size: 2rem;
-  color: var(--text-color);
+  margin-bottom: 20px;
+  color: #1e293b;
+  text-align: center;
 }
 
-.popular-section,
-.categories-section,
-.weather-section,
-.trending-section {
-  position: relative;
-  padding-top: 20px;
+/* Weather-Based Recommendations */
+.weather-section {
+  width: 100%;
+  max-width: 1200px;
+  padding: 40px 20px;
+  margin-top: 30px;
 }
 
+.weather-section h2 {
+  font-size: 2rem;
+  margin-bottom: 20px;
+  color: #1e293b;
+  text-align: center;
+}
+
+/* Footer */
+.footer {
+  width: 100%;
+  background: #1e293b;
+  color: white;
+  padding: 30px 20px;
+  text-align: center;
+  margin-top: 40px;
+}
+
+/* Responsive Design */
 @media (max-width: 768px) {
-  .section-header {
-    flex-direction: column;
-    gap: 15px;
+  .popular-section h2,
+  .categories-section h2,
+  .weather-section h2 {
+    font-size: 1.8rem;
     text-align: center;
   }
 
-  section h2 {
-    font-size: 1.5rem;
+  .hero-section {
+    padding: 30px 10px;
   }
-
-  .main-content {
-    padding: 60px 20px 40px;
-  }
-} 
+}

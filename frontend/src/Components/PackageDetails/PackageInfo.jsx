@@ -6,11 +6,11 @@ const PackageInfo = ({ tour, companyId }) => {
   const navigate = useNavigate();
 
   const handleChatClick = () => {
-    navigate(`/chat`, { 
-      state: { 
+    navigate(`/chat`, {
+      state: {
         chatType: 'companies',
-        companyId: companyId 
-      } 
+        companyId: companyId
+      }
     });
   };
 
@@ -19,8 +19,7 @@ const PackageInfo = ({ tour, companyId }) => {
       <div className="package-header">
         <h1>{tour.name}</h1>
         <div className="meta-info">
-          <span><i className="fas fa-map-marker-alt"></i> {tour.location}</span>
-          <span><i className="fas fa-clock"></i> {tour.duration}</span>
+          <span><i className="fas fa-clock"></i> {tour.duration.days}</span>
           <span><i className="fas fa-star"></i> {tour.rating}</span>
         </div>
       </div>
@@ -32,7 +31,6 @@ const PackageInfo = ({ tour, companyId }) => {
           <img src={tour.companyLogo} alt={tour.companyName} />
           <div>
             <h3>{tour.companyName}</h3>
-            <p>Tour Operator</p>
           </div>
         </div>
         <button className="chat-btn" onClick={handleChatClick}>
@@ -43,7 +41,7 @@ const PackageInfo = ({ tour, companyId }) => {
       <div className="included-section">
         <h2>What's Included</h2>
         <ul>
-          {tour.included.map((item, index) => (
+          {(tour.included || []).map((item, index) => (
             <li key={index}>
               <i className="fas fa-check"></i>
               {item}
@@ -51,6 +49,7 @@ const PackageInfo = ({ tour, companyId }) => {
           ))}
         </ul>
       </div>
+
     </div>
   );
 };

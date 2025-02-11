@@ -1,17 +1,22 @@
 import React from 'react';
 import './PackageItinerary.css';
 
-const PackageItinerary = ({ itinerary }) => {
+const PackageItinerary = ({ destinations }) => {
+  if (!destinations || destinations.length === 0) {
+    return <p className="no-itinerary">No itinerary available.</p>;
+  }
+
   return (
     <div className="itinerary-section">
       <h2>Itinerary</h2>
       <div className="timeline">
-        {itinerary.map((day) => (
-          <div key={day.day} className="timeline-item">
-            <div className="day-number">Day {day.day}</div>
+        {destinations.map((destination, index) => (
+          <div key={index} className="timeline-item">
+            <div className="day-number">Stop {index + 1}</div>
             <div className="day-content">
-              <h3>{day.title}</h3>
-              <p>{day.description}</p>
+              <h3>{destination.name}</h3>
+              <p>{destination.description}</p>
+              <p><strong>Stay Duration:</strong> {destination.stayDuration}</p>
             </div>
           </div>
         ))}
@@ -20,4 +25,4 @@ const PackageItinerary = ({ itinerary }) => {
   );
 };
 
-export default PackageItinerary; 
+export default PackageItinerary;

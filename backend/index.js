@@ -29,10 +29,11 @@ app.use('/api/chats', chatRoutes);
 // Socket.IO setup
 const io = socketIO(server, {
   cors: {
-    origin: "http://localhost:3000",
+    origin: ["http://localhost:3000", "http://localhost:3001"],  // Allow both origins
     methods: ["GET", "POST"]
   }
 });
+
 
 const PORT = process.env.PORT || 4000;
 

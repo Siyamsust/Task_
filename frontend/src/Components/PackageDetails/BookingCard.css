@@ -1,68 +1,213 @@
+/* BookingCard.css */
 .booking-card {
-  background: white;
-  padding: 30px;
-  border-radius: 15px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  position: sticky;
-  top: 20px;
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 25px;
+  margin: 30px 0;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid #eef2f7;
 }
 
-.price {
-  text-align: center;
+.booking-header {
   margin-bottom: 20px;
 }
 
-.price span {
-  color: #666;
+.price-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #eef2f7;
+}
+
+.price {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.from-text {
+  color: #6b7280;
   font-size: 0.9rem;
+  margin-bottom: 4px;
 }
 
 .price h2 {
   font-size: 2.5rem;
-  color: var(--primary-color);
-  margin: 5px 0;
+  color: #2c3e50;
+  font-weight: 700;
+  margin: 0;
+  line-height: 1;
 }
 
-.book-now,
-.add-wishlist {
-  width: 100%;
-  padding: 15px;
-  border: none;
-  border-radius: 8px;
+.per-person {
+  color: #6b7280;
+  font-size: 0.9rem;
+  margin-top: 4px;
+}
+
+.availability {
+  background: #f8fafc;
+  padding: 8px 15px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.availability i {
+  color: #3498db;
+}
+
+.availability span {
+  color: #64748b;
+  font-size: 0.9rem;
   font-weight: 500;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  margin-bottom: 10px;
+}
+
+.date-info {
+  margin-top: 20px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+
+.date-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: #f8fafc;
+  border-radius: 8px;
+}
+
+.date-item i {
+  color: #3498db;
+  font-size: 1.2rem;
+}
+
+.date-item span {
+  color: #64748b;
+  font-size: 0.85rem;
+}
+
+.date-item p {
+  color: #2c3e50;
+  font-weight: 500;
+  margin: 2px 0 0 0;
+}
+
+.booking-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 20px;
 }
 
 .book-now {
-  background: var(--primary-color);
+  background: #3498db;
   color: white;
+  border: none;
+  padding: 14px;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: all 0.3s ease;
 }
 
 .book-now:hover {
-  background: var(--secondary-color);
+  background: #2980b9;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
 }
 
 .add-wishlist {
-  background: white;
-  border: 1px solid #ddd;
-  color: #666;
+  background: #ffffff;
+  color: #64748b;
+  border: 1px solid #e2e8f0;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
+  transition: all 0.3s ease;
 }
 
 .add-wishlist:hover {
-  background: #f8f8f8;
-  color: #dc2626;
-  border-color: #dc2626;
+  background: #f8fafc;
+  color: #ef4444;
+  border-color: #ef4444;
 }
 
+.add-wishlist i {
+  font-size: 1.1rem;
+}
+
+/* Responsive Design */
 @media (max-width: 768px) {
   .booking-card {
-    position: static;
-    margin-top: 30px;
+    padding: 20px;
+    margin: 20px 0;
   }
-} 
+
+  .price-section {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+
+  .date-info {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Animation */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.booking-card {
+  animation: slideIn 0.3s ease-out;
+}
+
+/* Hover Effects */
+.booking-card:hover {
+  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* Loading State */
+.booking-card.loading {
+  position: relative;
+  overflow: hidden;
+}
+
+.booking-card.loading::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+  animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
