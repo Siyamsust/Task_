@@ -34,6 +34,11 @@ const io = socketIO(server, {
   }
 });
 
+// Add this test route at the top of your routes
+app.get('/api/test', (req, res) => {
+  console.log('Test route hit');
+  res.json({ message: 'API is working' });
+});
 
 const PORT = process.env.PORT || 4000;
 
@@ -226,19 +231,19 @@ app.post('/api/tours', upload.array('images'), async (req, res) => {
       message: 'Tour created successfully',
       tour: savedTour
     });
-  } catch (error) {
-    console.error('Error creating tour:', error);
+    } catch (error) {
+        console.error('Error creating tour:', error);
     res.status(400).json({
       success: false,
       error: error.message || 'Failed to create tour'
     });
-  }
+    }
 });
 
 // Get all tours
 app.get('/api/tours', async (req, res) => {
-  try {
-    const tours = await Tour.find();
+    try {
+        const tours = await Tour.find();
     res.json({
       success: true,
       tours
@@ -392,6 +397,91 @@ app.put('/api/tours/:id', upload.array('newImages'), async (req, res) => {
     });
   }
 });
+
+// Update the filter endpoint
+// app.get('/api/tours/filter', async (req, res) => {
+//   try {
+//     const { category, tourType } = req.query;
+//     console.log('Received filter request:', { category, tourType }); // Debug log
+
+//     let query = {};
+
+//     if (category && category !== 'all') {
+//       if (category === 'custom') {
+//         query.customCategory = { $exists: true, $ne: '' };
+//       } else {
+//         query.packageCategories = category;
+//       }
+//     }
+
+//     if (tourType && tourType !== 'all') {
+//       query[`tourType.${tourType}`] = true;
+//     }
+
+//     console.log('MongoDB query:', query); // Debug log
+
+//     const tours = await Tour.find(query).sort({ createdAt: -1 });
+//     console.log('Found tours:', tours.length); // Debug log
+
+//     res.json({
+//       success: true,
+//       tours
+//     });
+//   } catch (error) {
+//     console.error('Filter endpoint error:', error);
+//     res.status(500).json({
+//       success: false,
+//       error: 'Failed to fetch filtered tours',
+//       details: error.message
+//     });
+//   }
+// });
+
+
+app.get('/api/tours/filter', async (req, res) => {
+  try {
+    const { category, tourType } = req.query;
+    console.log('Received filter request:', { category, tourType });
+
+    let query = {};
+
+    // Handle category filtering
+    if (category && category !== 'all') {
+      if (category === 'custom') {
+        query.customCategory = { $exists: true, $ne: '' };
+      } else {
+        query.packageCategories = { $in: [category] }; // Fix for array filtering
+      }
+    }
+
+    // Handle tour type filtering
+    if (tourType && tourType !== 'all') {
+      query.tourType = tourType; // Fix: If tourType is stored as a string, use this
+    }
+
+    console.log('MongoDB query:', query);
+
+    // Fetch and sort tours
+    const tours = await Tour.find(query).sort({ createdAt: -1 });
+    console.log('Found tours:', tours.length);
+
+    res.json({
+      success: true,
+      tours
+    });
+  } catch (error) {
+    console.error('Filter endpoint error:', error.message, error.stack);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to fetch tours',
+      details: error.message
+    });
+  }
+});
+
+
+
+
 
 // Socket.IO connection handling
 io.on('connection', (socket) => {
