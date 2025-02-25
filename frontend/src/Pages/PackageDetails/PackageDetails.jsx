@@ -3,10 +3,8 @@ import { useParams } from 'react-router-dom';
 import { ToursContext } from '../../Context/ToursContext';
 import PackageGallery from '../../Components/PackageDetails/PackageGallery';
 import PackageInfo from '../../Components/PackageDetails/PackageInfo';
-import PackageItinerary from '../../Components/PackageDetails/PackageItinerary';
 import BookingCard from '../../Components/PackageDetails/BookingCard';
 import './PackageDetails.css';
-import PackageGrid from '../../Components/PackageGrid/PackageGrid';
 
 const PackageDetails = () => {
   const { id } = useParams();
@@ -60,33 +58,28 @@ const PackageDetails = () => {
 
   return (
     <div className="package-details-container">
+      {/* Gallery Section */}
       <div className="gallery-section">
-        <PackageGallery images={tour.images} activeImage={activeImage} setActiveImage={handleImageChange} />
+        <PackageGallery 
+          images={tour.images} 
+          activeImage={activeImage} 
+          setActiveImage={handleImageChange} 
+        />
       </div>
       
-      <div className="details-section">
-        <div className="tour-header">
-          <div className="tour-title">
-            <h1>{tour.name}</h1>
-            <div className="tour-meta">
-              <span><i className="fas fa-clock"></i> {tour.duration.days} Days</span>
-              <span><i className="fas fa-star"></i> {tour.rating}</span>
-            </div>
-          </div>
-        </div>
-        <div className="content-grid">
-          <div className="main-content">
-          <PackageItinerary destinations={tour.destinations} />
-          </div>
-          <div className="sidebar">
-            <BookingCard 
-              price={tour.price}
-              availableSeats={tour.availableSeats}
-              startDate={tour.startDate}
-              endDate={tour.endDate}
-            />
-          </div>
-        </div>
+      {/* Main Content Section */}
+      <div className="main-content-section">
+        <PackageInfo tour={tour} companyId={1} />
+      </div>
+
+      {/* Booking Card Section */}
+      <div className="booking-section">
+        <BookingCard 
+          price={tour.price}
+          availableSeats={tour.availableSeats}
+          startDate={tour.startDate}
+          endDate={tour.endDate}
+        />
       </div>
     </div>
   );

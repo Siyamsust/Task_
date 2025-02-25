@@ -7,11 +7,6 @@ const BookingCard = ({ price, availableSeats, startDate, endDate, onBook, onAddT
     <div className="booking-card">
       <div className="booking-header">
         <div className="price-section">
-          <div className="price">
-            <span className="from-text">From</span>
-            <h2>${price}</h2>
-            <span className="per-person">per person</span>
-          </div>
           {availableSeats && (
             <div className="availability">
               <i className="fas fa-users"></i>
