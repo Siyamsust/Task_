@@ -21,65 +21,132 @@ const ManageTours = () => {
     'Seasonal'
   ];
 
+  // Combined filtering effect
   useEffect(() => {
-    if (allTours && allTours.length > 0) {
-      setFilteredTours(allTours);
-    }
-  }, []);
+    let filtered = [...allTours];
 
-  useEffect(() => {
-    if (!loading && allTours) {
-      setFilteredTours(allTours);
-    }
-  }, [loading, allTours]);
+    // First filter by category
+    if (activeCategory !== 'all') {
+      filtered = filtered.filter(tour => {
+        let categories = tour.packageCategories;
 
-  const fetchFilteredTours = async (category, tourType) => {
-    try {
-      setFilterLoading(true);
-      console.log('Fetching with filters:', { category, tourType }); // Debug log
+        if (Array.isArray(categories) && categories.length > 0) {
+          let categoryString = categories[0];
 
-      const queryParams = new URLSearchParams({
-        ...(category !== 'all' && { category }),
-        ...(tourType !== 'all' && { tourType })
+          try {
+            // Parse categories based on format
+            if (categoryString.startsWith('[')) {
+              categories = JSON.parse(categoryString);
+            } else {
+              categories = categoryString
+                .replace('[', '')
+                .replace(']', '')
+                .split(',')
+                .map(cat => cat.trim());
+            }
+
+            // Case-insensitive comparison
+            return categories.some(cat =>
+              cat.toLowerCase() === activeCategory.toLowerCase()
+            );
+          } catch (error) {
+            console.error("Error parsing categories for tour:", tour.name, error);
+            return false;
+          }
+        }
+        return false;
       });
-
-      const url = `http://localhost:4000/api/tours/filter?${queryParams}`;
-      console.log('Request URL:', url); // Debug log
-
-      const response = await fetch(url);
-      console.log('Response status:', response.status); // Debug log
-
-      const data = await response.json();
-      console.log('Response data:', data); // Debug log
-      
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to fetch filtered tours');
-      }
-      
-      if (data.success) {
-        setFilteredTours(data.tours);
-      } else {
-        throw new Error(data.error || 'Failed to fetch filtered tours');
-      }
-    } catch (err) {
-      console.error('Error fetching filtered tours:', err);
-      alert(`Failed to fetch filtered tours: ${err.message}`);
-      setFilteredTours(allTours);
-      setActiveCategory('all');
-      setActiveTourType('all');
-    } finally {
-      setFilterLoading(false);
     }
-  };
 
-  const handleCategoryChange = async (category) => {
+    // Then filter by tour type
+    if (activeTourType !== 'all') {
+      filtered = filtered.filter(tour => tour.tourType?.[activeTourType]);
+    }
+     // Then filter by tour type
+     if (activeTourType !== 'all') {
+      filtered = filtered.filter(tour => 
+        tour.tourType && tour.tourType[activeTourType] === true
+      );
+    }
+
+    setFilteredTours(filtered);
+  }, [activeCategory, activeTourType, allTours]);
+
+
+  // const fetchFilteredTours = async (category, tourType) => {
+  //   try {
+  //     setFilterLoading(true);
+  //     console.log('Fetching with filters:', { category, tourType });
+
+  //     let queryParams = new URLSearchParams();
+
+  //     if (category && category !== 'all') {
+  //       queryParams.append('category', category);
+  //     }
+
+  //     if (tourType && tourType !== 'all') {
+  //       queryParams.append('tourType', tourType);
+  //     }
+
+  //     const url = `http://localhost:4000/api/tours/filter?${queryParams}`;
+  //     console.log('Request URL:', url);
+
+  //     const response = await fetch(url);
+  //     const data = await response.json();
+
+  //     if (!response.ok) {
+  //       console.error('Server response:', data);
+  //       throw new Error(data.details || data.error || 'Failed to fetch filtered tours');
+  //     }
+
+  //     if (data.success) {
+  //       console.log('Received data:', data);
+  //       console.log('Query used:', data.query);
+  //       console.log('Tours found:', data.tours.length);
+  //       setFilteredTours(data.tours);
+  //     } else {
+  //       throw new Error(data.error || 'Failed to fetch filtered tours');
+  //     }
+  //   } catch (err) {
+  //     console.error('Error fetching filtered tours:', err);
+  //     setFilteredTours([]);
+  //     // Optional: Show error to user
+  //     alert(`Error: ${err.message}`);
+  //   } finally {
+  //     setFilterLoading(false);
+  //   }
+  // };
+  // const filterTours = (category, tourType) => {
+  //   let filtered = [...allTours];
+
+  //   // Filter by category
+  //   if (category !== 'all') {
+  //     if (category === 'custom') {
+  //       filtered = filtered.filter(tour => tour.customCategory);
+  //     } else {
+  //       filtered = filtered.filter(tour => 
+  //         tour.packageCategories?.some(cat => 
+  //           cat.toLowerCase() === category.toLowerCase()
+  //         )
+  //       );
+  //     }
+  //   }
+
+  //   // Filter by tour type
+  //   if (tourType !== 'all') {
+  //     filtered = filtered.filter(tour => tour.tourType?.[tourType]);
+  //   }
+
+  //   setFilteredTours(filtered);
+  // };
+  const handleCategoryChange = (category) => {
     setActiveCategory(category);
-    await fetchFilteredTours(category, activeTourType);
+    // filterTours(category, activeTourType);
   };
 
-  const handleTourTypeChange = async (tourType) => {
+  const handleTourTypeChange = (tourType) => {
     setActiveTourType(tourType);
-    await fetchFilteredTours(activeCategory, tourType);
+    //  filterTours(activeCategory, tourType);
   };
 
   const handleEdit = (tourId) => {

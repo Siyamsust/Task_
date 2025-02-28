@@ -474,35 +474,37 @@ app.get('/api/tours/filter', async (req, res) => {
       if (category === 'custom') {
         query.customCategory = { $exists: true, $ne: '' };
       } else {
-        query.packageCategories = { $in: [category] }; // Fix for array filtering
+        // Use case-insensitive regex for better matching
+        query.packageCategories = {
+          $regex: new RegExp(category, 'i')
+        };
       }
     }
 
     // Handle tour type filtering
     if (tourType && tourType !== 'all') {
-      query.tourType = tourType; // Fix: If tourType is stored as a string, use this
+      query[`tourType.${tourType}`] = true;
     }
 
     console.log('MongoDB query:', query);
 
-    // Fetch and sort tours
     const tours = await Tour.find(query).sort({ createdAt: -1 });
-    console.log('Found tours:', tours.length);
-
+    
     res.json({
       success: true,
-      tours
+      tours,
+      count: tours.length
     });
+
   } catch (error) {
-    console.error('Filter endpoint error:', error.message, error.stack);
+    console.error('Filter endpoint error:', error);
     res.status(500).json({
       success: false,
-      error: 'Failed to fetch tours',
+      error: 'Failed to fetch filtered tours',
       details: error.message
     });
   }
 });
-
 
 
 
