@@ -61,7 +61,8 @@ const tourSchema = new mongoose.Schema({
   },
   packageCategories: [{
     type: String,
-    required: true
+    required: true,
+    set: value => value.replace(/["']/g, '') // Remove quotes when saving
   }],
   customCategory: {
     type: String
@@ -186,11 +187,10 @@ const tourSchema = new mongoose.Schema({
 
 const Tour = mongoose.model('Tour', tourSchema);
 
-// Create new tour API endpoint
 app.post('/api/tours', upload.array('images'), async (req, res) => {
   try {
     // Process the uploaded data
-    const tourData = {
+    let tourData = {
       ...req.body,
       destinations: JSON.parse(req.body.destinations),
       meals: JSON.parse(req.body.meals),
@@ -198,6 +198,25 @@ app.post('/api/tours', upload.array('images'), async (req, res) => {
       includes: JSON.parse(req.body.includes),
       excludes: JSON.parse(req.body.excludes)
     };
+
+    // Process packageCategories
+    if (req.body.packageCategories) {
+      // If it's a string, parse it
+      if (typeof req.body.packageCategories === 'string') {
+        try {
+          tourData.packageCategories = JSON.parse(req.body.packageCategories);
+        } catch (e) {
+          // If it's a comma-separated string, split it
+          tourData.packageCategories = req.body.packageCategories
+            .split(',')
+            .map(cat => cat.trim().toLowerCase()); // Normalize categories
+        }
+      }
+      // Ensure it's an array
+      if (!Array.isArray(tourData.packageCategories)) {
+        tourData.packageCategories = [tourData.packageCategories];
+      }
+    }
 
     // Add image paths to the tour data
     if (req.files) {
@@ -215,6 +234,11 @@ app.post('/api/tours', upload.array('images'), async (req, res) => {
     tourData.price = Number(tourData.price) || 0;
     if (tourData.maxGroupSize) tourData.maxGroupSize = parseInt(tourData.maxGroupSize) || 0;
     if (tourData.availableSeats) tourData.availableSeats = parseInt(tourData.availableSeats) || 0;
+
+    // Parse tourType if it exists
+    if (req.body.tourType) {
+      tourData.tourType = JSON.parse(req.body.tourType);
+    }
 
     // Create new tour
     const newTour = new Tour(tourData);

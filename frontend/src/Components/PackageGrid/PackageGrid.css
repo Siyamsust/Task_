@@ -1,32 +1,76 @@
 .package-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 30px;
-  padding: 20px 0;
+  padding: 20px;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+
+  /* Responsive grid layout */
+  grid-template-columns: repeat(4, 1fr); /* Default: 4 cards per row */
+
+  /* Large screens */
+  @media (max-width: 1400px) {
+    grid-template-columns: repeat(3, 1fr); /* 3 cards per row */
+  }
+
+  /* Medium screens */
+  @media (max-width: 1024px) {
+    grid-template-columns: repeat(2, 1fr); /* 2 cards per row */
+    gap: 20px;
+    padding: 15px;
+  }
+
+  /* Small screens */
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(1, 1fr); /* 1 card per row */
+    gap: 15px;
+    padding: 10px;
+  }
 }
 
 .package-card {
   background: white;
   border-radius: 15px;
   overflow: hidden;
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
-}
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 
-.package-card:hover {
-  transform: translateY(-5px);
-  box-shadow: var(--shadow-md);
+  /* Hover effect */
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+  }
+
+  @media (max-width: 768px) {
+    &:hover {
+      transform: none; /* Disable hover effect on mobile */
+    }
+  }
 }
 
 .package-image {
   position: relative;
   height: 200px;
+  overflow: hidden;
+
+  @media (max-width: 768px) {
+    height: 180px;
+  }
 }
 
 .package-image img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transition: transform 0.3s ease;
+
+  &:hover {
+    transform: scale(1.05);
+  }
 }
 
 .package-price {
@@ -38,10 +82,34 @@
   padding: 8px 16px;
   border-radius: 20px;
   font-weight: 500;
+  font-size: 0.9rem;
+  backdrop-filter: blur(4px);
+
+  @media (max-width: 768px) {
+    padding: 6px 12px;
+    font-size: 0.8rem;
+  }
 }
 
 .package-content {
   padding: 20px;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+
+  @media (max-width: 768px) {
+    padding: 15px;
+  }
+}
+
+.package-content h3 {
+  margin: 0 0 10px 0;
+  font-size: 1.2rem;
+  line-height: 1.4;
+
+  @media (max-width: 768px) {
+    font-size: 1.1rem;
+  }
 }
 
 .package-info {
@@ -49,13 +117,32 @@
   gap: 15px;
   margin: 10px 0;
   color: #666;
+  font-size: 0.9rem;
+  flex-wrap: wrap;
+
+  span {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  i {
+    color: var(--primary-color);
+  }
+
+  @media (max-width: 768px) {
+    gap: 10px;
+    font-size: 0.8rem;
+  }
 }
 
 .package-footer {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 15px;
+  margin-top: auto;
+  padding-top: 15px;
+  border-top: 1px solid #eee;
 }
 
 .rating {
@@ -63,6 +150,11 @@
   display: flex;
   align-items: center;
   gap: 5px;
+  font-size: 0.9rem;
+
+  @media (max-width: 768px) {
+    font-size: 0.8rem;
+  }
 }
 
 .view-details {
@@ -76,9 +168,46 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  font-size: 0.9rem;
+
+  &:hover {
+    background: var(--secondary-color);
+    gap: 12px;
+  }
+
+  @media (max-width: 768px) {
+    padding: 6px 12px;
+    font-size: 0.8rem;
+  }
 }
 
-.view-details:hover {
-  background: var(--secondary-color);
-  gap: 12px;
-} 
+/* Loading state */
+.package-grid-loading {
+  min-height: 400px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Empty state */
+.package-grid-empty {
+  text-align: center;
+  padding: 40px;
+  color: #666;
+}
+
+/* Add smooth scrolling to the whole page */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Optional: Add a container max-width */
+.package-grid-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 20px;
+
+  @media (max-width: 768px) {
+    padding: 0 10px;
+  }
+}
