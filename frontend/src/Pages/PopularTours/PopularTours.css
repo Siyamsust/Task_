@@ -1,0 +1,154 @@
+/* PopularPackages.css */
+.popular-packages {
+    min-height: 100vh;
+    background-color: #f8fafc;
+  }
+  
+  /* Header Section */
+  .packages-header {
+    background: linear-gradient(black,green);
+    padding: 80px 20px;
+    text-align: center;
+    color: white;
+  }
+  
+  .packages-header-content {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  
+  .packages-header h1 {
+    font-size: 2.8rem;
+    margin-bottom: 15px;
+  }
+  
+  .packages-header p {
+    font-size: 1.1rem;
+    opacity: 0.9;
+  }
+  
+  /* Search and Filter Controls */
+  .packages-controls {
+    max-width: 1400px;
+    margin: -30px auto 30px;
+    padding: 0 20px;
+  }
+  
+  .search-bar {
+    background: white;
+    padding: 15px 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+  }
+  
+  .search-bar input {
+    border: none;
+    flex: 1;
+    font-size: 1rem;
+    outline: none;
+  }
+  
+  .search-bar i {
+    color: #666;
+  }
+  
+  .filter-tabs {
+    display: flex;
+    gap: 15px;
+    overflow-x: auto;
+    padding: 10px 0;
+  }
+  
+  .filter-tab {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    background: white;
+    color: #666;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+  }
+  
+  .filter-tab.active {
+    background: green;
+    color: white;
+  }
+  
+  /* Results Summary */
+  .results-summary {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .view-options {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .view-option {
+    padding: 8px 15px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    background: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .view-option.active {
+    background: #f8f9fa;
+    border-color:green;
+    color: #3498db;
+  }
+  
+  /* Loading Spinner */
+  .loading-spinner {
+    text-align: center;
+    padding: 40px;
+    color: #666;
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .packages-header {
+      padding: 60px 15px;
+    }
+  
+    .packages-header h1 {
+      font-size: 2rem;
+    }
+  
+    .packages-controls {
+      margin-top: -20px;
+      padding: 0 15px;
+    }
+  
+    .search-bar {
+      padding: 12px 20px;
+    }
+  
+    .filter-tabs {
+      gap: 10px;
+    }
+  
+    .filter-tab {
+      padding: 8px 15px;
+      font-size: 0.9rem;
+    }
+  
+    .results-summary {
+      flex-direction: column;
+      gap: 15px;
+      align-items: flex-start;
+    }
+  }

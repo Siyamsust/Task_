@@ -17,13 +17,12 @@ const Homepage = () => {
       <div className="homepage">
         <HeroSection onSearch={setSearchQuery} />
         <section id="popular-section" className="popular-section">
-          <h2>Popular Tour Packages</h2>
           <PopularTours filter={activeFilter} searchQuery={searchQuery} />
         </section>
-          <section id="categories-section" className="categories-section">
-            <h2>Explore by Categories</h2>
-            <Categories />
-          </section>
+        <section id="categories-section" className="categories-section">
+          <h2>Explore by Categories</h2>
+          <Categories />
+        </section>
         <section className="weather-section">
           <h2>Weather based recommendations</h2>
           <WeatherRecommended />

@@ -12,6 +12,7 @@ import PrivateRoute from './Components/PrivateRoute/PrivateRoute';
 import { ChatProvider } from './Context/ChatContext';
 import ExploreByCategory from './Pages/ExploreByCategory/ExploreByCategory';
 import SearchFilter from './Pages/SearchFilter/SearchFilter';
+import PopularTours from './Pages/PopularTours/PopularTours';
 import './App.css';
 
 function App() {
@@ -26,6 +27,7 @@ function App() {
                   <Route path="/package/:id" element={<PackageDetails />} />
                   <Route path="/login" element={<LoginSignup />} />
                   <Route path="/chat" element={<ChatPage />} />
+                  <Route path="/populartours" element={<PopularTours />} />
                   <Route 
                     path="/profile" 
                     element={
