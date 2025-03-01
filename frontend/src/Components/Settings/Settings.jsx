@@ -1,26 +1,83 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useAuth } from '../../Context/AuthContext';
 import './Settings.css';
 
 const Settings = () => {
+  const { user, updateUser, loading } = useAuth();
   const [formData, setFormData] = useState({
-    name: 'John Doe',
-    email: 'john@example.com',
-    phone: '+1234567890',
+    name: '',
+    email: '',
+    phone: '',
     currentPassword: '',
     newPassword: '',
     confirmPassword: ''
   });
+  const [message, setMessage] = useState({ type: '', text: '' });
 
-  const handleSubmit = (e) => {
+  // Initialize form data with user data
+  useEffect(() => {
+    if (user) {
+      setFormData(prevState => ({
+        ...prevState,
+        name: user.name || '',
+        email: user.email || '',
+        phone: user.phone || ''
+      }));
+    }
+  }, [user]);
+
+  const handlePersonalInfoSubmit = async (e) => {
     e.preventDefault();
-    // Handle form submission
+    setMessage({ type: '', text: '' });
+
+    try {
+      const updatedData = {
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone
+      };
+
+      await updateUser(updatedData);
+      setMessage({ type: 'success', text: 'Personal information updated successfully!' });
+    } catch (error) {
+      setMessage({ type: 'error', text: 'Failed to update personal information.' });
+    }
+  };
+
+  const handlePasswordSubmit = async (e) => {
+    e.preventDefault();
+    setMessage({ type: '', text: '' });
+
+    if (formData.newPassword !== formData.confirmPassword) {
+      setMessage({ type: 'error', text: 'New passwords do not match!' });
+      return;
+    }
+
+    try {
+      await updateUser({
+        currentPassword: formData.currentPassword,
+        newPassword: formData.newPassword
+      });
+      
+      // Clear password fields
+      setFormData(prev => ({
+        ...prev,
+        currentPassword: '',
+        newPassword: '',
+        confirmPassword: ''
+      }));
+      
+      setMessage({ type: 'success', text: 'Password updated successfully!' });
+    } catch (error) {
+      setMessage({ type: 'error', text: 'Failed to update password.' });
+    }
   };
 
   return (
     <div className="settings">
       <div className="settings-section">
         <h3>Personal Information</h3>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handlePersonalInfoSubmit}>
           <div className="form-group">
             <label>Full Name</label>
             <input
@@ -45,13 +102,15 @@ const Settings = () => {
               onChange={(e) => setFormData({...formData, phone: e.target.value})}
             />
           </div>
-          <button type="submit" className="save-btn">Save Changes</button>
+          <button type="submit" className="save-btn" disabled={loading}>
+            {loading ? 'Saving...' : 'Save Changes'}
+          </button>
         </form>
       </div>
 
       <div className="settings-section">
         <h3>Change Password</h3>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handlePasswordSubmit}>
           <div className="form-group">
             <label>Current Password</label>
             <input
@@ -76,10 +135,11 @@ const Settings = () => {
               onChange={(e) => setFormData({...formData, confirmPassword: e.target.value})}
             />
           </div>
-          <button type="submit" className="save-btn">Update Password</button>
+          <button type="submit" className="save-btn" disabled={loading}>
+            {loading ? 'Updating...' : 'Update Password'}
+          </button>
         </form>
       </div>
-
       <div className="settings-section">
         <h3>Preferences</h3>
         <div className="preferences">
@@ -105,8 +165,10 @@ const Settings = () => {
           </div>
         </div>
       </div>
+
+      {/* Preferences section remains the same */}
     </div>
   );
 };
 
-export default Settings; 
+export default Settings;

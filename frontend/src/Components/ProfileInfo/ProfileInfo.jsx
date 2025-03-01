@@ -2,17 +2,23 @@ import React from 'react';
 import './ProfileInfo.css';
 
 const ProfileInfo = ({ user }) => {
+  // Add this console.log to check the user object structure
+  console.log('User object in ProfileInfo:', user);
+
+  // If user data is nested inside a user property
+  const userData = user?.user || user;
+
   return (
     <div className="profile-info">
       <div className="profile-header">
         <div className="profile-avatar">
-          <img src={user?.avatar || 'default-avatar.png'} alt="Profile" />
+          <img src={userData?.avatar || 'default-avatar.png'} alt="Profile" />
           <button className="edit-avatar">
             <i className="fas fa-camera"></i>
           </button>
         </div>
-        <h2>{user?.name || 'User Name'}</h2>
-        <p>{user?.email || 'email@example.com'}</p>
+        <h2>{userData?.name || 'User Name'}</h2>
+        <p>{userData?.email || 'email@example.com'}</p>
       </div>
 
       <div className="profile-stats">
@@ -33,4 +39,4 @@ const ProfileInfo = ({ user }) => {
   );
 };
 
-export default ProfileInfo; 
+export default ProfileInfo;

@@ -6,7 +6,6 @@ import MyTrips from '../../Components/MyTrips/MyTrips';
 import Wishlist from '../../Components/Wishlist/Wishlist';
 import Settings from '../../Components/Settings/Settings';
 import './ProfilePage.css';
-
 const ProfilePage = () => {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('trips');
@@ -18,7 +17,7 @@ const ProfilePage = () => {
         
         <div className="profile-content">
           <ProfileTabs activeTab={activeTab} setActiveTab={setActiveTab} />
-          
+          <p>{user.name}</p>
           <div className="tab-content">
             {activeTab === 'trips' && <MyTrips />}
             {activeTab === 'wishlist' && <Wishlist />}

@@ -3,7 +3,7 @@ const router = express.Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
-
+const authMiddleware = require('../middleware/authMiddleware');
 // Register User
 router.post('/register', async (req, res) => {
   try {
@@ -86,5 +86,35 @@ router.post('/login', async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
+router.put('/update', authMiddleware, async (req, res) => {
+  try {
+    const { name, email, phone } = req.body;
+    const userId = req.user.userId; // From auth middleware
 
+    // Find user and update
+    let user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Update fields if they are provided
+    if (name) user.name = name;
+    if (email) user.email = email;
+    if (phone) user.phone = phone;
+
+    await user.save();
+
+    res.json({
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        phone: user.phone
+      }
+    });
+  } catch (error) {
+    console.error('Update error:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
 module.exports = router; 
