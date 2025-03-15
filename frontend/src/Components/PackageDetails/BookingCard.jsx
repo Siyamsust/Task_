@@ -1,48 +1,57 @@
-// BookingCard.jsx
-import React from 'react';
-import './BookingCard.css';
+import React, { useState } from 'react';
+import axios from 'axios';
+import { useAuth } from '../../Context/AuthContext';
 
-const BookingCard = ({ price, availableSeats, startDate, endDate, onBook, onAddToWishlist }) => {
+const BookingCard = ({ price, availableSeats, startDate, endDate, tourId }) => {
+  const [message, setMessage] = useState('');
+  const { user } = useAuth(); 
+console.log("User in BookingCard:", user.user.email);
+
+  const handleAddToWishlist = async () => {
+    if (!user) {
+      setMessage('Please log in to add to wishlist');
+      return;
+    }
+    console.log("Adding to wishlist - Email:", user?.phone, "Tour ID:", tourId);
+    try {
+      const response = await axios.post(
+        'http://localhost:4000/api/wishlist/add',
+        { tourId, email: user.user.email }, // Send email to backend
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          },
+        });
+
+      setMessage(response.data.message);
+    } catch (error) {
+      setMessage(error.response?.data?.message || 'Error adding to wishlist');
+    }
+  };
+
   return (
     <div className="booking-card">
       <div className="booking-header">
-        <div className="price-section">
-          {availableSeats && (
-            <div className="availability">
-              <i className="fas fa-users"></i>
-              <span>{availableSeats} seats left</span>
-            </div>
-          )}
-        </div>
-        {(startDate && endDate) && (
+        {availableSeats && <span>{availableSeats} seats left</span>}
+        {startDate && endDate && (
           <div className="date-info">
-            <div className="date-item">
-              <i className="far fa-calendar-alt"></i>
-              <div>
-                <span>Start Date</span>
-                <p>{new Date(startDate).toLocaleDateString()}</p>
-              </div>
-            </div>
-            <div className="date-item">
-              <i className="far fa-calendar-check"></i>
-              <div>
-                <span>End Date</span>
-                <p>{new Date(endDate).toLocaleDateString()}</p>
-              </div>
-            </div>
+            <p>Start: {new Date(startDate).toLocaleDateString()}</p>
+            <p>End: {new Date(endDate).toLocaleDateString()}</p>
           </div>
         )}
       </div>
-      
+
       <div className="booking-actions">
-        <button className="book-now" onClick={onBook}>
+        <button className="book-now">
           <i className="fas fa-ticket-alt"></i>
           Book Now
         </button>
-        <button className="add-wishlist" onClick={onAddToWishlist}>
+        <button className="add-wishlist" onClick={handleAddToWishlist}>
           <i className="far fa-heart"></i>
           Add to Wishlist
         </button>
+        <p>{message}</p>
       </div>
     </div>
   );

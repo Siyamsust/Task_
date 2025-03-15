@@ -74,12 +74,12 @@ const PopularTours = () => {
                   <Link to={`/package/${tour._id}`} className="view-details-btn">
                     Explore Now <i className="fas fa-arrow-right"></i>
                   </Link>
-                  <button
+                  {/* <button
                     className="add-wishlist-btn"
                     onClick={() => handleAddToWishlist(tour._id)}
                   >
                     <i className="far fa-heart"></i>
-                  </button>
+                  </button> */}
                 </div>
               </div>
             </div>

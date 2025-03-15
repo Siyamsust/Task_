@@ -19,6 +19,7 @@ const ProfileInfo = ({ user }) => {
         </div>
         <h2>{userData?.name || 'User Name'}</h2>
         <p>{userData?.email || 'email@example.com'}</p>
+        <p>{userData?.phone || 'email@example.com'}</p>
       </div>
 
       <div className="profile-stats">

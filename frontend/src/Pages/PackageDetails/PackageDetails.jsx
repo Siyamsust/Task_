@@ -79,6 +79,7 @@ const PackageDetails = () => {
           availableSeats={tour.availableSeats}
           startDate={tour.startDate}
           endDate={tour.endDate}
+          tourId={tour._id}
         />
       </div>
     </div>

@@ -10,6 +10,7 @@ const socketIO = require('socket.io');
 const Message = require('./models/Message');
 const chatRoutes = require('./routes/chatRoutes');
 const authRoutes = require('./routes/authRoutes');
+const wishlistRoutes = require('./routes/wishlistRoutes');
 const errorHandler = require('./middleware/errorHandler');
 require('dotenv').config();
 
@@ -25,7 +26,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/chats', chatRoutes);
-
+app.use('/api/wishlist', wishlistRoutes);
 // Socket.IO setup
 const io = socketIO(server, {
   cors: {
