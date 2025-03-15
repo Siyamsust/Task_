@@ -88,6 +88,35 @@ exports.createTour=async (req, res) => {
       });
     }
   };
+  exports.getApprovedTours = async (req, res) => {
+    try {
+      console.log('Fetching approved tours...'); // Debug log
+      
+      const tours = await Tour.find({ status: 'approved' });
+      console.log('Found tours:', tours.length); // Debug log
+      
+      if (!tours || tours.length === 0) {
+        return res.status(200).json({
+          success: true,
+          message: 'No approved tours found',
+          tours: []
+        });
+      }
+
+      res.json({
+        success: true,
+        count: tours.length,
+        tours
+      });
+    } catch (error) {
+      console.error('Error fetching approved tours:', error); // Debug log
+      res.status(500).json({
+        success: false,
+        error: 'Failed to fetch approved tours',
+        message: error.message
+      });
+    }
+  };
   
   // Get single tour
   exports.getTourById = async (req, res) => {
@@ -212,12 +241,12 @@ exports.createTour=async (req, res) => {
       tourData.transportation = JSON.parse(req.body.transportation);
       tourData.includes = JSON.parse(req.body.includes);
       tourData.excludes = JSON.parse(req.body.excludes);
-      tourData.status='draft';
+      tourData.status = 'draft';
   
-      // Convert string numbers to actual numbers
-      tourData.price = Number(tourData.price);
-      if (tourData.maxGroupSize) tourData.maxGroupSize = Number(tourData.maxGroupSize);
-      if (tourData.availableSeats) tourData.availableSeats = Number(tourData.availableSeats);
+      // Safely convert numeric fields with fallback to default values
+      tourData.price = parseFloat(tourData.price) || 0;
+      tourData.maxGroupSize = parseInt(tourData.maxGroupSize) || 0;
+      tourData.availableSeats = parseInt(tourData.availableSeats) || 0;
   
       // Remove fields that shouldn't be updated directly
       delete tourData.existingImages;
