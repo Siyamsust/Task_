@@ -1,133 +1,203 @@
 .package-info {
-  margin-bottom: 40px;
+  padding: 10px;
+  background: #fff;
 }
 
-.package-header {
-  margin-bottom: 20px;
+/* Title Section */
+.package-title {
+  text-align: center;
 }
 
-.package-header h1 {
-  font-size: 2.5rem;
-  margin-bottom: 15px;
-  color: var(--text-color);
+.package-title h1 {
+  font-size: 2.2rem;
+  color: #2c3e50;
+  margin-bottom: 10px;
 }
 
-.meta-info {
-  display: flex;
-  gap: 20px;
+.package-categories {
   color: #666;
+  font-size: 0.95rem;
 }
 
-.meta-info span {
+/* Content Layout */
+.package-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+  background-color: #e9ddea;
+}
+
+.content-column {
   display: flex;
-  align-items: center;
-  gap: 5px;
+  flex-direction: column;
+  gap: 30px;
 }
 
-.meta-info i {
-  color: var(--primary-color);
-}
-
-.description {
-  line-height: 1.6;
-  margin-bottom: 30px;
-  color: #4b5563;
-}
-
-.company-info {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 20px;
-  background: #f8fafc;
+/* Info Sections */
+.info-section {
+  background: #f8f9fa;
   border-radius: 12px;
-  margin-bottom: 30px;
+  padding: 10px;
+}
+
+.info-section h2 {
+  font-size: 1.3rem;
+  color: #2c3e50;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #3498db;
+}
+
+/* Overview Details */
+.overview-details {
+  display: grid;
+  gap: 15px;
+}
+
+.detail-item {
+  padding: 12px;
+  background: #fff;
+  border-radius: 8px;
+}
+
+.detail-item .label {
+  color: #666;
+  font-size: 0.9rem;
+  display: block;
+  margin-bottom: 5px;
+}
+
+.detail-item p {
+  color: #2c3e50;
+  font-weight: 500;
+}
+
+/* Special Notes */
+.special-note {
+  line-height: 1.6;
+  color: #555;
+}
+
+/* Includes List */
+.includes-list {
+  list-style: none;
+  display: grid;
+  gap: 10px;
+}
+
+.includes-list li {
+  padding: 10px 15px;
+  background: #fff;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.includes-list li::before {
+  content: "✓";
+  color: #2ecc71;
+}
+
+/* Destinations */
+.destinations-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.destination-item {
+  background: #fff;
+  padding: 15px;
+  border-radius: 8px;
+}
+
+.destination-item h3 {
+  color: #2c3e50;
+  margin-bottom: 8px;
+  font-size: 1.1rem;
+}
+
+.destination-item p {
+  color: #666;
+  font-size: 0.95rem;
+  margin-bottom: 10px;
+}
+
+.destination-item .duration {
+  display: inline-block;
+  padding: 4px 10px;
+  background: #e8f4fd;
+  color: #3498db;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+/* Company Section */
+.company-section {
+  margin-top: auto;
 }
 
 .company-details {
   display: flex;
   align-items: center;
   gap: 15px;
+  padding: 20px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
 }
 
 .company-details img {
-  width: 50px;
-  height: 50px;
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
   object-fit: cover;
 }
 
 .company-details h3 {
-  margin: 0;
-  font-size: 1.1rem;
-  color: var(--text-color);
+  color: #2c3e50;
+  margin-bottom: 10px;
 }
 
-.company-details p {
-  margin: 0;
-  font-size: 0.9rem;
-  color: #666;
-}
-
-.chat-btn {
-  padding: 10px 20px;
-  background: var(--primary-color);
-  color: white;
-  border: none;
-  border-radius: 8px;
+.company-details button {
   display: flex;
   align-items: center;
   gap: 8px;
+  padding: 8px 16px;
+  background: #3498db;
+  color: white;
+  border: none;
+  border-radius: 6px;
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
-.chat-btn:hover {
-  background: var(--secondary-color);
+.company-details button:hover {
+  background: #2980b9;
 }
 
-.included-section h2 {
-  font-size: 1.5rem;
-  margin-bottom: 20px;
-  color: var(--text-color);
-}
-
-.included-section ul {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 15px;
-  list-style: none;
-  padding: 0;
-}
-
-.included-section li {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  color: #4b5563;
-}
-
-.included-section i {
-  color: var(--primary-color);
-}
-
+/* Responsive Design */
 @media (max-width: 768px) {
-  .package-header h1 {
-    font-size: 2rem;
+  .package-info {
+    padding: 10px;
   }
 
-  .meta-info {
-    flex-direction: column;
-    gap: 10px;
+  .package-title h1 {
+    font-size: 1.8rem;
   }
 
-  .company-info {
+  .package-content {
+    grid-template-columns: 1fr;
+  }
+
+  .company-details {
     flex-direction: column;
-    gap: 20px;
     text-align: center;
   }
 
-  .included-section ul {
-    grid-template-columns: 1fr;
+  .company-details button {
+    width: 100%;
+    justify-content: center;
   }
-} 
+}

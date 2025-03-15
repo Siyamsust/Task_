@@ -41,6 +41,12 @@
   border-color: #3498db;
 }
 
+.category-filters button:disabled,
+.type-filters button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
 .tours-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -237,4 +243,11 @@
   background-color: #e8f5e9;
   color: #2e7d32;
   white-space: nowrap;
+}
+
+.loading {
+  text-align: center;
+  padding: 2rem;
+  color: #3498db;
+  font-size: 1.1rem;
 }

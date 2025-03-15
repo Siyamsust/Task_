@@ -1,10 +1,15 @@
-import React from 'react';
+import React ,{useContext} from 'react';
 import { useNavigate } from 'react-router-dom';
 import './PackageGrid.css';
-
-const PackageGrid = ({ packages }) => {
+const PackageGrid = ({packages}) => {
   const navigate = useNavigate();
-
+  if (packages.length === 0) {
+    return (
+      <div className="package-grid-empty">
+        No packages found.
+      </div>
+    );
+  }
   return (
     <div className="package-grid">
       {packages.map(pkg => (

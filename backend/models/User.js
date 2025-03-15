@@ -18,6 +18,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: 'default-avatar.png'
   },
+  phone:{
+    type:String,
+    required:false,
+  },
   createdAt: {
     type: Date,
     default: Date.now

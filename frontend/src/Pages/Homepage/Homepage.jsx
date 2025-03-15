@@ -11,6 +11,7 @@ const Homepage = () => {
   const [searchQuery, setSearchQuery] = useState('');
 
   return (
+<<<<<<< HEAD
     <div className="homepage">
       <HeroSection onSearch={setSearchQuery} />
       
@@ -62,6 +63,24 @@ const Homepage = () => {
         </section>
    
       
+=======
+    <>
+      <div className="homepage">
+        <HeroSection onSearch={setSearchQuery} />
+        <section id="popular-section" className="popular-section">
+          <PopularTours filter={activeFilter} searchQuery={searchQuery} />
+        </section>
+        <section id="categories-section" className="categories-section">
+          <h2>Explore by Categories</h2>
+          <Categories />
+        </section>
+        <section className="weather-section">
+          <h2>Weather based recommendations</h2>
+          <WeatherRecommended />
+        </section>
+
+      </div>
+>>>>>>> 6bd6df964cdc4880e588e3561c339ee527a11dcb
       <Footer />
     </div>
   );

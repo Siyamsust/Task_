@@ -50,7 +50,7 @@ const Navbar = () => {
           </Link>
           <button 
             className="nav-item"
-            onClick={() => scrollToSection('popular-section')}
+            onClick={() => navigate('/populartours')}
           >
             <i className="fas fa-fire"></i> Popular
           </button>

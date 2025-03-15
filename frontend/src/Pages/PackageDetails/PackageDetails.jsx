@@ -1,45 +1,40 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useParams } from 'react-router-dom';
 import { ToursContext } from '../../Context/ToursContext';
 import PackageGallery from '../../Components/PackageDetails/PackageGallery';
 import PackageInfo from '../../Components/PackageDetails/PackageInfo';
-import PackageItinerary from '../../Components/PackageDetails/PackageItinerary';
 import BookingCard from '../../Components/PackageDetails/BookingCard';
 import './PackageDetails.css';
 
 const PackageDetails = () => {
   const { id } = useParams();
-  const { tours, loading, error } = useContext(ToursContext);
-  const [activeImage, setActiveImage] = useState(0);
+  const { tours, loading, error, fetchTourById } = useContext(ToursContext);
+  const [tour, setTour] = useState(null);
+  const [localLoading, setLocalLoading] = useState(true);
+  const [localError, setLocalError] = useState(null);
+  const [activeImage, setActiveImage] = useState(0); // Add this state
 
-  // Find the tour or use default data
-  const tour = tours?.find(t => t._id === id) || {
-    name: 'Mountain Trek Adventure',
-    location: 'Swiss Alps',
-    duration: '5 Days',
-    price: 899,
-    rating: 4.8,
-    images: ['tour1.jpg'],
-    description: 'Experience the breathtaking views of the Swiss Alps...',
-    companyId: '123',
-    companyName: 'Alpine Adventures',
-    companyLogo: '/company-logo.png',
-    included: ['Professional Guide', 'Accommodation', 'Meals', 'Transport'],
-    itinerary: [
-      { day: 1, title: 'Arrival', description: 'Welcome meeting and briefing' },
-      { day: 2, title: 'Trek Begins', description: 'Start the mountain trek' }
-    ]
-  };
+  useEffect(() => {
+    const getTour = async () => {
+      try {
+        setLocalLoading(true);
+        const data = await fetchTourById(id);
+        setTour(data);
+        setLocalError(null);
+        setActiveImage(0); // Reset active image when new tour loads
+      } catch (err) {
+        setLocalError('Failed to load tour details.');
+      } finally {
+        setLocalLoading(false);
+      }
+    };
 
-  const handleBook = () => {
-    // Booking logic
-  };
+    if (!tour) {
+      getTour();
+    }
+  }, [id, fetchTourById, tour]);
 
-  const handleAddToWishlist = () => {
-    // Wishlist logic
-  };
-
-  if (loading) {
+  if (localLoading) {
     return (
       <div className="loading-container">
         <div className="loading-spinner"></div>
@@ -48,37 +43,46 @@ const PackageDetails = () => {
     );
   }
 
-  if (error) {
+  if (localError || !tour) {
     return (
       <div className="error-container">
         <i className="fas fa-exclamation-circle"></i>
-        <p>Error loading tour details. Please try again later.</p>
+        <p>{localError || 'Error loading tour details. Please try again later.'}</p>
       </div>
     );
   }
 
+  const handleImageChange = (index) => {
+    setActiveImage(index);
+  };
+
   return (
-    <div className="package-details">
-      <PackageGallery 
-        images={tour.images}
-        activeImage={activeImage}
-        setActiveImage={setActiveImage}
-      />
+    <div className="package-details-container">
+      {/* Gallery Section */}
+      <div className="gallery-section">
+        <PackageGallery 
+          images={tour.images} 
+          activeImage={activeImage} 
+          setActiveImage={handleImageChange} 
+        />
+      </div>
+      
+      {/* Main Content Section */}
+      <div className="main-content-section">
+        <PackageInfo tour={tour} companyId={1} />
+      </div>
 
-      <div className="package-content">
-        <div className="main-content">
-          <PackageInfo tour={tour} companyId={tour.companyId} />
-          <PackageItinerary itinerary={tour.itinerary} />
-        </div>
-
+      {/* Booking Card Section */}
+      <div className="booking-section">
         <BookingCard 
           price={tour.price}
-          onBook={handleBook}
-          onAddToWishlist={handleAddToWishlist}
+          availableSeats={tour.availableSeats}
+          startDate={tour.startDate}
+          endDate={tour.endDate}
         />
       </div>
     </div>
   );
 };
 
-export default PackageDetails; 
+export default PackageDetails;

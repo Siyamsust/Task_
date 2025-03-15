@@ -4,9 +4,7 @@ const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(() => {
-    // Check if user data exists in localStorage
     const savedUser = localStorage.getItem('user');
-    const savedToken = localStorage.getItem('token');
     return savedUser ? JSON.parse(savedUser) : null;
   });
   const [loading, setLoading] = useState(false);
@@ -14,7 +12,6 @@ export const AuthProvider = ({ children }) => {
   const login = async (userData) => {
     try {
       setLoading(true);
-      // Store user data and token in localStorage
       localStorage.setItem('user', JSON.stringify(userData));
       localStorage.setItem('token', userData.token);
       setUser(userData);
@@ -26,8 +23,43 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const updateUser = async (updatedData) => {
+    try {
+      setLoading(true);
+      // Get the current token
+      const token = localStorage.getItem('token');
+      
+      // Make API call to update user data
+      const response = await fetch('http://localhost:4000/api/auth/update', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(updatedData)
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update user');
+      }
+
+      const updatedUser = await response.json();
+      
+      // Update local storage and state
+      const newUserData = { ...user, ...updatedUser };
+      localStorage.setItem('user', JSON.stringify(newUserData));
+      setUser(newUserData);
+      
+      return updatedUser;
+    } catch (error) {
+      console.error('Update error:', error);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const logout = () => {
-    // Clear localStorage and state
     localStorage.removeItem('user');
     localStorage.removeItem('token');
     setUser(null);
@@ -38,6 +70,7 @@ export const AuthProvider = ({ children }) => {
     loading,
     login,
     logout,
+    updateUser
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
@@ -49,4 +82,4 @@ export const useAuth = () => {
     throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
-}; 
+};

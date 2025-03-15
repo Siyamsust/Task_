@@ -1,7 +1,21 @@
 import React from 'react';
 import './Dashboard.css';
-
+import {useState,useEffect} from 'react';
+import Pendingtours from './PendingTours';
 const Dashboard = () => {
+   const [pendingtours,setPendingtours]=useState([]);
+   useEffect(()=>{
+    fetch('http://localhost:4000/api/pendingtours')
+    .then((res) => res.json())
+    .then(data => {
+      console.log('Fetched data:', data);
+      setPendingtours(data?.tours || []);
+    })
+    .catch(error => {
+      console.error('Error fetching pending tours:', error);
+      setPendingtours([]);
+    });
+   },[])
   return (
     <div className="dashboard">
       <div className="dashboard-header">
@@ -71,42 +85,17 @@ const Dashboard = () => {
             <h3><i className="fas fa-bell"></i> Pending Approvals</h3>
             <button className="view-all-btn">View All</button>
           </div>
-          <div className="approval-list">
-            <div className="approval-item">
-              <div className="approval-info">
-                <h4>Cox's Bazar Beach Tour</h4>
-                <p>Applicant: Mohammad Rafiq</p>
-                <p className="approval-date">May 15, 2023</p>
-              </div>
-              <div className="approval-actions">
-                <button className="approve-btn"><i className="fas fa-check"></i> Approve</button>
-                <button className="reject-btn"><i className="fas fa-times"></i> Reject</button>
-              </div>
-            </div>
-            
-            <div className="approval-item">
-              <div className="approval-info">
-                <h4>Sylhet Tour Package</h4>
-                <p>Applicant: Tania Akter</p>
-                <p className="approval-date">May 14, 2023</p>
-              </div>
-              <div className="approval-actions">
-                <button className="approve-btn"><i className="fas fa-check"></i> Approve</button>
-                <button className="reject-btn"><i className="fas fa-times"></i> Reject</button>
-              </div>
-            </div>
-            
-            <div className="approval-item">
-              <div className="approval-info">
-                <h4>Sundarbans Adventure</h4>
-                <p>Applicant: Arif Hossain</p>
-                <p className="approval-date">May 12, 2023</p>
-              </div>
-              <div className="approval-actions">
-                <button className="approve-btn"><i className="fas fa-check"></i> Approve</button>
-                <button className="reject-btn"><i className="fas fa-times"></i> Reject</button>
-              </div>
-            </div>
+          <div className="approval-list"> 
+            {Array.isArray(pendingtours) && pendingtours.map((tour) => (
+              <Pendingtours 
+                id={tour._id}
+                name={tour.name}
+                applicant={tour.applicant}
+                date={new Date(tour.createdAt).toLocaleDateString()}
+                status={tour.status}
+                price={tour.price}
+              />
+            ))}
           </div>
         </div>
         
