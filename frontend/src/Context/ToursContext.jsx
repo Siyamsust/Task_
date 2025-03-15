@@ -10,7 +10,7 @@ export const ToursProvider = ({ children }) => {
   const fetchTours = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:4000/api/tours');
+      const response = await fetch('http://localhost:4000/api/tours/approved');
       if (!response.ok) {
         throw new Error('Failed to fetch tours');
       }

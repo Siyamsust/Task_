@@ -1,96 +1,96 @@
 /* General Page Styling */
 /* General Page Styling */
 .homepage {
-  min-height: 100vh;
-  background-color: #f8fafc;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  overflow-x: hidden; /* Prevent horizontal scroll on homepage */
-  width: 100%;
-}
-
-/* Popular Tour Packages Section */
-/* Popular Tour Packages Section */
-.popular-section {
-  width: 100%;
-  max-width: 1200px;
-  padding: 40px 0; /* Remove horizontal padding */
-  margin: 0 auto;
-}
-
-/* Hero Section */
-.hero-section {
-  width: 100%;
-  min-height: 60vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  padding: 50px 20px;
-  text-align: center;
-  object-fit: cover;
-}
-
-/* Popular Tour Packages */
-
-.popular-section h2 {
-  font-size: 2rem;
-  margin: 20px;
-  color: #1e293b;
-  text-align: center;
-}
-
-/* Categories Section */
-.categories-section {
-  width: 100%;
-  max-width: 1200px;
-  padding: 40px 20px;
-  margin-top: 30px;
-}
-
-.categories-section h2 {
-  font-size: 2rem;
-  margin-bottom: 20px;
-  color: #1e293b;
-  text-align: center;
-}
-
-/* Weather-Based Recommendations */
-.weather-section {
-  width: 100%;
-  max-width: 1200px;
-  padding: 40px 20px;
-  margin-top: 30px;
-}
-
-.weather-section h2 {
-  font-size: 2rem;
-  margin-bottom: 20px;
-  color: #1e293b;
-  text-align: center;
-}
-
-/* Footer */
-.footer {
-  width: 100%;
-  background: #1e293b;
-  color: white;
-  padding: 30px 20px;
-  text-align: center;
-  margin-top: 40px;
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-  .popular-section h2,
-  .categories-section h2,
-  .weather-section h2 {
-    font-size: 1.8rem;
+    min-height: 100vh;
+    background-color: #f8fafc;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow-x: hidden; /* Prevent horizontal scroll on homepage */
+    width: 100%;
+  }
+  
+  /* Popular Tour Packages Section */
+  /* Popular Tour Packages Section */
+  .popular-section {
+    width: 100%;
+    max-width: 1200px;
+    padding: 40px 0; /* Remove horizontal padding */
+    margin: 0 auto;
+  }
+  
+  /* Hero Section */
+  .hero-section {
+    width: 100%;
+    min-height: 60vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    padding: 50px 20px;
+    text-align: center;
+    object-fit: cover;
+  }
+  
+  /* Popular Tour Packages */
+  
+  .popular-section h2 {
+    font-size: 2rem;
+    margin: 20px;
+    color: #1e293b;
     text-align: center;
   }
-
-  .hero-section {
-    padding: 30px 10px;
+  
+  /* Categories Section */
+  .categories-section {
+    width: 100%;
+    max-width: 1200px;
+    padding: 40px 20px;
+    margin-top: 30px;
   }
-}
+  
+  .categories-section h2 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+    color: #1e293b;
+    text-align: center;
+  }
+  
+  /* Weather-Based Recommendations */
+  .weather-section {
+    width: 100%;
+    max-width: 1200px;
+    padding: 40px 20px;
+    margin-top: 30px;
+  }
+  
+  .weather-section h2 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+    color: #1e293b;
+    text-align: center;
+  }
+  
+  /* Footer */
+  .footer {
+    width: 100%;
+    background: #1e293b;
+    color: white;
+    padding: 30px 20px;
+    text-align: center;
+    margin-top: 40px;
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .popular-section h2,
+    .categories-section h2,
+    .weather-section h2 {
+      font-size: 1.8rem;
+      text-align: center;
+    }
+  
+    .hero-section {
+      padding: 30px 10px;
+    }
+  }

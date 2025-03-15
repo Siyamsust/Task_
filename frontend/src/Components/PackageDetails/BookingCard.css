@@ -92,6 +92,11 @@
   color: white;
 }
 
+.book-now {
+  background: #2563eb;
+  color: white;
+}
+
 .book-now:hover {
   background-color: #2980b9;
 }

@@ -31,11 +31,12 @@ const Navbar = () => {
         </li>
         
         <li>
-          <Link to="/reports">
-            <i className="fas fa-file-alt"></i>
-            <span>Reports</span>
+          <Link to="/settings">
+            <i className="fas fa-cog"></i>
+            <span>Settings</span>
           </Link>
         </li>
+     
         <li className="user-profile">
           <Icon icon="mdi:account" height={30}/>
           <span>Admin User</span>
