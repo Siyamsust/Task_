@@ -212,6 +212,7 @@ exports.createTour=async (req, res) => {
       tourData.transportation = JSON.parse(req.body.transportation);
       tourData.includes = JSON.parse(req.body.includes);
       tourData.excludes = JSON.parse(req.body.excludes);
+      tourData.status='draft';
   
       // Convert string numbers to actual numbers
       tourData.price = Number(tourData.price);
