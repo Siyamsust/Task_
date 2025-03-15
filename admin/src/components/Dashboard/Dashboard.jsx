@@ -85,6 +85,7 @@ const Dashboard = () => {
             <h3><i className="fas fa-bell"></i> Pending Approvals</h3>
             <button className="view-all-btn">View All</button>
           </div>
+<<<<<<< HEAD
           <div className="approval-list"> 
             {Array.isArray(pendingtours) && pendingtours.map((tour) => (
               <Pendingtours 
@@ -96,6 +97,44 @@ const Dashboard = () => {
                 price={tour.price}
               />
             ))}
+=======
+          <div className="approval-list">
+            <div className="approval-item">
+              <div className="approval-info">
+                <h4>Cox's Bazar Beach Tour</h4>
+                <p>Applicant: Mohammad Rafiq</p>
+                <p className="approval-date">May 15, 2023</p>
+              </div>
+              <div className="approval-actions">
+                <button className="approve-btn"><i className="fas fa-check"></i> Approve</button>
+                <button className="reject-btn"><i className="fas fa-times"></i> Reject</button>
+              </div>
+            </div>
+            
+            <div className="approval-item">
+              <div className="approval-info">
+                <h4>Sylhet Tour Package</h4>
+                <p>Applicant: Tania Akter</p>
+                <p className="approval-date">May 14, 2023</p>
+              </div>
+              <div className="approval-actions">
+                <button className="approve-btn"><i className="fas fa-check"></i> Approve</button>
+                <button className="reject-btn"><i className="fas fa-times"></i> Reject</button>
+              </div>
+            </div>
+            
+            <div className="approval-item">
+              <div className="approval-info">
+                <h4>Sundarbans Adventure</h4>
+                <p>Applicant: Arif Hossain</p>
+                <p className="approval-date">May 12, 2023</p>
+              </div>
+              <div className="approval-actions">
+                <button className="approve-btn"><i className="fas fa-check"></i> Approve</button>
+                <button className="reject-btn"><i className="fas fa-times"></i> Reject</button>
+              </div>
+            </div>
+>>>>>>> bf4b7caf545fe676ac173dfecd8cbfa91c947455
           </div>
         </div>
         

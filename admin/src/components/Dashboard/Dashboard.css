@@ -355,6 +355,7 @@
     justify-content: flex-end;
   }
 }
+<<<<<<< HEAD
 
 .status-approved {
   color: #28a745;
@@ -386,4 +387,6 @@
   border-radius: 4px;
   font-size: 0.9em;
 }
+=======
+>>>>>>> bf4b7caf545fe676ac173dfecd8cbfa91c947455
   

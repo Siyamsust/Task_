@@ -4,7 +4,10 @@
   "private": true,
   "dependencies": {
     "@iconify/react": "^5.2.0",
+<<<<<<< HEAD
     "axios": "^1.8.3",
+=======
+>>>>>>> bf4b7caf545fe676ac173dfecd8cbfa91c947455
     "cra-template": "1.2.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
