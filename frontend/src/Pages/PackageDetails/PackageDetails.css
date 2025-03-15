@@ -1,41 +1,87 @@
 .package-details-container {
+  max-width: 1400px;
   margin: 0 auto;
-  padding: 10px;
+  padding: 2rem;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 380px; /* Increased booking section width */
+  gap: 2.5rem; /* Increased gap for better separation */
+  background: linear-gradient(to bottom, #f8f9fa, #ffffff);
+  min-height: 100vh;
 }
 
 .gallery-section {
-  margin-bottom: 30px;
+  grid-column: 1 / -1;
+  background: white;
+  border-radius: 16px; /* Increased border radius */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  margin-bottom: 1rem;
 }
 
 .main-content-section {
-  background: #39ec6e;
-  border-radius: 12px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-  margin-bottom: 30px;
+  grid-column: 1 / 2;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  background: transparent;
 }
 
 .booking-section {
-  max-width: 1200px;
-  margin: 0 auto 30px;
+  grid-column: 2 / 3;
+  position: sticky;
+  top: 2rem;
+  align-self: start;
+  height: max-content;
+  transition: all 0.3s ease;
 }
 
-/* Responsive Design */
+/* Improved responsive design */
+@media (max-width: 1200px) {
+  .package-details-container {
+    grid-template-columns: minmax(0, 1fr) 340px;
+    padding: 1.5rem;
+    gap: 2rem;
+  }
+}
+
 @media (max-width: 1024px) {
   .package-details-container {
-    padding: 15px;
+    grid-template-columns: 1fr;
+    padding: 1rem;
+  }
+  
+  .booking-section {
+    grid-column: 1 / -1;
+    position: static;
+    margin-top: 2rem;
+  }
+
+  .gallery-section {
+    margin-bottom: 0;
   }
 }
 
 @media (max-width: 768px) {
   .package-details-container {
-    padding: 10px;
+    padding: 0.5rem;
+    gap: 1.5rem;
   }
 
   .gallery-section {
-    margin-bottom: 20px;
+    border-radius: 12px;
   }
+}
 
-  .main-content-section {
-    margin-bottom: 20px;
+/* Add smooth scroll behavior */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Optional: Add a container max-width constraint */
+@media (min-width: 1401px) {
+  .package-details-container {
+    margin: 2rem auto;
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
   }
 }

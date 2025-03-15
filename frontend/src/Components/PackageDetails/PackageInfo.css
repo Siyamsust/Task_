@@ -1,180 +1,112 @@
 .package-info {
-  padding: 10px;
-  background: #fff;
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
-/* Title Section */
-.package-title {
-  text-align: center;
-}
-
-.package-title h1 {
-  font-size: 2.2rem;
-  color: #2c3e50;
-  margin-bottom: 10px;
+.package-info h1 {
+  font-size: 2.5rem;
+  color: #1a1a1a;
+  margin-bottom: 0.5rem;
 }
 
 .package-categories {
   color: #666;
-  font-size: 0.95rem;
+  font-size: 1.1rem;
+  margin-bottom: 2rem;
 }
 
-/* Content Layout */
 .package-content {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 30px;
-  background-color: #e9ddea;
+  gap: 2rem;
 }
 
-.content-column {
-  display: flex;
-  flex-direction: column;
-  gap: 30px;
-}
-
-/* Info Sections */
 .info-section {
-  background: #f8f9fa;
-  border-radius: 12px;
-  padding: 10px;
+  margin-bottom: 2.5rem;
 }
 
 .info-section h2 {
-  font-size: 1.3rem;
-  color: #2c3e50;
-  margin-bottom: 20px;
-  padding-bottom: 10px;
-  border-bottom: 2px solid #3498db;
+  font-size: 1.5rem;
+  color: #2563eb;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #e5e7eb;
 }
 
-/* Overview Details */
 .overview-details {
   display: grid;
-  gap: 15px;
+  gap: 1rem;
 }
 
 .detail-item {
-  padding: 12px;
-  background: #fff;
-  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
 }
 
-.detail-item .label {
-  color: #666;
-  font-size: 0.9rem;
-  display: block;
-  margin-bottom: 5px;
+.label {
+  font-weight: 600;
+  color: #4b5563;
+  min-width: 120px;
 }
 
-.detail-item p {
-  color: #2c3e50;
-  font-weight: 500;
-}
-
-/* Special Notes */
-.special-note {
-  line-height: 1.6;
-  color: #555;
-}
-
-/* Includes List */
 .includes-list {
   list-style: none;
-  display: grid;
-  gap: 10px;
+  padding: 0;
 }
 
 .includes-list li {
-  padding: 10px 15px;
-  background: #fff;
-  border-radius: 6px;
+  padding: 0.5rem 0;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 0.5rem;
 }
 
 .includes-list li::before {
   content: "✓";
-  color: #2ecc71;
+  color: #10b981;
+  font-weight: bold;
 }
 
-/* Destinations */
 .destinations-list {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
+  display: grid;
+  gap: 1.5rem;
 }
 
 .destination-item {
-  background: #fff;
-  padding: 15px;
+  padding: 1rem;
+  background: #f8f9fa;
   border-radius: 8px;
+  border-left: 4px solid #2563eb;
 }
 
-.destination-item h3 {
-  color: #2c3e50;
-  margin-bottom: 8px;
-  font-size: 1.1rem;
-}
-
-.destination-item p {
-  color: #666;
-  font-size: 0.95rem;
-  margin-bottom: 10px;
-}
-
-.destination-item .duration {
-  display: inline-block;
-  padding: 4px 10px;
-  background: #e8f4fd;
-  color: #3498db;
-  border-radius: 4px;
-  font-size: 0.9rem;
-}
-
-/* Company Section */
 .company-section {
-  margin-top: auto;
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: #f8f9fa;
+  border-radius: 8px;
 }
 
 .company-details {
   display: flex;
   align-items: center;
-  gap: 15px;
-  padding: 20px;
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-}
-
-.company-details img {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  object-fit: cover;
-}
-
-.company-details h3 {
-  color: #2c3e50;
-  margin-bottom: 10px;
+  gap: 1rem;
 }
 
 .company-details button {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 16px;
-  background: #3498db;
+  background: #2563eb;
   color: white;
   border: none;
+  padding: 0.75rem 1.5rem;
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
 .company-details button:hover {
-  background: #2980b9;
+  background: #1d4ed8;
 }
 
 /* Responsive Design */
