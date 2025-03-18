@@ -24,7 +24,6 @@ const Homepage = () => {
           <Categories />
         </section>
         <section className="weather-section">
-          <h2>Weather based recommendations</h2>
           <WeatherRecommended />
         </section>
 

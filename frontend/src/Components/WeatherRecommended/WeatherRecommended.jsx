@@ -1,67 +1,81 @@
-import React , { useContext } from 'react';
+import React, { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { ToursContext } from '../../Context/ToursContext';
 import './WeatherRecommended.css';
+
 const WeatherRecommended = () => {
   const navigate = useNavigate();
-  const recommendations = [
-    {
-      id: 1,
-      name: 'Sunny Beach Resort',
-      location: 'Bali, Indonesia',
-      weather: 'Sunny',
-      temp: 28,
-      image: 'https://images.unsplash.com/photo-1544644181-1484b3fdfc62',
-      price: 899
-    },
-    {
-      id: 2,
-      name: 'Mountain Retreat',
-      location: 'Swiss Alps',
-      weather: 'Snow',
-      temp: -2,
-      image: 'https://images.unsplash.com/photo-1531973819741-e27a5ae2cc7b',
-      price: 1299
-    }
-  ];
+  const { tours, loading, error } = useContext(ToursContext);
 
   const handleExplore = (packageId) => {
     navigate(`/package/${packageId}`);
   };
 
-  return (
-    <section className="weather-recommended">
-      <div className="section-header">
-        <p>Perfect destinations for current weather conditions</p>
+  if (loading) {
+    return (
+      <div className="loading-container">
+        <div className="loading-spinner"></div>
+        <p>Loading recommended tours...</p>
       </div>
+    );
+  }
 
-      <div className="recommendations-grid">
-        {recommendations.map(item => (
-          <div key={item.id} className="recommendation-card">
-            <div className="recommendation-image">
-              <img src={item.image} alt={item.name} />
-              <div className="weather-badge">
-                <i className={`fas fa-${item.weather === 'Sunny' ? 'sun' : 'snowflake'}`}></i>
-                {item.temp}°C
-              </div>
-            </div>
-            <div className="recommendation-content">
-              <h3>{item.name}</h3>
-              <p><i className="fas fa-map-marker-alt"></i> {item.location}</p>
-              <div className="recommendation-footer">
-                <span className="price">From ${item.price}</span>
-                <button 
-                  className="explore-btn"
-                  onClick={() => handleExplore(item.id)}
-                >
-                   Explore Now <i className="fas fa-arrow-right"></i>
-                </button>
-              </div>
-            </div>
-          </div>
-        ))}
+  if (error) {
+    return (
+      <div className="error-container">
+        <i className="fas fa-exclamation-circle"></i>
+        <p>Error loading recommended tours. Please try again later.</p>
       </div>
-    </section>
+    );
+  }
+
+  return (
+    <div className="popular-tours">
+      <div className="popular-tours-header">
+        <h2>Perfect Tours for current weather</h2>
+      </div>
+      <div className="tour-scroll-container">
+        <div className="tour-row">
+          {tours.map(tour => (
+            <div key={tour._id} className="tour-card">
+              <div className="tour-image">
+                <img
+                  src={`http://localhost:4000/${tour.images[0]}`}
+                  alt={tour.name}
+                  onError={(e) => {
+                    e.target.src = 'https://picsum.photos/300/200';
+                  }}
+                />
+                <div className="weather-badge">
+                  <i className="fas fa-cloud-sun"></i> {tour.weather || 'Varied'}
+                </div>
+              </div>
+              <div className="tour-info">
+                <h3>{tour.name || 'Untitled Tour'}</h3>
+                <div className="tour-details">
+                  <span>
+                    From <strong>${tour.price || 'N/A'}</strong>
+                  </span>
+                  <span>
+                    <i className="fas fa-map-marker-alt"></i>
+                    {tour.location || 'Unknown Location'}
+                  </span>
+                </div>
+                <div className="tour-actions">
+                  <button 
+                    className="view-details-btn" 
+                    onClick={() => handleExplore(tour._id)}
+                  >
+                    Explore Now <i className="fas fa-arrow-right"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
   );
 };
 
-export default WeatherRecommended; 
+export default WeatherRecommended;
