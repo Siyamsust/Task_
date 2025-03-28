@@ -15,6 +15,13 @@ const wishlistRoutes = require('./routes/wishlistRoutes');
 const errorHandler = require('./middleware/errorHandler');
 const toursRoutes = require('./routes/tours');
 const tourController = require('./controllers/tour');
+
+
+//Admin Section
+const adminAuthRoutes = require('./routes/adminauth');
+
+
+
 require('dotenv').config();
 
 const app = express();
@@ -67,6 +74,9 @@ app.post('/api/tours', upload.array('images'), tourController.createTour);
   // Update tour
 app.put('/api/tours/:id', upload.array('newImages'), tourController.updateTour);
 app.use('/api', toursRoutes);
+
+// Admin Routes
+app.use('/api/admin', adminAuthRoutes);
 
 // Get all tours
 
