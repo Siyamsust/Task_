@@ -5,9 +5,9 @@ import PackageGallery from '../../Components/PackageDetails/PackageGallery';
 import PackageInfo from '../../Components/PackageDetails/PackageInfo';
 import BookingCard from '../../Components/PackageDetails/BookingCard';
 import './PackageDetails.css';
-
 const PackageDetails = () => {
   const { id } = useParams();
+  
   const { tours, loading, error, fetchTourById } = useContext(ToursContext);
   const [tour, setTour] = useState(null);
   const [localLoading, setLocalLoading] = useState(true);

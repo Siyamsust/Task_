@@ -7,12 +7,12 @@ import ProfilePage from './Pages/ProfilePage/ProfilePage';
 import ChatPage from './Pages/ChatPage/ChatPage';
 import { ToursProvider } from './Context/ToursContext';
 import { AuthProvider } from './Context/AuthContext';
-import { SocketProvider } from './Context/SocketContext';
 import PrivateRoute from './Components/PrivateRoute/PrivateRoute';
-import { ChatProvider } from './Context/ChatContext';
+
 import ExploreByCategory from './Pages/ExploreByCategory/ExploreByCategory';
 import SearchFilter from './Pages/SearchFilter/SearchFilter';
 import PopularTours from './Pages/PopularTours/PopularTours';
+import Checkout from './Pages/Checkout/Checkout';
 import './App.css';
 
 function App() {
@@ -38,6 +38,8 @@ function App() {
                   />
                   <Route path="/search" element={<SearchFilter />} />
                   <Route path="/explore/:category?" element={<ExploreByCategory />} />
+                  <Route path="/checkout/:tourId" element={<Checkout />} />
+
                 </Routes>
               </div>
             </BrowserRouter>
