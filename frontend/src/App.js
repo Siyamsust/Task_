@@ -8,6 +8,8 @@ import ChatPage from './Pages/ChatPage/ChatPage';
 import { ToursProvider } from './Context/ToursContext';
 import { AuthProvider } from './Context/AuthContext';
 import PrivateRoute from './Components/PrivateRoute/PrivateRoute';
+import TermsAndConditions from './Pages/TermsandConditions/TermsandConditions';
+import Faq from './Pages/Faq/Faq';
 
 import ExploreByCategory from './Pages/ExploreByCategory/ExploreByCategory';
 import SearchFilter from './Pages/SearchFilter/SearchFilter';
@@ -39,7 +41,9 @@ function App() {
                   <Route path="/search" element={<SearchFilter />} />
                   <Route path="/explore/:category?" element={<ExploreByCategory />} />
                   <Route path="/checkout/:tourId" element={<Checkout />} />
-
+                  <Route path="/terms" element={<TermsAndConditions />} />
+                  <Route path="/terms/:section" element={<TermsAndConditions />} />
+                  <Route path="/faq" element={<Faq />} />
                 </Routes>
               </div>
             </BrowserRouter>
