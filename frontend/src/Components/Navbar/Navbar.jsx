@@ -62,9 +62,9 @@ const Navbar = () => {
           </button>
           <button 
             className="nav-item"
-            onClick={() => scrollToSection('contact-section')}
+             onClick={() => navigate('/review')}
           >
-            <i className="fas fa-envelope"></i> Contact
+            <i className="fas fa-envelope"></i>Review
           </button>
         </div>
 

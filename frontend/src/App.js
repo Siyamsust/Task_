@@ -10,7 +10,7 @@ import { AuthProvider } from './Context/AuthContext';
 import PrivateRoute from './Components/PrivateRoute/PrivateRoute';
 import TermsAndConditions from './Pages/TermsandConditions/TermsandConditions';
 import Faq from './Pages/Faq/Faq';
-
+import ReviewPage from './Pages/Review/ReviewPage';
 import ExploreByCategory from './Pages/ExploreByCategory/ExploreByCategory';
 import SearchFilter from './Pages/SearchFilter/SearchFilter';
 import PopularTours from './Pages/PopularTours/PopularTours';
@@ -44,6 +44,7 @@ function App() {
                   <Route path="/terms" element={<TermsAndConditions />} />
                   <Route path="/terms/:section" element={<TermsAndConditions />} />
                   <Route path="/faq" element={<Faq />} />
+                  <Route path="/review" element={<ReviewPage />} />
                 </Routes>
               </div>
             </BrowserRouter>
