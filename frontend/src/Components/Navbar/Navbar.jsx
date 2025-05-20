@@ -14,6 +14,14 @@ const Navbar = () => {
     navigate('/');
   };
 
+  // Extract surname from the full name
+  const getSurname = (fullName) => {
+    if (!fullName) return 'Profile';
+    // Split by spaces and get the last part (surname)
+    const nameParts = fullName.split(' ');
+    return nameParts.length > 1 ? nameParts[nameParts.length - 1] : fullName;
+  };
+
   const scrollToSection = (sectionId) => {
     if (location.pathname !== '/') {
       window.location.href = '/#' + sectionId;
@@ -73,7 +81,7 @@ const Navbar = () => {
             <>
               <Link to="/profile" className="profile-btn">
                 <i className="fas fa-user"></i>
-                <span>{user.user?.name || 'Profile'}</span>
+                <span>{getSurname(user.user?.name) || 'Profile'}</span>
               </Link>
               <button onClick={handleLogout} className="logout-btn">
                 <i className="fas fa-sign-out-alt"></i>
@@ -98,4 +106,4 @@ const Navbar = () => {
   );
 };
 
-export default Navbar; 
+export default Navbar;
