@@ -47,31 +47,13 @@ const PopularTours = () => {
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
-        
-        <div className="filter-tabs">
-          {filters.map(filter => (
-            <button
-              key={filter.id}
-              className={`filter-tab ${activeFilter === filter.id ? 'active' : ''}`}
-              onClick={() => setActiveFilter(filter.id)}
-            >
-              {filter.label}
-            </button>
-          ))}
-        </div>
+  
       </div>
 
       {/* Results Summary */}
       <div className="results-summary">
         <p>Showing {filteredPackages.length} packages</p>
-        <div className="view-options">
-          <button className="view-option active">
-            <i className="fas fa-grid"></i> Grid
-          </button>
-          <button className="view-option">
-            <i className="fas fa-list"></i> List
-          </button>
-        </div>
+
       </div>
 
       {/* Packages Grid */}

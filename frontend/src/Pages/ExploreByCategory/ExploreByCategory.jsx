@@ -15,50 +15,61 @@ const ExploreByCategory = () => {
 
   // Fetch tours when component mounts
   useEffect(() => {
-    fetchTours();
-  }, [fetchTours]);
-
-  // Update active category when URL changes
-  useEffect(() => {
-    if (activeCategory === 'all') {
-      setFilteredTours(tours);
-    } else {
-      const filtered = tours.filter(tour => {
-        let categories = tour.packageCategories;
+  console.log("Active Category:", activeCategory);
+  console.log("All Tours:", tours);
   
-        // First, get the actual array from the outer array
-        if (Array.isArray(categories) && categories.length > 0) {
-          // Take the first element and parse it if it's a string
-          let categoryString = categories[0];
-          
-          try {
-            // If it's in JSON format (with square brackets and quotes)
-            if (categoryString.startsWith('[')) {
-              categories = JSON.parse(categoryString);
-            } else {
-              // If it's in the format [Cultural,Nature & Eco,Family]
-              categories = categoryString
-                .replace('[', '')
-                .replace(']', '')
-                .split(',')
-                .map(cat => cat.trim());
-            }
-            
-            // Case-insensitive comparison
-            return categories.some(cat => 
-              cat.toLowerCase() === activeCategory.toLowerCase()
-            );
-          } catch (error) {
-            console.error("Error parsing categories for tour:", tour.name, error);
-            return false;
-          }
-        }
+  if (activeCategory === 'all') {
+    setFilteredTours(tours);
+  } else {
+    // Add debugging logs to see the structure of packageCategories
+    tours.forEach(tour => {
+      console.log(`Tour "${tour.name}" categories:`, tour.packageCategories);
+    });
+    
+    const filtered = tours.filter(tour => {
+      console.log(`Checking tour: ${tour.name}`);
+      console.log(`Categories for this tour:`, tour.packageCategories);
+      
+      // Check if packageCategories exists and has content
+      if (!tour.packageCategories || tour.packageCategories.length === 0) {
+        console.log("No categories found for this tour");
         return false;
+      }
+      
+      // Try this simplified approach that handles multiple potential formats
+      const matchFound = tour.packageCategories.some(cat => {
+        let categoryValue = cat;
+        
+        // If it's a string that might be an array in string format
+        if (typeof cat === 'string' && (cat.includes('[') || cat.includes(','))) {
+          try {
+            // Try to extract categories from various string formats
+            const cleanedStr = cat.replace(/[$$$$']/g, '');
+            const possibleCategories = cleanedStr.split(',').map(c => c.trim());
+            console.log(`Parsed categories from string: ${possibleCategories}`);
+            
+            return possibleCategories.some(c => 
+              c.toLowerCase() === activeCategory.toLowerCase()
+            );
+          } catch (e) {
+            console.error("Error parsing category:", e);
+            // Fall back to direct comparison
+            return cat.toLowerCase() === activeCategory.toLowerCase();
+          }
+        } else {
+          // Direct comparison for simple string
+          return categoryValue.toLowerCase() === activeCategory.toLowerCase();
+        }
       });
-  
-      setFilteredTours(filtered);
-    }
-  }, [activeCategory, tours]);
+      
+      console.log(`Match found for ${tour.name}: ${matchFound}`);
+      return matchFound;
+    });
+    
+    console.log("Filtered tours:", filtered);
+    setFilteredTours(filtered);
+  }
+}, [activeCategory, tours]);
 
   // Handle category change
   const handleCategoryChange = (newCategory) => {
