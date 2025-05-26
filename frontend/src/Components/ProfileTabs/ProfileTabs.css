@@ -1,6 +1,8 @@
+/* Profile tabs styles */
 .profile-tabs {
   display: flex;
-  border-bottom: 1px solid var(--light-gray);
+  border-bottom: 1px solid var(--border-color);
+  transition: border-color 0.3s ease;
 }
 
 .tab-btn {
@@ -9,7 +11,7 @@
   border: none;
   background: none;
   font-weight: 500;
-  color: #666;
+  color: var(--text-secondary);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -18,17 +20,47 @@
   transition: all 0.3s ease;
 }
 
+.tab-btn:hover {
+  color: var(--primary-color);
+  background-color: rgba(77, 171, 247, 0.1);
+}
+
 .tab-btn.active {
   color: var(--primary-color);
   border-bottom: 2px solid var(--primary-color);
+  background-color: rgba(77, 171, 247, 0.05);
 }
 
 .tab-btn i {
   font-size: 1.1rem;
 }
 
+/* Dark mode specific enhancements */
+[data-theme="dark"] .profile-content {
+  border: 1px solid var(--border-color);
+}
+
+[data-theme="dark"] .tab-btn:hover {
+  background-color: rgba(77, 171, 247, 0.15);
+}
+
+[data-theme="dark"] .tab-btn.active {
+  background-color: rgba(77, 171, 247, 0.1);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .profile-container {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (max-width: 480px) {
   .tab-btn span {
     display: none;
   }
-} 
+  
+  .profile-page {
+    padding: 20px 10px;
+  }
+}
