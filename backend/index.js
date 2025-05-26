@@ -15,7 +15,7 @@ const wishlistRoutes = require('./routes/wishlistRoutes');
 const errorHandler = require('./middleware/errorHandler');
 const toursRoutes = require('./routes/tours');
 const tourController = require('./controllers/tour');
-
+const reviewRoutes = require('./routes/reviewRoutes');
 
 //Admin Section
 const adminAuthRoutes = require('./routes/adminauth');
@@ -33,10 +33,12 @@ app.use(express.json());
 app.use(bodyParser.json());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
+app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/chats', chatRoutes);
 app.use('/api/wishlist', wishlistRoutes);
+app.use('/reviews', reviewRoutes);
 // Socket.IO setup
 const io = socketIO(server, {
   cors: {

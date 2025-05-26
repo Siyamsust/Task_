@@ -1,6 +1,6 @@
 /* Main layout */
 .review-page {
-  max-width: 1200px;
+  width: 1200px;
   margin: 0 auto;
   padding: 2rem 1rem;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -41,6 +41,8 @@
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   padding: 1.5rem;
+  height: 100%;
+  min-height: 600px; /* Ensure minimum height */
 }
 
 .review-form-section h2 {
@@ -264,6 +266,10 @@ select.error, textarea.error {
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   padding: 1.5rem;
+  height: 100%;
+  min-height: 600px; /* Ensure minimum height */
+  display: flex;
+  flex-direction: column;
 }
 
 .reviews-section h2 {
@@ -278,9 +284,11 @@ select.error, textarea.error {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-  max-height: 800px;
+  height: 100%;
+  min-height: 450px; /* Ensure minimum height */
   overflow-y: auto;
   padding-right: 0.5rem;
+  flex: 1;
 }
 
 .reviews-list::-webkit-scrollbar {
@@ -343,6 +351,7 @@ select.error, textarea.error {
 .review-comment {
   padding: 1rem;
   line-height: 1.5;
+  min-height: 60px; /* Ensure minimum height */
 }
 
 .review-photos {
@@ -351,6 +360,12 @@ select.error, textarea.error {
   padding: 0 1rem 1rem;
   overflow-x: auto;
   scroll-snap-type: x mandatory;
+  min-height: 80px; /* Ensure minimum height even when empty */
+}
+
+.review-photos:empty {
+  min-height: 0; /* Reset height when empty */
+  padding: 0;
 }
 
 .review-photos img {
@@ -379,4 +394,29 @@ select.error, textarea.error {
   background-color: #f9fafb;
   border-radius: 6px;
   border: 1px dashed #cbd5e0;
+  height: 100%;
+  min-height: 300px; /* Ensure minimum height */
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
+/* Loading states */
+.loading-reviews,
+.loading-spinner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #718096;
+  height: 300px;
+  width: 100%;
+  font-style: italic;
+}
+
+/* Review tour info */
+.review-tour {
+  padding: 0.5rem 1rem;
+  border-top: 1px solid #e2e8f0;
+  background-color: #f8f9fa;
+  font-size: 0.8rem;
+  color: #718096;
 }
