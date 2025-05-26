@@ -1,10 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../Context/AuthContext';
+import { ThemeContext } from '../../Context/ThemeContext'; // Import ThemeContext
+import { Moon, Sun } from 'lucide-react'; // Import icons (or use Font Awesome alternatives)
 import './Navbar.css';
 
 const Navbar = () => {
   const { user, logout } = useAuth();
+  const { theme, toggleTheme } = useContext(ThemeContext); // Get theme and toggle function
   const location = useLocation();
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -70,13 +73,26 @@ const Navbar = () => {
           </button>
           <button 
             className="nav-item"
-             onClick={() => navigate('/review')}
+            onClick={() => navigate('/review')}
           >
             <i className="fas fa-envelope"></i>Review
           </button>
         </div>
 
         <div className="nav-auth">
+          {/* Theme Toggle Button */}
+          <button 
+            className="theme-toggle-btn"
+            onClick={toggleTheme}
+            aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
+          >
+            {theme === 'light' ? (
+              <i className="fas fa-moon"></i>
+            ) : (
+              <i className="fas fa-sun"></i>
+            )}
+          </button>
+
           {user ? (
             <>
               <Link to="/profile" className="profile-btn">

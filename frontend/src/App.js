@@ -16,11 +16,13 @@ import SearchFilter from './Pages/SearchFilter/SearchFilter';
 import PopularTours from './Pages/PopularTours/PopularTours';
 import Checkout from './Pages/Checkout/Checkout';
 import './App.css';
+import { ThemeProvider } from './Context/ThemeContext';
 
 function App() {
   return (
     <AuthProvider>
           <ToursProvider>
+            <ThemeProvider>
             <BrowserRouter>
               <div className="App">
                 <Navbar />
@@ -48,6 +50,7 @@ function App() {
                 </Routes>
               </div>
             </BrowserRouter>
+            </ThemeProvider>
           </ToursProvider>
     </AuthProvider>
   );

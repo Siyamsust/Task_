@@ -1,15 +1,16 @@
 /* ExploreByCategory.css */
 .explore-page {
   min-height: 100vh;
-  background-color: #f8fafc;
+  background-color: var(--background-primary, #f8fafc);
+  transition: background-color 0.3s ease;
 }
 
 /* Header Section */
 .explore-header {
-  background: linear-gradient(black, green);
+  background: var(--header-gradient, linear-gradient(black, green));
   padding: 80px 20px;
   text-align: center;
-  color: white;
+  color: var(--header-text, white);
 }
 
 .explore-header-content {
@@ -35,29 +36,30 @@
 }
 
 .category-tabs {
-  background: white;
+  background: var(--card-bg, white);
   padding: 15px 25px;
   border-radius: 12px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 15px var(--shadow-color, rgba(0,0,0,0.1));
   display: flex;
   overflow-x: auto;
   gap: 15px;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .category-tab {
   padding: 10px 20px;
   border: none;
   border-radius: 8px;
-  background: white;
-  color: #666;
+  background: var(--card-bg, white);
+  color: var(--text-secondary, #666);
   cursor: pointer;
   transition: all 0.3s ease;
   white-space: nowrap;
 }
 
 .category-tab.active {
-  background: green;
-  color: white;
+  background: var(--accent-color, green);
+  color: var(--accent-text, white);
 }
 
 /* Search Container */
@@ -68,13 +70,14 @@
 }
 
 .search-bar {
-  background: white;
+  background: var(--card-bg, white);
   padding: 15px 25px;
   border-radius: 12px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 15px var(--shadow-color, rgba(0,0,0,0.1));
   display: flex;
   align-items: center;
   gap: 15px;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .search-bar input {
@@ -82,10 +85,14 @@
   flex: 1;
   font-size: 1rem;
   outline: none;
+  background: transparent;
+  color: var(--text-primary, #333);
+  transition: color 0.3s ease;
 }
 
 .search-bar i {
-  color: #666;
+  color: var(--text-secondary, #666);
+  transition: color 0.3s ease;
 }
 
 /* Results Summary */
@@ -98,6 +105,11 @@
   align-items: center;
 }
 
+.results-summary p {
+  color: var(--text-secondary, #666);
+  transition: color 0.3s ease;
+}
+
 .view-options {
   display: flex;
   gap: 10px;
@@ -105,19 +117,21 @@
 
 .view-option {
   padding: 8px 15px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--border-color, #ddd);
   border-radius: 6px;
-  background: white;
+  background: var(--card-bg, white);
+  color: var(--text-secondary, #666);
   cursor: pointer;
   display: flex;
   align-items: center;
   gap: 8px;
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
 
 .view-option.active {
-  background: #f8f9fa;
-  border-color: green;
-  color: #3498db;
+  background: var(--background-secondary, #f8f9fa);
+  border-color: var(--accent-color, green);
+  color: var(--primary-color, #3498db);
 }
 
 /* Package Grid Container */
@@ -132,11 +146,12 @@
   text-align: center;
   padding: 40px;
   font-size: 1.2rem;
-  color: #666;
+  color: var(--text-secondary, #666);
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 300px;
+  transition: color 0.3s ease;
 }
 
 /* Responsive Design */

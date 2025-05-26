@@ -1,9 +1,40 @@
+/* Theme variables - add this at the top of your CSS file */
+:root {
+  /* Light theme (default) */
+  --navbar-bg: #ffffff;
+  --navbar-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  --text-color: #333333;
+  --text-secondary: #666666;
+  --primary-color: #3498db;
+  --primary-hover: #2980b9;
+  --logout-bg: #fee2e2;
+  --logout-color: #dc2626;
+  --overlay-bg: rgba(0, 0, 0, 0.1);
+  --menu-bg: #ffffff;
+}
+
+[data-theme='dark'] {
+  /* Dark theme */
+  --navbar-bg: #1a1a1a;
+  --navbar-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  --text-color: #f0f0f0;
+  --text-secondary: #cccccc;
+  --primary-color: #4299e1;
+  --primary-hover: #3182ce;
+  --logout-bg: #433838;
+  --logout-color: #f56565;
+  --overlay-bg: rgba(255, 255, 255, 0.1);
+  --menu-bg: #1a1a1a;
+}
+
+/* Navbar styles with theme variables */
 .navbar {
-  background: white;
-  box-shadow: var(--shadow-sm);
+  background: var(--navbar-bg);
+  box-shadow: var(--navbar-shadow);
   position: sticky;
   top: 0;
   z-index: 1000;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .nav-container {
@@ -23,6 +54,7 @@
   font-weight: 700;
   color: var(--primary-color);
   min-width: 100px;
+  transition: color 0.3s ease;
 }
 
 .nav-menu {
@@ -52,6 +84,7 @@
 
 .nav-item i {
   font-size: 1.1rem;
+  transition: color 0.3s ease;
 }
 
 .nav-auth {
@@ -79,14 +112,26 @@
   color: white;
 }
 
+.profile-btn:hover {
+  background: var(--primary-hover);
+}
+
 .login-btn {
   background: var(--primary-color);
   color: white;
 }
 
+.login-btn:hover {
+  background: var(--primary-hover);
+}
+
 .logout-btn {
-  background: #fee2e2;
-  color: #dc2626;
+  background: var(--logout-bg);
+  color: var(--logout-color);
+}
+
+.logout-btn:hover {
+  opacity: 0.9;
 }
 
 .menu-toggle {
@@ -95,6 +140,42 @@
   border: none;
   font-size: 1.5rem;
   cursor: pointer;
+  color: var(--text-color);
+  transition: color 0.3s ease;
+}
+
+/* Theme toggle button */
+.theme-toggle-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  color: var(--text-color);
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  margin-right: 10px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.theme-toggle-btn:hover {
+  background-color: var(--overlay-bg);
+}
+
+/* Make sure the icon is visible in both themes */
+.theme-toggle-btn i {
+  font-size: 1.2rem;
+  color: var(--text-color);
+  transition: color 0.3s ease;
+}
+
+/* Responsive styles for theme toggle */
+@media screen and (max-width: 768px) {
+  .theme-toggle-btn {
+    margin-right: 5px;
+  }
 }
 
 @media (max-width: 768px) {
@@ -105,10 +186,11 @@
     width: 100%;
     height: calc(100vh - 70px);
     flex-direction: column;
-    background: white;
+    background: var(--menu-bg);
     padding: 2rem;
     transition: 0.3s ease;
     margin: 0;
+    box-shadow: var(--navbar-shadow);
   }
 
   .nav-menu.active {
@@ -132,4 +214,4 @@
   .nav-container {
     padding: 1rem;
   }
-} 
+}

@@ -1,17 +1,44 @@
 /* Main layout */
+:root {
+  /* Light theme colors */
+  --text-primary: #333333;
+  --text-secondary: #666666;
+  --text-muted: #888888;
+  --background-primary: #ffffff;
+  --background-secondary: #f8f9fa;
+  --card-bg: #ffffff;
+  --border-color: #e2e8f0;
+  --label-color:#232a2a;
+  --bg-light:#f2f4f6;
+}
+
+[data-theme='dark'] {
+  /* Dark theme colors */
+  --text-primary: #f0f0f0;
+  --text-secondary: #cccccc;
+  --text-muted: #a0aec0;
+  --background-primary: #1a1a1a;
+  --background-secondary: #2d3748;
+  --card-bg: #2d3748;
+  --border-color: #4a5568;
+   --label-color:#dbe8e8;
+   --bg-light: #546573;
+}
 .review-page {
   width: 1200px;
   margin: 0 auto;
   padding: 2rem 1rem;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  color: #333;
+  color: var(--text-primary, #333);
+  transition: color 0.3s ease;
 }
 
 .review-page h1 {
   text-align: center;
-  color: #2c3e50;
+  color: var(--text-color, #2c3e50);
   margin-bottom: 2rem;
   font-size: 2.2rem;
+  transition: color 0.3s ease;
 }
 
 .review-container {
@@ -37,20 +64,22 @@
 
 /* Form section */
 .review-form-section {
-  background-color: #fff;
+  background-color: var(--card-bg, #fff);
   border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 10px var(--shadow-color, rgba(0, 0, 0, 0.1));
   padding: 1.5rem;
   height: 100%;
   min-height: 600px; /* Ensure minimum height */
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .review-form-section h2 {
-  color: #2c3e50;
+  color: var(--text-color, #354c63);
   margin-bottom: 1.5rem;
   font-size: 1.5rem;
-  border-bottom: 2px solid #f0f0f0;
+  border-bottom: 2px solid var(--border-light, #f0f0f0);
   padding-bottom: 0.8rem;
+  transition: color 0.3s ease, border-color 0.3s ease;
 }
 
 .review-form {
@@ -68,30 +97,33 @@
 .form-group label {
   font-weight: 600;
   font-size: 0.95rem;
-  color: #4a5568;
+  color: var(--label-color, #41526a);
+  transition: color 0.3s ease;
 }
 
-select, textarea {
+select, textarea, input {
   padding: 0.75rem;
-  border: 1px solid #ddd;
+  border: 1px solid var(--input-border, #ddd);
   border-radius: 4px;
   font-family: inherit;
   font-size: 1rem;
-  transition: border-color 0.3s;
+  transition: border-color 0.3s, background-color 0.3s, color 0.3s;
+  background-color: var(--input-bg, #544242);
+  color: var(--text-primary, #333);
 }
 
-select:focus, textarea:focus {
-  border-color: #3498db;
+select:focus, textarea:focus, input:focus {
+  border-color: var(--primary-color, #3498db);
   outline: none;
-  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+  box-shadow: 0 0 0 2px var(--focus-ring, rgba(52, 152, 219, 0.2));
 }
 
-select.error, textarea.error {
-  border-color: #e74c3c;
+select.error, textarea.error, input.error {
+  border-color: var(--error-color, #e74c3c);
 }
 
 .error-message {
-  color: #e74c3c;
+  color: var(--error-color, #e74c3c);
   font-size: 0.85rem;
   margin-top: 0.25rem;
 }
@@ -114,26 +146,28 @@ select.error, textarea.error {
 /* Character count */
 .character-count {
   font-size: 0.8rem;
-  color: #718096;
+  color: var(--text-muted, #718096);
   text-align: right;
   margin-top: 0.25rem;
+  transition: color 0.3s ease;
 }
 
 .approaching-limit {
-  color: #e67e22;
+  color: var(--warning-color, #e67e22);
 }
 
 .over-limit {
-  color: #e74c3c;
+  color: var(--error-color, #e74c3c);
   font-weight: 600;
 }
 
 /* Photo upload */
 .photo-upload-section {
-  border: 1px dashed #cbd5e0;
+  border: 1px dashed var(--border-color, #cbd5e0);
   padding: 1rem;
   border-radius: 6px;
-  background-color: #f9fafb;
+  background-color: var(--bg-light, #aeb8c3);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .upload-container {
@@ -152,8 +186,8 @@ select.error, textarea.error {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  background-color: #3498db;
-  color: white;
+  background-color: var(--primary-color, #3498db);
+  color: var(--button-text, white);
   padding: 0.6rem 1.2rem;
   border-radius: 4px;
   cursor: pointer;
@@ -162,12 +196,13 @@ select.error, textarea.error {
 }
 
 .upload-button:hover {
-  background-color: #2980b9;
+  background-color: var(--primary-hover, #2980b9);
 }
 
 .upload-help {
   font-size: 0.8rem;
-  color: #718096;
+  color: var(--text-muted, #718096);
+  transition: color 0.3s ease;
 }
 
 /* Photo previews */
@@ -182,8 +217,9 @@ select.error, textarea.error {
   position: relative;
   border-radius: 4px;
   overflow: hidden;
-  border: 1px solid #e2e8f0;
-  background-color: #f7fafc;
+  border: 1px solid var(--border-color, #e2e8f0);
+  background-color: var(--bg-light, #f7fafc);
+  transition: border-color 0.3s ease, background-color 0.3s ease;
 }
 
 .photo-preview img {
@@ -197,7 +233,7 @@ select.error, textarea.error {
   position: absolute;
   top: 5px;
   right: 5px;
-  background-color: rgba(255, 255, 255, 0.8);
+  background-color: var(--overlay-light, rgba(255, 255, 255, 0.8));
   border: none;
   border-radius: 50%;
   width: 24px;
@@ -210,7 +246,7 @@ select.error, textarea.error {
 }
 
 .remove-photo:hover {
-  background-color: #fff;
+  background-color: var(--bg-white, #fff);
 }
 
 .photo-name {
@@ -219,14 +255,15 @@ select.error, textarea.error {
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
-  background-color: #f8f9fa;
-  color: #4a5568;
+  background-color: var(--bg-light, #f8f9fa);
+  color: var(--text-secondary, #4a5568);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* Submit button */
 .submit-button {
-  background-color: #2ecc71;
-  color: white;
+  background-color: var(--success-color, #2ecc71);
+  color: var(--button-text, white);
   border: none;
   border-radius: 4px;
   padding: 0.8rem 1.2rem;
@@ -239,13 +276,13 @@ select.error, textarea.error {
 }
 
 .submit-button:hover {
-  background-color: #27ae60;
+  background-color: var(--success-hover, #27ae60);
 }
 
 /* Success message */
 .success-message {
-  background-color: #d4edda;
-  color: #155724;
+  background-color: var(--success-bg, #d4edda);
+  color: var(--success-text, #155724);
   padding: 1rem;
   border-radius: 4px;
   margin-bottom: 1.5rem;
@@ -253,6 +290,7 @@ select.error, textarea.error {
   align-items: center;
   gap: 0.5rem;
   animation: fadeIn 0.3s ease-out;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 @keyframes fadeIn {
@@ -262,22 +300,24 @@ select.error, textarea.error {
 
 /* Reviews section */
 .reviews-section {
-  background-color: #fff;
+  background-color: var(--card-bg, #fff);
   border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 10px var(--shadow-color, rgba(0, 0, 0, 0.1));
   padding: 1.5rem;
   height: 100%;
   min-height: 600px; /* Ensure minimum height */
   display: flex;
   flex-direction: column;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .reviews-section h2 {
-  color: #2c3e50;
+  color: var(--text-color, #2c3e50);
   margin-bottom: 1.5rem;
   font-size: 1.5rem;
-  border-bottom: 2px solid #f0f0f0;
+  border-bottom: 2px solid var(--border-light, #f0f0f0);
   padding-bottom: 0.8rem;
+  transition: color 0.3s ease, border-color 0.3s ease;
 }
 
 .reviews-list {
@@ -296,40 +336,41 @@ select.error, textarea.error {
 }
 
 .reviews-list::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: var(--scrollbar-track, #f1f1f1);
   border-radius: 10px;
 }
 
 .reviews-list::-webkit-scrollbar-thumb {
-  background: #c1c1c1;
+  background: var(--scrollbar-thumb, #c1c1c1);
   border-radius: 10px;
 }
 
 .reviews-list::-webkit-scrollbar-thumb:hover {
-  background: #a0a0a0;
+  background: var(--scrollbar-thumb-hover, #a0a0a0);
 }
 
 /* Review card */
 .review-card {
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-color, #e2e8f0);
   border-radius: 6px;
   overflow: hidden;
-  background-color: #fff;
-  transition: transform 0.2s, box-shadow 0.2s;
+  background-color: var(--card-bg, #fff);
+  transition: transform 0.2s, box-shadow 0.2s, background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .review-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 12px var(--shadow-hover, rgba(0, 0, 0, 0.05));
 }
 
 .review-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #f8f9fa;
+  background-color: var(--bg-light, #f8f9fa);
   padding: 1rem;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid var(--border-color, #e2e8f0);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .reviewer-info {
@@ -339,19 +380,23 @@ select.error, textarea.error {
 
 .reviewer-name {
   font-weight: 600;
-  color: #2d3748;
+  color: var(--text-primary, #2d3748);
+  transition: color 0.3s ease;
 }
 
 .review-date {
   font-size: 0.8rem;
-  color: #718096;
+  color: var(--text-muted, #718096);
   margin-top: 0.2rem;
+  transition: color 0.3s ease;
 }
 
 .review-comment {
   padding: 1rem;
   line-height: 1.5;
   min-height: 60px; /* Ensure minimum height */
+  color: var(--text-primary, #333);
+  transition: color 0.3s ease;
 }
 
 .review-photos {
@@ -387,17 +432,18 @@ select.error, textarea.error {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  color: #718096;
+  color: var(--text-muted, #718096);
   font-style: italic;
   padding: 2rem 0;
   justify-content: center;
-  background-color: #f9fafb;
+  background-color: var(--bg-light, #f9fafb);
   border-radius: 6px;
-  border: 1px dashed #cbd5e0;
+  border: 1px dashed var(--border-color, #cbd5e0);
   height: 100%;
   min-height: 300px; /* Ensure minimum height */
   margin-top: auto;
   margin-bottom: auto;
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
 
 /* Loading states */
@@ -406,17 +452,19 @@ select.error, textarea.error {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #718096;
+  color: var(--text-muted, #718096);
   height: 300px;
   width: 100%;
   font-style: italic;
+  transition: color 0.3s ease;
 }
 
 /* Review tour info */
 .review-tour {
   padding: 0.5rem 1rem;
-  border-top: 1px solid #e2e8f0;
-  background-color: #f8f9fa;
+  border-top: 1px solid var(--border-color, #e2e8f0);
+  background-color: var(--bg-light, #f8f9fa);
   font-size: 0.8rem;
-  color: #718096;
+  color: var(--text-muted, #718096);
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }

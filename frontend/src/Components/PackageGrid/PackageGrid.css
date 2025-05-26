@@ -1,3 +1,4 @@
+/* PackageGrid.css with theme variables */
 .package-grid {
   display: grid;
   gap: 30px;
@@ -36,10 +37,10 @@
 }
 
 .package-card {
-  background: white;
+  background: var(--card-bg, white);
   border-radius: 15px;
   overflow: hidden;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 10px var(--shadow-color, rgba(0, 0, 0, 0.1));
   transition: all 0.3s ease;
   display: flex;
   flex-direction: column;
@@ -48,7 +49,7 @@
 
 .package-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 5px 20px var(--shadow-hover, rgba(0, 0, 0, 0.15));
 }
 
 @media (max-width: 768px) {
@@ -84,8 +85,8 @@
   position: absolute;
   bottom: 15px;
   right: 15px;
-  background: rgba(0, 0, 0, 0.7);
-  color: white;
+  background: var(--price-badge-bg, rgba(0, 0, 0, 0.7));
+  color: var(--price-badge-text, white);
   padding: 8px 16px;
   border-radius: 20px;
   font-weight: 500;
@@ -97,8 +98,8 @@
   position: absolute;
   top: 15px;
   right: 15px;
-  background: rgba(220, 53, 69, 0.85);
-  color: white;
+  background: var(--danger-color-translucent, rgba(220, 53, 69, 0.85));
+  color: var(--badge-text, white);
   padding: 6px 12px;
   border-radius: 20px;
   font-weight: 600;
@@ -111,8 +112,8 @@
   position: absolute;
   top: 15px;
   left: 15px;
-  background: rgba(25, 135, 84, 0.85);
-  color: white;
+  background: var(--success-color-translucent, rgba(25, 135, 84, 0.85));
+  color: var(--badge-text, white);
   padding: 6px 12px;
   border-radius: 20px;
   font-weight: 500;
@@ -172,7 +173,7 @@
   display: flex;
   gap: 15px;
   margin: 10px 0;
-  color: #666;
+  color: var(--text-secondary, #666);
   font-size: 0.9rem;
   flex-wrap: wrap;
 }
@@ -199,7 +200,7 @@
   flex-direction: column;
   gap: 2px;
   margin: 15px 0;
-  color: #555;
+  color: var(--text-secondary, #555);
   font-size: 0.85rem;
 }
 
@@ -226,11 +227,11 @@
   align-items: center;
   margin-top: auto;
   padding-top: 15px;
-  border-top: 1px solid #eee;
+  border-top: 1px solid var(--border-color, #eee);
 }
 
 .rating {
-  color: #fbbf24;
+  color: var(--star-color, #fbbf24);
   display: flex;
   align-items: center;
   gap: 5px;
@@ -245,7 +246,7 @@
 
 .view-details {
   background: var(--primary-color, #1a73e8);
-  color: white;
+  color: var(--button-text, white);
   border: none;
   padding: 8px 16px;
   border-radius: 8px;
@@ -258,7 +259,7 @@
 }
 
 .view-details:hover {
-  background: var(--secondary-color, #0d47a1);
+  background: var(--primary-hover, #0d47a1);
   gap: 12px;
 }
 
@@ -275,14 +276,15 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  color: var(--text-primary, #333);
 }
 
 /* Empty state */
 .package-grid-empty {
   text-align: center;
   padding: 40px;
-  color: #666;
-  background: rgba(0, 0, 0, 0.03);
+  color: var(--text-secondary, #666);
+  background: var(--empty-state-bg, rgba(0, 0, 0, 0.03));
   border-radius: 15px;
   margin: 20px auto;
   max-width: 600px;
@@ -290,7 +292,7 @@
 
 .package-grid-empty i {
   font-size: 3rem;
-  color: #ccc;
+  color: var(--icon-muted, #ccc);
   margin-bottom: 15px;
 }
 
