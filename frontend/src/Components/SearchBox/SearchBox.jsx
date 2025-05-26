@@ -20,16 +20,6 @@ const SearchBox = ({ onSearch }) => {
               onSearch(e.target.value);
             }}
           />
-          <select 
-            className="search-category"
-            onChange={(e) => setCategory(e.target.value)}
-          >
-            <option value="">All Categories</option>
-            <option value="adventure">Adventure</option>
-            <option value="cultural">Cultural</option>
-            <option value="beach">Beach</option>
-            <option value="mountain">Mountain</option>
-          </select>
           <button className="search-button" onClick={handleSearch}>Search</button>
         </div>
   );

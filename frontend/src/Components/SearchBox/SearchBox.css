@@ -1,10 +1,9 @@
 .search-trigger {
   max-width: 600px;
   margin: 0 auto;
-  background: #ffffff;
   border: 1px solid #e1e4e8;
   border-radius: 12px;
-  padding: 12px 20px;
+  padding: 8px 8px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -22,7 +21,6 @@
 .search-placeholder {
   display: flex;
   align-items: center;
-  gap: 12px;
   color: #57606a;
 }
 

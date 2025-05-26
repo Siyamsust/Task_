@@ -1,38 +1,46 @@
-/* Theme variables (already defined in the root CSS) */
 :root {
-  /* Light theme */
-  --bg-homepage: #f8fafc;
-  --text-heading: #1e293b;
-  --text-light: white;
-  --footer-bg: #1e293b;
+  /* Light theme colors */
+  --text-primary: #333333;
+  --text-secondary: #666666;
+  --text-muted: #888888;
+  --background-primary: #ffffff;
+  --background-secondary: #f8f9fa;
+  --card-bg: #ffffff;
+  --border-color: #e2e8f0;
+  --label-color: #232a2a;
+  --bg-light: #f2f4f6;
+  --text-heading: #222222;
+  --text-light: #ffffff;
+  --footer-bg: #e2e8f0;
 }
 
 [data-theme='dark'] {
-  /* Dark theme */
-  --bg-homepage:  #302e2e;
-  --text-heading: #e2e8f0;
-  --text-light: #f8fafc;
-  --footer-bg: #0f172a;
+  /* Dark theme colors */
+  --text-primary: #f0f0f0;
+  --text-secondary: #cccccc;
+  --text-muted: #a0aec0;
+  --background-primary: #1a1a1a;
+  --background-secondary: #1a1a1a;
+  --card-bg: #2d3748;
+  --border-color: #4a5568;
+  --label-color: #dbe8e8;
+  --bg-light: #546573;
+  --text-heading: #ffffff;
+  --text-light: #e0e0e0;
+  --footer-bg: #2d3748;
 }
 
 /* General Page Styling */
 .homepage {
   min-height: 100vh;
-  background-color: var(--bg-homepage);
+  background-color: var(--background-primary);
+  color: var(--text-primary);
   display: flex;
   flex-direction: column;
   align-items: center;
-  overflow-x: hidden; /* Prevent horizontal scroll on homepage */
+  overflow-x: hidden;
   width: 100%;
-  transition: background-color 0.3s ease;
-}
-
-/* Popular Tour Packages Section */
-.popular-section {
-  width: 100%;
-  max-width: 1200px;
-  padding: 40px 0; /* Remove horizontal padding */
-  margin: 0 auto;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* Hero Section */
@@ -43,13 +51,21 @@
   align-items: center;
   justify-content: center;
   color: var(--text-light);
+  background-color: var(--background-secondary);
   padding: 50px 20px;
   text-align: center;
   object-fit: cover;
-  transition: color 0.3s ease;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Popular Tour Packages */
+/* Popular Tour Packages Section */
+.popular-section {
+  width: 100%;
+  max-width: 1400px;
+  padding: 40px 0;
+  margin: 0 auto;
+}
+
 .popular-section h2 {
   font-size: 2rem;
   margin: 20px;
@@ -61,7 +77,7 @@
 /* Categories Section */
 .categories-section {
   width: 100%;
-  max-width: 1200px;
+  max-width: 1400px;
   padding: 40px 20px;
   margin-top: 30px;
 }
@@ -77,7 +93,7 @@
 /* Weather-Based Recommendations */
 .weather-section {
   width: 100%;
-  max-width: 1200px;
+  max-width: 1400px;
   padding: 40px 20px;
   margin-top: 30px;
 }
@@ -93,8 +109,8 @@
 /* Footer */
 .footer {
   width: 100%;
-  background: var(--footer-bg);
-  color: var(--text-light);
+  background:  #2d3748;
+  color: white;
   padding: 30px 20px;
   text-align: center;
   margin-top: 40px;
