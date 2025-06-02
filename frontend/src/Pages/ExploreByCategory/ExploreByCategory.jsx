@@ -12,6 +12,17 @@ const ExploreByCategory = () => {
   
   const [activeCategory, setActiveCategory] = useState(category || 'all');
   const [filteredTours, setFilteredTours] = useState([]);
+ const handleExploreNow = async (tourId) => {
+    try {
+      await fetch(`http://localhost:4000/api/tours/${tourId}/increment-view`, {
+        method: 'PATCH',
+      });
+      navigate(`/package/${tourId}`);
+    } catch (error) {
+      console.error('Failed to increment view count:', error);
+      navigate(`/package/${tourId}`); // Navigate anyway
+    }
+  };
 
   // Fetch tours when component mounts
   useEffect(() => {
@@ -89,10 +100,69 @@ const ExploreByCategory = () => {
       {loading ? (
         <div className="loading">Loading...</div>
       ) : (
-        <PackageGrid packages={filteredTours} />
+        <PackageGrid2 packages={filteredTours} onExplore={handleExploreNow} />
       )}
     </div>
   );
 };
 
 export default ExploreByCategory;
+// PackageGrid.jsx
+const TourCard = ({ tour, onExplore }) => {
+  // Average rating fallback if you want to pass it as prop or compute here
+  const averageRating = tour.averageRating ?? tour.popularity?.rating?.average ?? 0;
+
+  // Convert packageCategories array or string into display string
+  let categoriesDisplay = 'General';
+  if (Array.isArray(tour.packageCategories)) {
+    categoriesDisplay = tour.packageCategories.join(', ');
+  } else if (typeof tour.packageCategories === 'string') {
+    categoriesDisplay = tour.packageCategories;
+  }
+
+  return (
+    <div className="tour-card">
+      <div className="tour-image">
+        <img
+          src={tour.images && tour.images.length > 0 ? `http://localhost:4000/${tour.images[0]}` : 'https://picsum.photos/300/200'}
+          alt={tour.name}
+          onError={(e) => { e.target.src = 'https://picsum.photos/300/200'; }}
+        />
+      </div>
+      <div className="tour-info">
+        <h3>{tour.name || 'Untitled Tour'}</h3>
+        <div className="tour-details">
+          <span>
+            Price: <strong>${tour.price ?? 'N/A'}</strong>
+          </span>
+          <span>
+            <i className="fas fa-tag"></i> {categoriesDisplay}
+          </span>
+          <span>
+            <i className="fas fa-star"></i>{' '}
+            {averageRating ? `${averageRating.toFixed(1)} / 5` : 'No Rating'}
+          </span>
+        </div>
+        <div className="tour-actions">
+          <button onClick={() => onExplore && onExplore(tour._id)} className="view-details-btn">
+            Explore Now <i className="fas fa-arrow-right"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const PackageGrid2 = ({ packages, onExplore }) => {
+  return (
+    <div className="tour-row">
+      {packages.length === 0 && <p className="no-tours-message">No tours found.</p>}
+      {packages.map(tour => (
+        <TourCard key={tour._id} tour={tour} onExplore={onExplore} />
+      ))}
+    </div>
+  );
+};
+
+
+
