@@ -33,29 +33,40 @@
 /* General Page Styling */
 .homepage {
   min-height: 100vh;
-  background-color: var(--background-primary);
+  /* REMOVED: background-color: var(--background-primary); */
   color: var(--text-primary);
   display: flex;
   flex-direction: column;
   align-items: center;
   overflow-x: hidden;
   width: 100%;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  /* MODIFIED: Only transition color, not background */
+  transition: color 0.3s ease;
 }
 
-/* Hero Section */
+/* Hero Section - FIXED */
 .hero-section {
-  width: 100%;
-  min-height: 60vh;
+  margin-top: 20px;
+  width: 90%;
+  min-height: 30vh;
+  max-height: 80vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--text-light);
-  background-color: var(--background-secondary);
-  padding: 50px 20px;
+  padding: 120px 20px;
   text-align: center;
-  object-fit: cover;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  /* REMOVED: object-fit: cover; - This was breaking the background */
+  /* REMOVED: transition: background-color 0.3s ease, color 0.3s ease; */
+  /* Allow the HeroSection component to handle its own background */
+  position: relative;
+  border-radius: 16px;
+}
+
+/* Add background for sections after hero */
+.popular-section,
+.categories-section,
+.weather-section {
+  transition: background-color 0.3s ease;
 }
 
 /* Popular Tour Packages Section */
@@ -109,7 +120,7 @@
 /* Footer */
 .footer {
   width: 100%;
-  background:  #2d3748;
+  background: #2d3748;
   color: white;
   padding: 30px 20px;
   text-align: center;
@@ -125,7 +136,7 @@
     font-size: 1.8rem;
     text-align: center;
   }
-
+  
   .hero-section {
     padding: 30px 10px;
   }
