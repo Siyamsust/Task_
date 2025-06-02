@@ -1,84 +1,150 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import './MyTrips.css';
+import { useAuth } from '../../Context/AuthContext';
 
 const MyTrips = () => {
+  const [bookings, setBookings] = useState([]);
   const [filter, setFilter] = useState('all');
-  const trips = [
-    {
-      id: 1,
-      name: 'Swiss Alps Trek',
-      date: '2024-03-15',
-      status: 'Upcoming',
-      image: 'https://images.unsplash.com/photo-1531973819741-e27a5ae2cc7b',
-      location: 'Switzerland',
-      price: 1299
-    },
-    {
-      id: 2,
-      name: 'Beach Paradise',
-      date: '2023-12-10',
-      status: 'Completed',
-      image: 'https://images.unsplash.com/photo-1520454974749-611b7248ffdb',
-      location: 'Maldives',
-      price: 2499
-    }
-  ];
+  const [error, setError] = useState('');
+  const { user } = useAuth();
 
-  const filteredTrips = filter === 'all' 
-    ? trips 
-    : trips.filter(trip => trip.status.toLowerCase() === filter);
+  useEffect(() => {
+    const fetchBookings = async () => {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        setError('Please log in to view your trips.');
+        return;
+      }
+
+      if (!user) {
+        setError('User data is missing.');
+        return;
+      }
+
+      try {
+        const response = await axios.get('http://localhost:4000/api/bookings', {
+          headers: { 'Authorization': `Bearer ${token}` },
+          params: { email: user.user.email }
+        });
+
+        console.log('Bookings API response:', response.data);
+
+        // The API returns {success: true, upcoming: Array, completed: Array}
+        if (response.data.success) {
+          const allBookings = [
+            ...(response.data.upcoming || []),
+            ...(response.data.completed || [])
+          ];
+          setBookings(allBookings);
+          setError('');
+        } else {
+          setError('No bookings found.');
+          setBookings([]);
+        }
+      } catch (error) {
+        setError('Failed to fetch trips.');
+        setBookings([]);
+        console.error(error);
+      }
+    };
+
+    fetchBookings();
+  }, [user]);
+
+  // Filter bookings based on status
+ const filteredTrips = bookings.filter(trip => {
+  if (filter === 'all') return true;
+  if (!trip.startDate) return false;
+
+  const tripDate = new Date(trip.startDate);
+  const today = new Date();
+
+  // Set both to midnight for clean date comparison
+  tripDate.setHours(0, 0, 0, 0);
+  today.setHours(0, 0, 0, 0);
+
+  if (filter === 'upcoming') {
+    return tripDate.getTime() >= today.getTime();
+  }
+
+  if (filter === 'completed') {
+    return tripDate.getTime() < today.getTime();
+  }
+  console.log({
+  trip: trip.name,
+  tripDate: trip.startDate,
+  tripTimestamp: tripDate.getTime(),
+  todayTimestamp: today.getTime(),
+  result: tripDate.getTime() >= today.getTime()
+});
+
+
+  return true;
+});
+
+
+  if (error) {
+    return <div className="error-message">{error}</div>;
+  }
 
   return (
     <div className="my-trips">
       <div className="trips-header">
         <h3>My Trips</h3>
         <div className="trip-filters">
-          <button 
-            className={filter === 'all' ? 'active' : ''} 
-            onClick={() => setFilter('all')}
-          >
-            All
-          </button>
-          <button 
-            className={filter === 'upcoming' ? 'active' : ''} 
-            onClick={() => setFilter('upcoming')}
-          >
-            Upcoming
-          </button>
-          <button 
-            className={filter === 'completed' ? 'active' : ''} 
-            onClick={() => setFilter('completed')}
-          >
-            Completed
-          </button>
+          {['all', 'upcoming', 'completed'].map(f => (
+            <button
+              key={f}
+              className={filter === f ? 'active' : ''}
+              onClick={() => setFilter(f)}
+            >
+              {f.charAt(0).toUpperCase() + f.slice(1)}
+            </button>
+          ))}
         </div>
       </div>
 
-      <div className="trips-grid">
-        {filteredTrips.map(trip => (
-          <div key={trip.id} className="trip-card">
-            <div className="trip-image">
-              <img src={trip.image} alt={trip.name} />
-              <span className={`status ${trip.status.toLowerCase()}`}>
-                {trip.status}
-              </span>
-            </div>
-            <div className="trip-details">
-              <h4>{trip.name}</h4>
-              <div className="trip-info">
-                <span><i className="fas fa-map-marker-alt"></i> {trip.location}</span>
-                <span><i className="fas fa-calendar"></i> {new Date(trip.date).toLocaleDateString()}</span>
+      {filteredTrips.length === 0 ? (
+        <div className="no-trips">
+          <p>No trips found.</p>
+        </div>
+      ) : (
+        <div className="trips-grid">
+          {filteredTrips.map((trip, index) => (
+            <div key={trip._id || index} className="trip-card">
+              <div className="trip-image">
+                <img
+                  src={`http://localhost:4000/${trip.images?.[0]}`}
+                  alt={trip.name || 'Trip'}
+                />
+                <span className={`status ${trip.status?.toLowerCase() || 'pending'}`}>
+                  {trip.status || 'Pending'}
+                </span>
               </div>
-              <div className="trip-footer">
-                <span className="price">${trip.price}</span>
-                <button className="view-details">View Details</button>
+              <div className="trip-details">
+                <h4>{trip.name || 'Unknown Tour'}</h4>
+                <div className="trip-info">
+                  <span>
+                    <i className="fas fa-map-marker-alt"></i>
+                    {trip.duration?.days || 0} Days, {trip.duration?.nights || 0} Nights
+                  </span>
+                  <span>
+                    <i className="fas fa-calendar"></i>
+                    {trip.startDate ? new Date(trip.startDate).toLocaleDateString() : 'Date TBD'}
+                  </span>
+                </div>
+                <div className="trip-footer">
+                  <span className="price">${trip.price || 0}</span>
+                  <button className="view-details">View Details</button>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
 
-export default MyTrips; 
+export default MyTrips;

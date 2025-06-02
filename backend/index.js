@@ -12,6 +12,7 @@ const Message = require('./models/Message');
 const chatRoutes = require('./routes/chatRoutes');
 const authRoutes = require('./routes/authRoutes');
 const wishlistRoutes = require('./routes/wishlistRoutes');
+const bookingRoutes = require('./routes/bookingRoutes');
 const errorHandler = require('./middleware/errorHandler');
 const toursRoutes = require('./routes/tours');
 const tourController = require('./controllers/tour');
@@ -38,6 +39,12 @@ app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 app.use('/api/auth', authRoutes);
 app.use('/api/chats', chatRoutes);
 app.use('/api/wishlist', wishlistRoutes);
+
+
+app.use('/api/bookings', bookingRoutes);
+
+
+
 app.use('/reviews', reviewRoutes);
 // Socket.IO setup
 const io = socketIO(server, {

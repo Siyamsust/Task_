@@ -3,9 +3,11 @@ import { Check, CreditCard, Calendar, Mail, Phone, User, MapPin } from 'lucide-r
 import './Checkout.css';
 import { ToursContext } from '../../Context/ToursContext';
 import { useParams } from 'react-router-dom';
+import { useAuth } from '../../Context/AuthContext';
 const Checkout = () => {
   const [step, setStep] = useState(1); // 1 = Contact Info, 2 = Payment
   const { tourId } = useParams();
+    const { user } = useAuth(); 
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -43,12 +45,33 @@ const Checkout = () => {
     window.scrollTo(0, 0);
   };
 
- const handlePaymentSubmit = async (e) => {
+const handlePaymentSubmit = async (e) => {
   e.preventDefault();
-  try {
-    // Booking logic here (e.g., form validation, payment processing)
 
-    // ✅ Increment the booking count
+  try {
+    // ✅ Save booking after successful payment
+    const token = localStorage.getItem('token');
+
+    const bookingResponse = await fetch('http://localhost:4000/api/bookings/add', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        email: user?.user?.email,
+        tourId: tourId,
+        startDate: new Date().toISOString()  // or a selected startDate if available
+      })
+    });
+
+    const bookingData = await bookingResponse.json();
+
+    if (!bookingResponse.ok) {
+      throw new Error(bookingData.message || 'Failed to save booking');
+    }
+
+    // ✅ Increment the booking count (optional)
     await fetch(`http://localhost:4000/api/tours/${tourId}/increment-booking`, {
       method: 'PATCH'
     });
@@ -59,6 +82,7 @@ const Checkout = () => {
     alert("Failed to confirm booking. Please try again.");
   }
 };
+
 
 
   return (
