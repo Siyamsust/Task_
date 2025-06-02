@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { Check, CreditCard, Calendar, Mail, Phone, User, MapPin } from 'lucide-react';
 import './Checkout.css';
-
+import { ToursContext } from '../../Context/ToursContext';
+import { useParams } from 'react-router-dom';
 const Checkout = () => {
   const [step, setStep] = useState(1); // 1 = Contact Info, 2 = Payment
+  const { tourId } = useParams();
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -41,10 +43,23 @@ const Checkout = () => {
     window.scrollTo(0, 0);
   };
 
-  const handlePaymentSubmit = (e) => {
-    e.preventDefault();
+ const handlePaymentSubmit = async (e) => {
+  e.preventDefault();
+  try {
+    // Booking logic here (e.g., form validation, payment processing)
+
+    // ✅ Increment the booking count
+    await fetch(`http://localhost:4000/api/tours/${tourId}/increment-booking`, {
+      method: 'PATCH'
+    });
+
     alert("Payment processed successfully! Your booking is confirmed.");
-  };
+  } catch (err) {
+    console.error("Error confirming booking:", err);
+    alert("Failed to confirm booking. Please try again.");
+  }
+};
+
 
   return (
     <div className="checkout-container">

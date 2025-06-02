@@ -130,7 +130,8 @@ app.use('/api/admin', adminAuthRoutes);
 //     });
 //   }
 // });
-
+app.patch('/api/tours/:id/increment-view', tourController.incrementViewCount);
+app.patch('/api/tours/:id/increment-booking', tourController.incrementBookingCount);
 
 
 

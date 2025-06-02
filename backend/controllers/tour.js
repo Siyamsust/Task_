@@ -373,3 +373,56 @@ exports.getPendingTours = async (req, res) => {
       tours
     });
   };
+
+  // Kaoser
+
+  // Increment views count
+// In controllers/tour.js
+// Increment views count
+exports.incrementViewCount = async (req, res) => {
+  try {
+    const tour = await Tour.findByIdAndUpdate(
+      req.params.id,
+      { $inc: { 'popularity.views': 1 } },  // ✅ Correct nested path
+      { new: true }
+    );
+
+    if (!tour) {
+      return res.status(404).json({ success: false, error: 'Tour not found' });
+    }
+
+    res.json({
+      success: true,
+      message: 'View count incremented',
+      views: tour.popularity.views  // ✅ Correct path for response
+    });
+  } catch (error) {
+    console.error('Increment error:', error);
+    res.status(500).json({ success: false, error: 'Failed to increment view count' });
+  }
+};
+//
+exports.incrementBookingCount = async (req, res) => {
+  try {
+    const tour = await Tour.findByIdAndUpdate(
+      req.params.id,
+      { $inc: { 'popularity.bookings': 1 } },
+      { new: true }
+    );
+
+    if (!tour) {
+      return res.status(404).json({ success: false, error: 'Tour not found' });
+    }
+
+    res.json({
+      success: true,
+      message: 'Booking count incremented',
+      bookings: tour.popularity.bookings
+    });
+  } catch (error) {
+    console.error('Increment booking error:', error);
+    res.status(500).json({ success: false, error: 'Failed to increment booking count' });
+  }
+};
+
+

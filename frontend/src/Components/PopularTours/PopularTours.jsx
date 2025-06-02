@@ -10,6 +10,18 @@ const PopularTours = () => {
   const handleViewAll = () => {
     navigate('/populartours');
   };
+  const handleExploreNow = async (tourId) => {
+    try {
+      await fetch(`http://localhost:4000/api/tours/${tourId}/increment-view`, {
+        method: 'PATCH',
+      });
+      navigate(`/package/${tourId}`);
+    } catch (error) {
+      console.error('Failed to increment view count:', error);
+      navigate(`/package/${tourId}`); // Navigate anyway
+    }
+  };
+
 
   const handleAddToWishlist = (tourId) => {
     // Placeholder function for adding to wishlist
@@ -71,9 +83,10 @@ const PopularTours = () => {
                   </span>
                 </div>
                 <div className="tour-actions">
-                  <Link to={`/package/${tour._id}`} className="view-details-btn">
+                  <Link to="#" onClick={() => handleExploreNow(tour._id)} className="view-details-btn">
                     Explore Now <i className="fas fa-arrow-right"></i>
                   </Link>
+
                   {/* <button
                     className="add-wishlist-btn"
                     onClick={() => handleAddToWishlist(tour._id)}
