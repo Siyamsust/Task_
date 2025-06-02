@@ -1,7 +1,7 @@
 /* PopularPackages.css */
 :root {
   /* Light theme */
-  --background-primary: #f8fafc;
+  --background-primary:linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
   --background-secondary: #f8f9fa;
   --card-bg: white;
   --text-primary: #333333;
@@ -32,7 +32,7 @@
 }
 .popular-packages {
   min-height: 100vh;
-  background-color: var(--background-primary, #f8fafc);
+  background-color: var(--background-primary,linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%));
   transition: background-color 0.3s ease;
 }
 
@@ -157,6 +157,7 @@
 
 /* Loading Spinner */
 .loading-spinner {
+  
   text-align: center;
   padding: 40px;
   color: var(--text-secondary, #666);

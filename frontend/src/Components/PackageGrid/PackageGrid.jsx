@@ -1,27 +1,87 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState, useContext } from 'react';
+import { useNavigate , Link} from 'react-router-dom';
 import './PackageGrid.css';
-
+import { ToursContext } from '../../Context/ToursContext';
 const PackageGrid = ({ packages }) => {
   const navigate = useNavigate();
-
+  const { tours, loading, error } = useContext(ToursContext);
+  const [averageRatings, setAverageRatings] = useState({});
+  const [sortedTours, setSortedTours] = useState([]);
   // Helper functions
   const getDestinations = (destinations) => {
     if (!destinations || destinations.length === 0) return 'Various destinations';
     return destinations.map(dest => dest.name).join(', ');
   };
   const handleExploreNow = async (tourId) => {
-  try {
-    await fetch(`http://localhost:4000/api/tours/${tourId}/increment-view`, {
-      method: 'PATCH',
-    });
-    navigate(`/package/${tourId}`);
-  } catch (error) {
-    console.error('Failed to increment view count:', error);
-    navigate(`/package/${tourId}`); // Navigate anyway
-  }
-};
+    try {
+      await fetch(`http://localhost:4000/api/tours/${tourId}/increment-view`, {
+        method: 'PATCH',
+      });
+      navigate(`/package/${tourId}`);
+    } catch (error) {
+      console.error('Failed to increment view count:', error);
+      navigate(`/package/${tourId}`); // Navigate anyway
+    }
+  };
+  useEffect(() => {
+    const computePopularityAndSort = async () => {
+      try {
+        // Fetch reviews for rating fallback (optional)
+        const res = await fetch('http://localhost:4000/reviews');
+        const reviews = await res.json();
 
+        const ratingMap = {};
+        const countMap = {};
+
+        reviews.forEach(review => {
+          const tourId = review.tourId;
+          if (!ratingMap[tourId]) {
+            ratingMap[tourId] = 0;
+            countMap[tourId] = 0;
+          }
+          ratingMap[tourId] += review.rating;
+          countMap[tourId] += 1;
+        });
+
+        const averages = {};
+        for (const id in ratingMap) {
+          averages[id] = ratingMap[id] / countMap[id];
+        }
+
+        setAverageRatings(averages);
+
+        // Compute popularity score
+        const scored = [...tours].map(tour => {
+          const {
+            bookings = 0,
+            views = 0,
+            wishlistCount = 0,
+            rating = {}
+          } = tour.popularity || {};
+
+          const averageRating = rating.average ?? averages[tour._id] ?? 0;
+          const popularityScore =
+            (bookings * 0.5) +
+            (averageRating * 10 * 0.2) +
+            (views * 0.2) +
+            (wishlistCount * 0.1);
+
+          return { ...tour, popularityScore };
+        });
+
+        // Sort by popularityScore descending
+        const sorted = scored.sort((a, b) => b.popularityScore - a.popularityScore);
+
+        setSortedTours(sorted);
+      } catch (err) {
+        console.error("Error computing popularity scores:", err);
+      }
+    };
+
+    if (tours.length > 0) {
+      computePopularityAndSort();
+    }
+  }, [tours]);
 
   const getTourType = (tourType) => {
     if (!tourType) return 'Standard Tour';
@@ -52,95 +112,42 @@ const PackageGrid = ({ packages }) => {
 
   return (
     <div className="package-grid">
-      {packages.map(pkg => (
-        <div key={pkg._id} className="package-card">
-          <div className="package-image">
-            <img
-              src={`http://localhost:4000/${pkg.images[0]}`}
-              alt={pkg.name}
-              loading="lazy"
-            />
-            <div className="package-price">From ${pkg.price}</div>
-
-            {pkg.availableSeats !== undefined && pkg.availableSeats < 5 && pkg.availableSeats > 0 && (
-              <div className="limited-seats">Only {pkg.availableSeats} seats left!</div>
-            )}
-
-            {pkg.tourGuide && (
-              <div className="tour-guide-badge">
-                <i className="fas fa-user-tie"></i> Guide Included
+      {sortedTours.map(tour => {
+            const averageRating = averageRatings[tour._id];
+            return (
+              <div key={tour._id} className="tour-card">
+                <div className="tour-image">
+                  <img
+                    src={`http://localhost:4000/${tour.images[0]}`}
+                    alt={tour.name}
+                    onError={(e) => {
+                      e.target.src = 'https://picsum.photos/300/200';
+                    }}
+                  />
+                </div>
+                <div className="tour-info">
+                  <h3>{tour.name || 'Untitled Tour'}</h3>
+                  <div className="tour-details">
+                    <span>
+                      Price: <strong>${tour.price || 'N/A'}</strong>
+                    </span>
+                    <span>
+                      <i className="fas fa-tag"></i> {tour.packageCategories || 'General'}
+                    </span>
+                    <span>
+                      <i className="fas fa-star"></i>{' '}
+                      {averageRating ? `${averageRating} / 5` : 'No Rating'}
+                    </span>
+                  </div>
+                  <div className="tour-actions">
+                    <Link to="#" onClick={() => handleExploreNow(tour._id)} className="view-details-btn">
+                      Explore Now <i className="fas fa-arrow-right"></i>
+                    </Link>
+                  </div>
+                </div>
               </div>
-            )}
-          </div>
-
-          <div className="package-content">
-            <h3 className="package-title">{pkg.name}</h3>
-
-            <div className="package-info">
-              <span className="info-item">
-                <i className="fas fa-map-marker-alt"></i>
-                {getDestinations(pkg.destinations)}
-              </span>
-              <span className="info-item">
-                <i className="fas fa-clock"></i>
-                {pkg.duration.days}d/{pkg.duration.nights}n
-              </span>
-              <span className="info-item">
-                <i className="fas fa-users"></i>
-                {getTourType(pkg.tourType)}
-              </span>
-            </div>
-
-            <div className="package-details">
-              {/* {pkg.transportation && (
-                <div className="detail-item">
-                  <i className="fas fa-car"></i> 
-                  <span>{pkg.transportation.type}</span>
-                </div>
-              )} */}
-
-              {/* <div className="detail-item">
-                <i className="fas fa-utensils"></i> 
-                <span>{formatMeals(pkg.meals)}</span>
-              </div> */}
-
-              {/* {pkg.startDate && pkg.endDate && (
-                <div className="detail-item">
-                  <i className="fas fa-calendar-alt"></i>
-                  <span>
-                    {new Date(pkg.startDate).toLocaleDateString('en-US', {
-                      day: 'numeric',
-                      month: 'short'
-                    })} - {new Date(pkg.endDate).toLocaleDateString('en-US', {
-                      day: 'numeric',
-                      month: 'short',
-                      year: 'numeric'
-                    })}
-                  </span>
-                </div>
-              )} */}
-            </div>
-
-            <div className="package-footer">
-              {pkg.rating && (
-                <div className="rating">
-                  <i className="fas fa-star"></i>
-                  <span>{pkg.rating}</span>
-                </div>
-              )}
-
-              <button
-                className="view-details"
-                onClick={() => handleExploreNow(pkg._id)}
-                aria-label={`View details for ${pkg.name}`}
-              >
-                View Details <i className="fas fa-arrow-right"></i>
-              </button>
-
-            </div>
-          </div>
-        </div>
-      ))}
+            );
+          })}
     </div>
   );
 };

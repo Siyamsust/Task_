@@ -63,7 +63,7 @@ a {
 }
 :root {
   /* Light theme (default) */
-  --background-primary: #ffffff;
+  --background-primary: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
   --background-secondary: #f8f9fa;
   --background-tertiary: #f1f3f5;
   
