@@ -42,7 +42,7 @@ const PackageInfo = ({ tour, companyId }) => {
             </div>
           </div>
 
-          <div className="info-section">
+          <div className="info-section" >
             <h2>Special Notes</h2>
             <p className="special-note">{tour.specialNote || "No special notes available."}</p>
           </div>

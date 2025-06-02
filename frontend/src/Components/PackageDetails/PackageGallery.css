@@ -1,4 +1,73 @@
-/* PackageDetails.css */
+/* CSS Variables for Light and Dark Themes */
+:root {
+  /* Light theme colors */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8f9fa;
+  --bg-tertiary: #f5f5f5;
+  --text-primary: #333333;
+  --text-secondary: #666666;
+  --text-tertiary: #777777;
+  --border-color: #dddddd;
+  --border-color-light: #eeeeee;
+  --shadow-light: rgba(0, 0, 0, 0.08);
+  --shadow-medium: rgba(0, 0, 0, 0.1);
+  --shadow-heavy: rgba(0, 0, 0, 0.15);
+  --accent-primary: #3498db;
+  --accent-secondary: #2980b9;
+  --accent-warning: #e67e22;
+  --accent-error: #e74c3c;
+  --overlay-light: rgba(255, 255, 255, 0.7);
+  --overlay-medium: rgba(255, 255, 255, 0.9);
+  --scrollbar-thumb: #cccccc;
+}
+
+/* Dark theme colors */
+[data-theme="dark"] {
+  --bg-primary: #1a1a1a;
+  --bg-secondary: #2d2d2d;
+  --bg-tertiary: #363636;
+  --text-primary: #ffffff;
+  --text-secondary: #cccccc;
+  --text-tertiary: #aaaaaa;
+  --border-color: #404040;
+  --border-color-light: #4a4a4a;
+  --shadow-light: rgba(0, 0, 0, 0.3);
+  --shadow-medium: rgba(0, 0, 0, 0.4);
+  --shadow-heavy: rgba(0, 0, 0, 0.6);
+  --accent-primary: #5dade2;
+  --accent-secondary: #3498db;
+  --accent-warning: #f39c12;
+  --accent-error: #e74c3c;
+  --overlay-light: rgba(0, 0, 0, 0.7);
+  --overlay-medium: rgba(0, 0, 0, 0.9);
+  --scrollbar-thumb: #555555;
+}
+
+/* Auto dark theme based on system preference */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-primary: #1a1a1a;
+    --bg-secondary: #2d2d2d;
+    --bg-tertiary: #363636;
+    --text-primary: #ffffff;
+    --text-secondary: #cccccc;
+    --text-tertiary: #aaaaaa;
+    --border-color: #404040;
+    --border-color-light: #4a4a4a;
+    --shadow-light: rgba(0, 0, 0, 0.3);
+    --shadow-medium: rgba(0, 0, 0, 0.4);
+    --shadow-heavy: rgba(0, 0, 0, 0.6);
+    --accent-primary: #5dade2;
+    --accent-secondary: #3498db;
+    --accent-warning: #f39c12;
+    --accent-error: #e74c3c;
+    --overlay-light: rgba(0, 0, 0, 0.7);
+    --overlay-medium: rgba(0, 0, 0, 0.9);
+    --scrollbar-thumb: #555555;
+  }
+}
+
+/* PackageDetails.css - Updated with dark theme */
 .package-details-container {
   max-width: 1200px;
   margin: 0 auto;
@@ -6,6 +75,9 @@
   display: grid;
   grid-template-columns: 1fr;
   gap: 2rem;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .loading-container {
@@ -14,15 +86,15 @@
   align-items: center;
   justify-content: center;
   height: 50vh;
-  color: #666;
+  color: var(--text-secondary);
 }
 
 .loading-spinner {
   width: 50px;
   height: 50px;
-  border: 4px solid rgba(0, 0, 0, 0.1);
+  border: 4px solid var(--border-color);
   border-radius: 50%;
-  border-top: 4px solid #3498db;
+  border-top: 4px solid var(--accent-primary);
   animation: spin 1s linear infinite;
   margin-bottom: 1rem;
 }
@@ -38,7 +110,7 @@
   align-items: center;
   justify-content: center;
   height: 50vh;
-  color: #e74c3c;
+  color: var(--accent-error);
   text-align: center;
 }
 
@@ -49,9 +121,10 @@
 
 .gallery-section {
   grid-column: 1 / -1;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 12px var(--shadow-light);
   border-radius: 12px;
   overflow: hidden;
+  background-color: var(--bg-primary);
 }
 
 .main-content-section {
@@ -80,21 +153,22 @@
   }
 }
 
-/* PackageGallery.css - With fixed image sizes */
+/* PackageGallery.css - Updated with dark theme */
 .image-gallery {
   display: flex;
   flex-direction: column;
   gap: 1rem;
   width: 100%;
+  background-color: var(--bg-primary);
 }
 
 .main-image-container {
   position: relative;
   width: 100%;
-  height: 450px; /* Fixed height for main image */
+  height: 450px;
   overflow: hidden;
   border-radius: 8px;
-  background-color: #f5f5f5; /* Background color for image container */
+  background-color: var(--bg-tertiary);
 }
 
 .main-image {
@@ -103,7 +177,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover; /* This will crop the image to fill the container */
+  object-fit: cover;
   transition: opacity 0.3s ease;
 }
 
@@ -111,8 +185,8 @@
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  background-color: rgba(255, 255, 255, 0.7);
-  color: #333;
+  background-color: var(--overlay-light);
+  color: var(--text-primary);
   border: none;
   border-radius: 50%;
   width: 40px;
@@ -121,11 +195,12 @@
   opacity: 0.7;
   transition: opacity 0.3s ease, background-color 0.3s ease;
   z-index: 2;
+  backdrop-filter: blur(10px);
 }
 
 .nav-button:hover {
   opacity: 1;
-  background-color: rgba(255, 255, 255, 0.9);
+  background-color: var(--overlay-medium);
 }
 
 .prev {
@@ -143,7 +218,7 @@
   overflow-x: auto;
   padding-bottom: 10px;
   scrollbar-width: thin;
-  scrollbar-color: #ccc transparent;
+  scrollbar-color: var(--scrollbar-thumb) transparent;
 }
 
 .image-thumbnails::-webkit-scrollbar {
@@ -151,19 +226,23 @@
 }
 
 .image-thumbnails::-webkit-scrollbar-thumb {
-  background-color: #ccc;
+  background-color: var(--scrollbar-thumb);
   border-radius: 6px;
 }
 
+.image-thumbnails::-webkit-scrollbar-track {
+  background-color: var(--bg-secondary);
+}
+
 .thumbnail {
-  width: 120px; /* Fixed width */
-  height: 80px; /* Fixed height */
-  flex-shrink: 0; /* Prevent thumbnails from shrinking */
-  object-fit: cover; /* This will crop the image to fill the container */
+  width: 120px;
+  height: 80px;
+  flex-shrink: 0;
+  object-fit: cover;
   border-radius: 4px;
   cursor: pointer;
   opacity: 0.7;
-  transition: opacity 0.3s ease, transform 0.2s ease;
+  transition: opacity 0.3s ease, transform 0.2s ease, border-color 0.3s ease;
   border: 2px solid transparent;
 }
 
@@ -174,13 +253,13 @@
 
 .thumbnail.active {
   opacity: 1;
-  border-color: #3498db;
+  border-color: var(--accent-primary);
 }
 
 /* For smaller screens */
 @media (max-width: 768px) {
   .main-image-container {
-    height: 300px; /* Smaller fixed height for mobile */
+    height: 300px;
   }
   
   .thumbnail {
@@ -189,24 +268,28 @@
   }
 }
 
-/* BookingCard.css */
+/* BookingCard.css - Updated with dark theme */
 .booking-card {
-  background-color: #fff;
+  background-color: var(--bg-primary);
   border-radius: 12px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 16px var(--shadow-medium);
   padding: 1.5rem;
   position: sticky;
   top: 2rem;
+  border: 1px solid var(--border-color);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
 }
 
 .booking-header {
   margin-bottom: 1.5rem;
+  color: var(--text-primary);
 }
 
 .price-section {
   display: flex;
   align-items: baseline;
   margin-bottom: 1rem;
+  color: var(--text-primary);
 }
 
 .availability {
@@ -214,12 +297,12 @@
   align-items: center;
   gap: 8px;
   font-size: 0.95rem;
-  color: #e67e22;
+  color: var(--accent-warning);
   font-weight: 500;
 }
 
 .availability i {
-  color: #e67e22;
+  color: var(--accent-warning);
 }
 
 .date-info {
@@ -228,8 +311,10 @@
   gap: 12px;
   margin-bottom: 1.5rem;
   padding: 15px;
-  background-color: #f8f9fa;
+  background-color: var(--bg-secondary);
   border-radius: 8px;
+  border: 1px solid var(--border-color-light);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .date-item {
@@ -240,7 +325,7 @@
 
 .date-item i {
   font-size: 1.2rem;
-  color: #3498db;
+  color: var(--accent-primary);
 }
 
 .date-item div {
@@ -250,13 +335,14 @@
 
 .date-item span {
   font-size: 0.8rem;
-  color: #777;
+  color: var(--text-tertiary);
 }
 
 .date-item p {
   font-weight: 500;
   margin: 0;
   padding: 0;
+  color: var(--text-primary);
 }
 
 .booking-actions {
@@ -279,25 +365,53 @@
 }
 
 .book-now {
-  background-color: #3498db;
+  background-color: var(--accent-primary);
   color: white;
 }
 
 .book-now:hover {
-  background-color: #2980b9;
+  background-color: var(--accent-secondary);
+  box-shadow: 0 2px 8px rgba(52, 152, 219, 0.3);
 }
 
 .add-wishlist {
   background-color: transparent;
-  border: 1px solid #ddd !important;
-  color: #555;
+  border: 1px solid var(--border-color) !important;
+  color: var(--text-secondary);
 }
 
 .add-wishlist:hover {
-  background-color: #f8f9fa;
-  border-color: #ccc;
+  background-color: var(--bg-secondary);
+  border-color: var(--border-color-light) !important;
+  color: var(--text-primary);
 }
 
 .booking-actions button i {
   font-size: 1rem;
+}
+
+/* Theme toggle button (optional) */
+.theme-toggle {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  transition: all 0.3s ease;
+  z-index: 1000;
+  box-shadow: 0 2px 8px var(--shadow-light);
+}
+
+.theme-toggle:hover {
+  background-color: var(--bg-tertiary);
+  transform: scale(1.1);
 }

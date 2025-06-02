@@ -1,11 +1,38 @@
 /* BookingCard.css */
+:root {
+  --bg-card: #fff;
+  --text-color: #000;
+  --subtext-color: #777;
+  --highlight-color: #3498db;
+  --availability-color: #e67e22;
+  --bg-light: #f8f9fa;
+  --btn-primary: #2563eb;
+  --btn-primary-hover: #2980b9;
+  --btn-outline-border: #ddd;
+  --btn-outline-hover: #f8f9fa;
+}
+
+[data-theme='dark'] {
+  --bg-card: #1e1e1e;
+  --text-color: #f1f1f1;
+  --subtext-color: #aaa;
+  --highlight-color: #4ea8de;
+  --availability-color: #f39c12;
+  --bg-light: #2c2c2c;
+  --btn-primary: #3b82f6;
+  --btn-primary-hover: #2563eb;
+  --btn-outline-border: #444;
+  --btn-outline-hover: #333;
+}
+
 .booking-card {
-  background-color: #fff;
+  background-color: var(--bg-card);
   border-radius: 12px;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
   padding: 1.5rem;
   position: sticky;
   top: 2rem;
+  color: var(--text-color);
 }
 
 .booking-header {
@@ -23,12 +50,12 @@
   align-items: center;
   gap: 8px;
   font-size: 0.95rem;
-  color: #e67e22;
+  color: var(--availability-color);
   font-weight: 500;
 }
 
 .availability i {
-  color: #e67e22;
+  color: var(--availability-color);
 }
 
 .date-info {
@@ -37,7 +64,7 @@
   gap: 12px;
   margin-bottom: 1.5rem;
   padding: 15px;
-  background-color: #f8f9fa;
+  background-color: var(--bg-light);
   border-radius: 8px;
 }
 
@@ -49,7 +76,7 @@
 
 .date-item i {
   font-size: 1.2rem;
-  color: #3498db;
+  color: var(--highlight-color);
 }
 
 .date-item div {
@@ -59,7 +86,7 @@
 
 .date-item span {
   font-size: 0.8rem;
-  color: #777;
+  color: var(--subtext-color);
 }
 
 .date-item p {
@@ -88,28 +115,23 @@
 }
 
 .book-now {
-  background-color: #3498db;
-  color: white;
-}
-
-.book-now {
-  background: #2563eb;
+  background: var(--btn-primary);
   color: white;
 }
 
 .book-now:hover {
-  background-color: #2980b9;
+  background-color: var(--btn-primary-hover);
 }
 
 .add-wishlist {
   background-color: transparent;
-  border: 1px solid #ddd !important;
-  color: #555;
+  border: 1px solid var(--btn-outline-border) !important;
+  color: var(--text-color);
 }
 
 .add-wishlist:hover {
-  background-color: #f8f9fa;
-  border-color: #ccc;
+  background-color: var(--btn-outline-hover);
+  border-color: var(--btn-outline-border);
 }
 
 .booking-actions button i {

@@ -1,25 +1,431 @@
-/* PackageInfo.css */
+/* CSS Variables for Light and Dark Themes */
+:root {
+  /* Light theme colors */
+  --bg-primary: #ffffff;
+  --bgg-secondary: #f8f9fa;
+  --bg-tertiary: #f5f5f5;
+  --text-primary: #333333;
+  --text-secondary: #666666;
+  --text-tertiary: #777777;
+  --border-color: #dddddd;
+  --border-color-light: #eeeeee;
+  --shadow-light: rgba(0, 0, 0, 0.08);
+  --shadow-medium: rgba(0, 0, 0, 0.1);
+  --shadow-heavy: rgba(0, 0, 0, 0.15);
+  --accent-primary: #3498db;
+  --accent-secondary: #2980b9;
+  --accent-warning: #e67e22;
+  --accent-error: #e74c3c;
+  --overlay-light: rgba(255, 255, 255, 0.7);
+  --overlay-medium: rgba(255, 255, 255, 0.9);
+  --scrollbar-thumb: #cccccc;
+}
+
+/* Dark theme colors */
+[data-theme="dark"] {
+  --bg-primary: #1a1a1a;
+  --bgg-secondary: #40454f;
+  --bg-tertiary: #363636;
+  --text-primary: #ffffff;
+  --text-secondary: #cccccc;
+  --text-tertiary: #aaaaaa;
+  --border-color: #404040;
+  --border-color-light: #4a4a4a;
+  --shadow-light: rgba(0, 0, 0, 0.3);
+  --shadow-medium: rgba(0, 0, 0, 0.4);
+  --shadow-heavy: rgba(0, 0, 0, 0.6);
+  --accent-primary: #5dade2;
+  --accent-secondary: #3498db;
+  --accent-warning: #f39c12;
+  --accent-error: #e74c3c;
+  --overlay-light: rgba(0, 0, 0, 0.7);
+  --overlay-medium: rgba(0, 0, 0, 0.9);
+  --scrollbar-thumb: #555555;
+}
+
+/* Auto dark theme based on system preference */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-primary: #1a1a1a;
+    --bg-secondary: #2d2d2d;
+    --bg-tertiary: #363636;
+    --text-primary: #ffffff;
+    --text-secondary: #cccccc;
+    --text-tertiary: #aaaaaa;
+    --border-color: #404040;
+    --border-color-light: #4a4a4a;
+    --shadow-light: rgba(0, 0, 0, 0.3);
+    --shadow-medium: rgba(0, 0, 0, 0.4);
+    --shadow-heavy: rgba(0, 0, 0, 0.6);
+    --accent-primary: #5dade2;
+    --accent-secondary: #3498db;
+    --accent-warning: #f39c12;
+    --accent-error: #e74c3c;
+    --overlay-light: rgba(0, 0, 0, 0.7);
+    --overlay-medium: rgba(0, 0, 0, 0.9);
+    --scrollbar-thumb: #555555;
+  }
+}
+
+/* PackageDetails.css - Updated with dark theme */
+.package-details-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 50vh;
+  color: var(--text-secondary);
+}
+
+.loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid var(--border-color);
+  border-radius: 50%;
+  border-top: 4px solid var(--accent-primary);
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 50vh;
+  color: var(--accent-error);
+  text-align: center;
+}
+
+.error-container i {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.gallery-section {
+  grid-column: 1 / -1;
+  box-shadow: 0 4px 12px var(--shadow-light);
+  border-radius: 12px;
+  overflow: hidden;
+  background-color: var(--bg-primary);
+}
+
+.main-content-section {
+  grid-column: 1 / -1;
+}
+
+.booking-section {
+  grid-column: 1 / -1;
+}
+
+@media (min-width: 992px) {
+  .package-details-container {
+    grid-template-columns: 2fr 1fr;
+  }
+  
+  .gallery-section {
+    grid-column: 1 / -1;
+  }
+  
+  .main-content-section {
+    grid-column: 1 / 2;
+  }
+  
+  .booking-section {
+    grid-column: 2 / 3;
+  }
+}
+
+/* PackageGallery.css - Updated with dark theme */
+.image-gallery {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+  background-color: var(--bg-primary);
+}
+
+.main-image-container {
+  position: relative;
+  width: 100%;
+  height: 450px;
+  overflow: hidden;
+  border-radius: 8px;
+  background-color: var(--bg-tertiary);
+}
+
+.main-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: opacity 0.3s ease;
+}
+
+.nav-button {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: var(--overlay-light);
+  color: var(--text-primary);
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  opacity: 0.7;
+  transition: opacity 0.3s ease, background-color 0.3s ease;
+  z-index: 2;
+  backdrop-filter: blur(10px);
+}
+
+.nav-button:hover {
+  opacity: 1;
+  background-color: var(--overlay-medium);
+}
+
+.prev {
+  left: 15px;
+}
+
+.next {
+  right: 15px;
+}
+
+.image-thumbnails {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+  overflow-x: auto;
+  padding-bottom: 10px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) transparent;
+}
+
+.image-thumbnails::-webkit-scrollbar {
+  height: 6px;
+}
+
+.image-thumbnails::-webkit-scrollbar-thumb {
+  background-color: var(--scrollbar-thumb);
+  border-radius: 6px;
+}
+
+.image-thumbnails::-webkit-scrollbar-track {
+  background-color: var(--bg-secondary);
+}
+
+.thumbnail {
+  width: 120px;
+  height: 80px;
+  flex-shrink: 0;
+  object-fit: cover;
+  border-radius: 4px;
+  cursor: pointer;
+  opacity: 0.7;
+  transition: opacity 0.3s ease, transform 0.2s ease, border-color 0.3s ease;
+  border: 2px solid transparent;
+}
+
+.thumbnail:hover {
+  opacity: 0.9;
+  transform: translateY(-2px);
+}
+
+.thumbnail.active {
+  opacity: 1;
+  border-color: var(--accent-primary);
+}
+
+/* For smaller screens */
+@media (max-width: 768px) {
+  .main-image-container {
+    height: 300px;
+  }
+  
+  .thumbnail {
+    width: 80px;
+    height: 60px;
+  }
+}
+
+/* BookingCard.css - Updated with dark theme */
+.booking-card {
+  background-color: var(--bg-primary);
+  border-radius: 12px;
+  box-shadow: 0 4px 16px var(--shadow-medium);
+  padding: 1.5rem;
+  position: sticky;
+  top: 2rem;
+  border: 1px solid var(--border-color);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.booking-header {
+  margin-bottom: 1.5rem;
+  color: var(--text-primary);
+}
+
+.price-section {
+  display: flex;
+  align-items: baseline;
+  margin-bottom: 1rem;
+  color: var(--text-primary);
+}
+
+.availability {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.95rem;
+  color: var(--accent-warning);
+  font-weight: 500;
+}
+
+.availability i {
+  color: var(--accent-warning);
+}
+
+.date-info {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 1.5rem;
+  padding: 15px;
+  background-color: var(--bgg-secondary);
+  border-radius: 8px;
+  border: 1px solid var(--border-color-light);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.date-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.date-item i {
+  font-size: 1.2rem;
+  color: var(--accent-primary);
+}
+
+.date-item div {
+  display: flex;
+  flex-direction: column;
+}
+ #special-note {
+  background-color: var(--bgg-secondary);
+  border-left: 4px solid var(--accent-warning);
+  border-radius: 4px;
+  color: var(--text-secondary);
+  font-style: italic;
+  border: 1px solid var(--border-color-light);
+  transition: all 0.3s ease;
+  
+}
+
+.date-item span {
+  font-size: 0.8rem;
+  color: var(--text-tertiary);
+}
+
+.date-item p {
+  font-weight: 500;
+  margin: 0;
+  padding: 0;
+  color: var(--text-primary);
+}
+
+.booking-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.booking-actions button {
+  padding: 12px;
+  border-radius: 6px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+
+.book-now {
+  background-color: var(--accent-primary);
+  color: white;
+}
+
+.book-now:hover {
+  background-color: var(--accent-secondary);
+  box-shadow: 0 2px 8px rgba(52, 152, 219, 0.3);
+}
+
+.add-wishlist {
+  background-color: transparent;
+  border: 1px solid var(--border-color) !important;
+  color: var(--text-secondary);
+}
+
+.add-wishlist:hover {
+  background-color: var(--bgg-secondary);
+  border-color: var(--border-color-light) !important;
+  color: var(--text-primary);
+}
+
+.booking-actions button i {
+  font-size: 1rem;
+}
+
+/* PackageInfo.css - Updated with dark theme */
 .package-info {
   padding: 1rem 0;
+  color: var(--text-primary);
+  transition: color 0.3s ease;
 }
 
 .package-info h1 {
   font-size: 2rem;
   margin: 0 0 0.5rem 0;
-  color: #2c3e50;
+  color: var(--text-primary);
+  transition: color 0.3s ease;
 }
 
 .package-categories {
-  color: #3498db;
+  color: var(--accent-primary);
   font-weight: 500;
   margin-bottom: 1.5rem;
   font-size: 1rem;
+  transition: color 0.3s ease;
 }
 
 .package-content {
   display: grid;
   grid-template-columns: 1fr;
-  gap: .2rem;
+  gap: 2rem;
 }
 
 @media (min-width: 768px) {
@@ -36,8 +442,9 @@
   font-size: 1.4rem;
   margin-bottom: 1rem;
   padding-bottom: 0.5rem;
-  border-bottom: 2px solid #f1f1f1;
-  color: #2c3e50;
+  border-bottom: 2px solid var(--border-color-light);
+  color: var(--text-primary);
+  transition: color 0.3s ease, border-color 0.3s ease;
 }
 
 .overview-details {
@@ -54,30 +461,47 @@
 
 .detail-item {
   padding: 0.8rem;
-  background-color: #f8f9fa;
+  background-color: var(--bgg-secondary);
   border-radius: 8px;
+  border: 1px solid var(--border-color-light);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .detail-item .label {
   font-size: 0.85rem;
-  color: #777;
+  color: var(--text-tertiary);
   display: block;
   margin-bottom: 0.3rem;
+  transition: color 0.3s ease;
 }
 
 .detail-item p {
   margin: 0;
   font-weight: 500;
-  color: #333;
+  color: var(--text-primary);
+  transition: color 0.3s ease;
 }
 
 .special-note {
   padding: 1rem;
-  background-color: #fef9e7;
-  border-left: 4px solid #f39c12;
+  background-color: var(--bgg-secondary);
+  border-left: 4px solid var(--accent-warning);
   border-radius: 4px;
-  color: #666;
+  color: var(--text-secondary);
   font-style: italic;
+  border: 1px solid var(--border-color-light);
+  transition: all 0.3s ease;
+}
+
+/* Dark theme specific styling for special note */
+[data-theme="dark"] .special-note {
+  background-color: rgba(243, 156, 18, 0.1);
+}
+
+@media (prefers-color-scheme: dark) {
+  .special-note {
+    background-color: rgba(243, 156, 18, 0.1);
+  }
 }
 
 .includes-list {
@@ -88,6 +512,8 @@
 .includes-list li {
   position: relative;
   padding: 0.5rem 0;
+  color: var(--text-primary);
+  transition: color 0.3s ease;
 }
 
 .includes-list li:before {
@@ -98,6 +524,17 @@
   font-weight: bold;
 }
 
+/* Dark theme checkmark color */
+[data-theme="dark"] .includes-list li:before {
+  color: #58d68d;
+}
+
+@media (prefers-color-scheme: dark) {
+  .includes-list li:before {
+    color: #58d68d;
+  }
+}
+
 .destinations-list {
   display: flex;
   flex-direction: column;
@@ -106,37 +543,45 @@
 
 .destination-item {
   padding: 1rem;
-  background-color: #f8f9fa;
+  background-color: var(--bgg-secondary);
   border-radius: 8px;
-  border-left: 4px solid #3498db;
+  border-left: 4px solid var(--accent-primary);
+  border: 1px solid var(--border-color-light);
+  transition: all 0.3s ease;
 }
 
 .destination-item h3 {
   margin: 0 0 0.5rem 0;
-  color: #3498db;
+  color: var(--accent-primary);
+  transition: color 0.3s ease;
 }
 
 .destination-item p {
   margin: 0 0 0.8rem 0;
-  color: #666;
+  color: var(--text-secondary);
   font-size: 0.95rem;
+  transition: color 0.3s ease;
 }
 
 .destination-item .duration {
   display: inline-block;
   padding: 0.3rem 0.7rem;
   font-size: 0.8rem;
-  background-color: #edf7ff;
-  color: #3498db;
+  background-color: rgba(52, 152, 219, 0.1);
+  color: var(--accent-primary);
   border-radius: 20px;
   font-weight: 500;
+  border: 1px solid rgba(52, 152, 219, 0.2);
+  transition: all 0.3s ease;
 }
 
 .company-section {
   padding: 1.5rem;
-  background-color: #f8f9fa;
+  background-color: var(--bgg-secondary);
   border-radius: 8px;
   margin-top: 2rem;
+  border: 1px solid var(--border-color-light);
+  transition: all 0.3s ease;
 }
 
 .company-details {
@@ -150,13 +595,15 @@
   height: 60px;
   border-radius: 50%;
   object-fit: cover;
-  border: 3px solid #fff;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 3px solid var(--bg-primary);
+  box-shadow: 0 2px 8px var(--shadow-light);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .company-details h3 {
   margin: 0 0 0.5rem 0;
-  color: #2c3e50;
+  color: var(--text-primary);
+  transition: color 0.3s ease;
 }
 
 .company-details button {
@@ -170,9 +617,55 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  transition: background-color 0.2s ease;
+  transition: all 0.2s ease;
 }
 
 .company-details button:hover {
   background-color: #27ae60;
+  box-shadow: 0 2px 8px rgba(46, 204, 113, 0.3);
+}
+
+/* Dark theme specific button styling */
+[data-theme="dark"] .company-details button {
+  background-color: #58d68d;
+}
+
+[data-theme="dark"] .company-details button:hover {
+  background-color: #2ecc71;
+}
+
+@media (prefers-color-scheme: dark) {
+  .company-details button {
+    background-color: #58d68d;
+  }
+  
+  .company-details button:hover {
+    background-color: #2ecc71;
+  }
+}
+
+/* Theme toggle button (optional) */
+.theme-toggle {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background-color: var(--bgg-secondary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  transition: all 0.3s ease;
+  z-index: 1000;
+  box-shadow: 0 2px 8px var(--shadow-light);
+}
+
+.theme-toggle:hover {
+  background-color: var(--bg-tertiary);
+  transform: scale(1.1);
 }
