@@ -118,7 +118,7 @@ const PopularTours = () => {
       </div>
       <div className="tour-scroll-container">
         <div className="tour-row">
-          {toursToDisplay.map(tour => {
+          {toursToDisplay.slice(0, 5).map(tour => {
             // Ensure tour has required properties
             if (!tour || !tour._id) return null;
             

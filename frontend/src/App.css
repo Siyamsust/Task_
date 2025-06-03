@@ -89,7 +89,6 @@ a {
 /* Dark theme */
 [data-theme='dark'] {
    --background-primary: #1a1a1a;
-  --background-secondary: #2d3748;
   --background-tertiary: #4a5568;
   
   --text-primary: #f7fafc;

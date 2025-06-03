@@ -2,7 +2,6 @@ import React, { useContext, useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ToursContext } from '../../Context/ToursContext';
 import CategoryTabs from '../../Components/CategoryTabs/CategoryTabs';
-import PackageGrid from '../../Components/PackageGrid/PackageGrid';
 import './ExploreByCategory.css';
 
 const ExploreByCategory = () => {

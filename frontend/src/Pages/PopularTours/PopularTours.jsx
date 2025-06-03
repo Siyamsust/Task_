@@ -34,7 +34,7 @@ const PopularTours = () => {
       const name = tour.name || '';
       const location = tour.location || '';
       return name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-             location.toLowerCase().includes(searchQuery.toLowerCase());
+        location.toLowerCase().includes(searchQuery.toLowerCase());
     });
 
     // Step 3: Sort by popularity score descending
@@ -70,11 +70,15 @@ const PopularTours = () => {
       </div>
 
       {/* Packages Grid */}
-      {loading ? (
-        <div className="loading-spinner">Loading packages...</div>
-      ) : (
-        <PackageGrid packages={sortedAndFilteredTours} />
-      )}
+      <div className='pop'>
+        {loading ? (
+          <div className="loading-spinner">Loading packages...</div>
+        ) : (
+          <PackageGrid packages={sortedAndFilteredTours} />
+        )}
+      </div>
+
+
     </div>
   );
 };

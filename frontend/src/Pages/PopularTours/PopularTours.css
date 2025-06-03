@@ -17,8 +17,8 @@
 
 [data-theme='dark'] {
   /* Dark theme */
-  --background-primary: #322e2e;
-  --background-secondary: #3d3535;
+  --background-primary:#40565f;
+  --background-secondary:#1a1a1a;
   --card-bg: #2d3748;
   --text-primary: #f0f0f0;
   --text-secondary: #cccccc;
@@ -32,7 +32,7 @@
 }
 .popular-packages {
   min-height: 100vh;
-  background-color: var(--background-primary,linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%));
+  background-color: var(--background-primary,white);
   transition: background-color 0.3s ease;
 }
 
@@ -61,7 +61,7 @@
 
 /* Search and Filter Controls */
 .packages-controls {
-  max-width: 1400px;
+  max-width: 1500px;
   margin: -30px auto 30px;
   padding: 0 20px;
 }
@@ -113,12 +113,11 @@
 
 .filter-tab.active {
   background: var(--accent-color, green);
+
   color: var(--accent-text, white);
 }
-
 /* Results Summary */
 .results-summary {
-  max-width: 1400px;
   margin: 0 auto;
   padding: 20px;
   display: flex;
@@ -156,13 +155,7 @@
 }
 
 /* Loading Spinner */
-.loading-spinner {
-  
-  text-align: center;
-  padding: 40px;
-  color: var(--text-secondary, #666);
-  transition: color 0.3s ease;
-}
+
 
 /* Responsive Design */
 @media (max-width: 768px) {
@@ -197,4 +190,11 @@
     gap: 15px;
     align-items: flex-start;
   }
+}
+.pop{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  padding: 10px;
 }
