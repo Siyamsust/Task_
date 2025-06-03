@@ -16,12 +16,12 @@ const Wishlist = () => {
         setError('Please log in to view your wishlist.');
         return;
       }
-  
+
       if (!user) {
         setError('User data is missing.');
         return;
       }
-  
+
       try {
         const response = await axios.get('http://localhost:4000/api/wishlist', {
           headers: {
@@ -31,20 +31,20 @@ const Wishlist = () => {
             email: user.user.email, // Send email as a query parameter
           },
         });
-        
+
         // Log the response to see the returned data
         console.log('Wishlist Response:', response.data);
-  
+
         setWishlistItems(response.data.wishlist);
       } catch (error) {
         setError('Failed to load wishlist items.');
         console.error(error);
       }
     };
-  
+
     fetchWishlist();
   }, [user]);
-  
+
 
   const handleRemoveFromWishlist = async (tourId) => {
     const token = localStorage.getItem('token');
@@ -88,12 +88,15 @@ const Wishlist = () => {
               src={`http://localhost:4000/${item.tourId?.images[0]}`} // Assuming the first image is representative
               alt={item.tourId?.name}
             />
-            <button
-              className="remove-btn"
-              onClick={() => handleRemoveFromWishlist(item.tourId._id)}
-            >
-              <i className="fas fa-trash"></i>
-            </button>
+            {item.tourId && (
+              <button
+                className="remove-btn"
+                onClick={() => handleRemoveFromWishlist(item.tourId._id)}
+              >
+                <i className="fas fa-trash"></i>
+              </button>
+            )}
+
           </div>
           <div className="wishlist-content">
             {/* <h4>{item.name}</h4> */}

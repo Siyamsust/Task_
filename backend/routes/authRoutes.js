@@ -4,6 +4,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const authMiddleware = require('../middleware/authMiddleware');
+const upload = require('../middleware/upload')// Assuming you have a multer setup in index.js
 // Register User
 router.post('/register', async (req, res) => {
   try {
@@ -115,6 +116,30 @@ router.put('/update', authMiddleware, async (req, res) => {
   } catch (error) {
     console.error('Update error:', error);
     res.status(500).json({ message: 'Server error' });
+  }
+});
+router.post('/avatar', upload.single('avatar'), async (req, res) => {
+  try {
+    const { email } = req.body;
+    const avatarPath = req.file.path.replace(/\\/g, '/'); // for Windows compatibility
+
+    const user = await User.findOneAndUpdate(
+      { email },
+      { avatar: avatarPath },
+      { new: true }
+    );
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found.' });
+    }
+
+    res.json({
+      success: true,
+      user
+    });
+  } catch (error) {
+    console.error('Error uploading avatar:', error);
+    res.status(500).json({ success: false, message: 'Avatar upload failed.' });
   }
 });
 module.exports = router; 

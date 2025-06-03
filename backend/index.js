@@ -20,6 +20,7 @@ const reviewRoutes = require('./routes/reviewRoutes');
 
 //Admin Section
 const adminAuthRoutes = require('./routes/adminauth');
+// <-- register route
 
 
 
@@ -42,7 +43,7 @@ app.use('/api/wishlist', wishlistRoutes);
 
 
 app.use('/api/bookings', bookingRoutes);
-
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 
 app.use('/reviews', reviewRoutes);

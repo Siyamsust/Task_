@@ -27,7 +27,6 @@ const Categories = () => {
             <i className={`fas fa-${category.icon}`}></i>
           </div>
           <h3>{category.name}</h3>
-          <span className="tour-count">15 Tours</span>
         </div>
       ))}
     </div>
