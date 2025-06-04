@@ -22,14 +22,14 @@ function App() {
           <div className="main-content">
             <Routes>
             <Route path="/login" element={<Login />} />
-              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/" element={<Dashboard />} />
               <Route path="/tour-monitoring" element={<TourMonitoring />} />
               <Route path="/destination-search" element={<DestinationSearch />} />
               <Route path="/admin-support" element={<AdminSupport />} />
               <Route path="/reports" element={<Reports />} />
               
               <Route path="/signup" element={<Signup />} />
-              <Route path="/" element={<h2>Welcome to the Admin Dashboard</h2>} />
+              <Route path="/boikalake" element={<h2>Welcome to the Admin Dashboard</h2>} />
             </Routes>
           </div>
         </div>

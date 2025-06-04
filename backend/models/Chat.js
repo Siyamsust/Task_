@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 
 const chatSchema = new mongoose.Schema({
+  
   participants: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
@@ -11,7 +12,7 @@ const chatSchema = new mongoose.Schema({
   required: function() { return this.chatType === 'aduse'||this.chatType==='comuse'; }
   },
   chatType: {
-    type: String,
+    type: String, 
     enum: ['adcom', 'aduse','comuse'],
     required: true
   },
@@ -30,8 +31,28 @@ const chatSchema = new mongoose.Schema({
   companyId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Company',
-    required: function() { return this.chatType === 'comuse'||this.chatType==='adcom'; }
-  }
+    required: function() { return this.chatType === 'adcom'||this.chatType==='comuse'; }
+  },
+  companyName: {
+    type: String,
+    required: function() { return this.chatType === 'adcom'||this.chatType==='comuse'; }
+  },
+  messages: [{
+    senderId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: true
+    },
+    content: {
+      type: String,
+      required: true
+    },
+    sentAt: {
+      type: Date,
+      default: Date.now
+    }
+  }]
+
 }, {
   timestamps: true
 });

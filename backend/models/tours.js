@@ -120,10 +120,40 @@ const tourSchema = new mongoose.Schema({
       enum: ['draft', 'pending', 'approved','rejected'],
       default: 'draft'
     },
+    companyId:{
+      type:mongoose.Schema.Types.ObjectId,
+      ref:'company'
+    },
     createdAt: {
       type: Date,
       default: Date.now
-    }
+    },
+    popularity: {
+      bookings: {
+        type: Number,
+        default: 0
+      },
+      views: {
+        type: Number,
+        default: 0
+      },
+      rating: {
+        average: {
+          type: Number,
+          default: 0,
+          min: 0,
+          max: 5
+        },
+        count: {
+          type: Number,
+          default: 0
+        }
+      },
+      wishlistCount: {
+        type: Number,
+        default: 0
+      }
+    },
   });
   
 const Tour = mongoose.model('Tour', tourSchema);

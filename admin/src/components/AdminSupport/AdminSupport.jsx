@@ -1,8 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './AdminSupport.css';
 import avatar from '../Assets/chat_avatar.png'; // Use a default avatar if needed
+import { useAuth } from '../../context/AuthContext';
+
+// Default admin ID (MongoDB ObjectId format)
+const DEFAULT_ADMIN_ID = '65f1a2b3c4d5e6f7a8b9c0d1'; // Valid 24-character hex string
 
 const AdminSupport = () => {
+  const { user } = useAuth();
   const [userChats, setUserChats] = useState([]);
   const [companyChats, setCompanyChats] = useState([]);
   const [filter, setFilter] = useState('users'); // 'users' or 'companies'
@@ -28,24 +33,41 @@ const AdminSupport = () => {
 
   const chatList = filter === 'users' ? userChats : companyChats;
 
-  const handleSendMessage = (e) => {
+  const handleSendMessage = async (e) => {
     e.preventDefault();
     if (!newMessage.trim() || !activeChat) return;
 
-    // Example: send message to backend (implement as needed)
-    // After sending, update activeChat.messages and also update the chat in userChats/companyChats
-    // For demo, just update local state
-    const newMsg = {
-      _id: Date.now(),
-      sender: 'admin',
-      content: newMessage,
-      sentAt: new Date().toISOString()
-    };
-    setActiveChat(prev => ({
-      ...prev,
-      messages: [...(prev.messages || []), newMsg]
-    }));
-    setNewMessage('');
+    try {
+      const authtoken = localStorage.getItem('token');
+      const response = await fetch('http://localhost:4000/api/chat/send-message', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${authtoken}`
+        },
+        body: JSON.stringify({
+          chatId: activeChat._id,
+          content: newMessage,
+          userId: activeChat.userId || null,
+          companyId: activeChat.companyId || null,
+          companyName: activeChat.companyName || null,
+          userName: activeChat.userName || null,
+          chatType: filter === 'users' ? 'aduse' : 'adcom',
+          senderId: user?.id || DEFAULT_ADMIN_ID // Use default admin ID if user.id is not available
+        })
+      });
+
+      if (response.ok) {
+        const updatedChat = await response.json();
+        setActiveChat(prev => ({
+          ...prev,
+          messages: [...(prev.messages || []), updatedChat.messages[updatedChat.messages.length - 1]]
+        }));
+        setNewMessage('');
+      }
+    } catch (error) {
+      console.error('Error sending message:', error);
+    }
   };
 
   return (
@@ -126,7 +148,7 @@ const AdminSupport = () => {
                 {(activeChat.messages || []).map(message => (
                   <div 
                     key={message._id} 
-                    className={`message ${message.sender === 'admin' ? 'sent' : 'received'}`}
+                    className={`message ${message.senderId === DEFAULT_ADMIN_ID ? 'sent' : 'received'}`}
                   >
                     <div className="message-content">
                       <p>{message.content}</p>

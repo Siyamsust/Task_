@@ -17,7 +17,7 @@ const apiKey = process.env.WEATHER_API_KEY;
 
 try {
 const response = await axios.get(
-https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric
+    `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`
 );
 const weather = response.data.weather[0].main;
 const temp = response.data.main.temp;

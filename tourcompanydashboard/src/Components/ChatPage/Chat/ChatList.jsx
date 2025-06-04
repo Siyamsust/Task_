@@ -168,7 +168,7 @@ let response,responseData;
               </div>
             ))
           ) : searchQuery ? (
-            <div className="no-results">No companies found</div>
+            <div className="no-results">No user found</div>
           ) : null}
         </div>
       )}

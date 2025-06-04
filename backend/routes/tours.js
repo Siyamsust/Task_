@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
-//const { upload } = require('../index.js');
+const { upload } = require('../index.js');
 const tourController = require('../controllers/tour');
-router.post('/api/tours', tourController.createTour);
+//router.post('/api/tours', tourController.createTour);
   // Update tour
-router.put('/api/tours/:id',  tourController.updateTour);
+//router.put('/api/tours/:id', upload.array('newImages'), tourController.updateTour);
 router.get('/tours/approved', tourController.getApprovedTours);
 router.get('/tours/filter', tourController.filterTours);
 router.get('/pendingtours', tourController.getPendingTours);

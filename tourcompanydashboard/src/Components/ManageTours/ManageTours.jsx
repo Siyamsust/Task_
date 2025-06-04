@@ -331,8 +331,9 @@ const ManageTours = () => {
                       <button
                         className="approve-btn"
                         onClick={() => handleStatusUpdate(tour._id, 'pending')}
+                        disabled={tour.status === 'pending'}
                       >
-                        Send for Approval
+                        {tour.status === 'pending' ? 'Pending' : 'Send for Approval'}
                       </button>
                     )}
                     <button

@@ -92,7 +92,7 @@ else
             setSelectedChat(null);
           }}
         >
-          Tour Companies
+          Users
         </button>
         <button 
           className={`type-btn ${chatType === 'adcom' ? 'active' : ''}`}

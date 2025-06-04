@@ -27,6 +27,7 @@ export const ToursProvider = ({ children }) => {
       console.log("Fetching tours for company ID:", companyId);
       const response = await fetch(`http://localhost:4000/api/companytours/${companyId}`);
       const data = await response.json();
+      console.log(response);
       if (data.success) {
         setTours(data.tours);
       } else {

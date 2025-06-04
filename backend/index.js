@@ -18,6 +18,7 @@ const toursRoutes = require('./routes/tours');
 const tourController = require('./controllers/tour');
 const reviewRoutes = require('./routes/reviewRoutes');
 const companyRoutes = require('./routes/company');
+const weatherRoute = require('./routes/weatherRoutes'); 
 //Admin Section
 const adminAuthRoutes = require('./routes/adminauth');
 // <-- register route
@@ -85,7 +86,6 @@ app.post('/api/tours', upload.array('images'), tourController.createTour);
   // Update tour
 app.put('/api/tours/:id', upload.array('newImages'), tourController.updateTour);
 app.use('/api', toursRoutes);
-app.use('/api', require('./routes/weatherRoutes'));
 
 // Admin Routes
 app.use('/api/admin', adminAuthRoutes);
@@ -151,7 +151,9 @@ app.get('/api/tours/:id/seat-availability', tourController.getSeatAvailability);
 app.patch('/api/tours/:id/release-seats', tourController.releaseSeats);
 
 
+// ✅ Make sure this matches your filename
 
+app.use('/api', weatherRoute); // ✅ using a valid router
 
 
 // Socket.IO connection handling
@@ -162,17 +164,4 @@ app.use(errorHandler);
 // Start server
 server.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
-});
-
-const weatherRoute = require('./routes/weatherRoutes'); // ✅ Make sure this matches your filename
-
-app.use(express.json());
-app.use('/api', weatherRoute); // ✅ using a valid router
-
-app.listen(4000, () => {
-  console.log('Server running on http://localhost:4000');
-});
-
-app.get('/', (req, res) => {
-  res.send('Backend is running!');
 });

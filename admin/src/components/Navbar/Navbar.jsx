@@ -12,7 +12,7 @@ const Navbar = () => {
       
       <ul className="nav-links">
         <li>
-          <Link to="/dashboard">
+          <Link to="/">
             <i className="fas fa-chart-line"></i>
             <span>Dashboard</span>
           </Link>

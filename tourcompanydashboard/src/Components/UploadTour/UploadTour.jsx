@@ -2,7 +2,7 @@ import React, { useState ,useEffect} from 'react';
 import './UploadTour.css';  // Import the CSS file for styling
 import { useAuth } from '../../Context/AuthContext';
 const UploadTour = () => {
-  const [company]=useAuth();
+  const {company}=useAuth();
   useEffect(() => {
     if (company) {
       console.log("Current logged in company:", company);

@@ -10,7 +10,8 @@ exports.createTour=async (req, res) => {
         meals: JSON.parse(req.body.meals),
         transportation: JSON.parse(req.body.transportation),
         includes: JSON.parse(req.body.includes),
-        excludes: JSON.parse(req.body.excludes)
+        excludes: JSON.parse(req.body.excludes),
+        comapnyId: req.body.companyId 
       };
   
       // Process packageCategories
