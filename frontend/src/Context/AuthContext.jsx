@@ -30,7 +30,7 @@ export const AuthProvider = ({ children }) => {
       const token = localStorage.getItem('token');
       
       // Make API call to update user data
-      const response = await fetch('http://localhost:4000/api/auth/update', {
+      const response = await fetch('http://localhost:4000/user/auth/update', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

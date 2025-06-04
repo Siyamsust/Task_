@@ -12,22 +12,28 @@ import {
   FaBell,
   FaSignOutAlt
 } from 'react-icons/fa';
+import { useAuth } from '../../Context/AuthContext';
 import './Navbar.css';
-
+import { useNavigate } from 'react-router-dom';
 const Navbar = () => {
   const location = useLocation();
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
-  
+  const {company,logout} = useAuth();
   const notificationRef = useRef(null);
   const profileRef = useRef(null);
-
+  const navigate = useNavigate();
   const notifications = [
     { id: 1, text: 'New booking request', time: '5 min ago' },
     { id: 2, text: 'Tour package approved', time: '1 hour ago' },
     { id: 3, text: 'New customer review', time: '2 hours ago' }
   ];
-
+  const companyDetails =company.company;
+  console.log("company",companyDetails)
+ const handleLogout = ()=>{
+  logout();
+  navigate('/login');
+ }
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (notificationRef.current && !notificationRef.current.contains(event.target)) {
@@ -47,7 +53,7 @@ const Navbar = () => {
   return (
     <nav className="navbar">
       <div className="navbar-brand">
-        <h1>SS Tours</h1>
+        <h1>{companyDetails.name}</h1>
       </div>
 
       <div className="navbar-links">
@@ -63,7 +69,7 @@ const Navbar = () => {
         <Link to="/analytics" className={location.pathname === '/analytics' ? 'active' : ''}>
           <FaChartBar /> <span>Analytics</span>
         </Link>
-        <Link to="/messages" className={location.pathname === '/messages' ? 'active' : ''}>
+        <Link to="/chat" className={location.pathname === '/chat' ? 'active' : ''}>
           <FaEnvelope /> <span>Messages</span>
         </Link>
         <Link to="/license" className={location.pathname === '/license' ? 'active' : ''}>
@@ -98,9 +104,9 @@ const Navbar = () => {
               <Link to="/settings">
                 <FaCog /> Settings
               </Link>
-              <Link to="/logout">
+              <button  onClick={handleLogout}>
                 <FaSignOutAlt /> Logout
-              </Link>
+              </button>
             </div>
           )}
         </div>

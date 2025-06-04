@@ -135,7 +135,10 @@ const ProfileInfo = () => {
         </div>
         <h2>{userData?.name || 'User Name'}</h2>
         <p>{userData?.email || 'email@example.com'}</p>
+
         <p>{userData?.phone || '0123456789'}</p>
+        <p>{userData?.phone || 'Phone not provided'}</p>
+
       </div>
 
       {error && <p className="error-message" style={{ color: 'red', marginTop: '10px' }}>{error}</p>}

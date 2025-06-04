@@ -1,7 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState ,useEffect} from 'react';
 import './UploadTour.css';  // Import the CSS file for styling
-
+import { useAuth } from '../../Context/AuthContext';
 const UploadTour = () => {
+  const {company}=useAuth();
+  useEffect(() => {
+    if (company) {
+      console.log("Current logged in company:", company);
+      console.log("Company ID:", company._id);
+    }
+  }, [company]);
+const companyId=company.company._id;
   const [tourDetails, setTourDetails] = useState({
     name: '',
     packageCategories: [],
@@ -196,6 +204,7 @@ const UploadTour = () => {
     formData.append('excludes', JSON.stringify(tourDetails.excludes));
     formData.append('specialNote', tourDetails.specialNote);
     formData.append('cancellationPolicy', tourDetails.cancellationPolicy);
+    formData.append('companyId',companyId);
     
     tourDetails.images.forEach((image) => {
       formData.append('images', image);
