@@ -36,3 +36,31 @@
     transform: rotate(360deg);
   }
 }
+
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--background-color);
+}
+
+.content {
+  flex: 1;
+  padding: 2rem;
+  margin-top: 4rem; /* Height of navbar */
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .content {
+    padding: 1.5rem;
+    margin-top: 3.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .content {
+    padding: 1rem;
+    margin-top: 3rem;
+  }
+}

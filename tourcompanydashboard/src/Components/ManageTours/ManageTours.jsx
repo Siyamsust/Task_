@@ -4,7 +4,7 @@ import { useTours } from '../../Context/ToursContext';
 import './ManageTours.css';
 
 const ManageTours = () => {
-  const { tours: allTours, loading, error, deleteTour, updateTourStatus } = useTours();
+  const { tours: allTours, loading, error, deleteTour, updateTourStatus, fetchcompanyTours } = useTours();
   const [filteredTours, setFilteredTours] = useState([]);
   const [activeCategory, setActiveCategory] = useState('all');
   const [activeTourType, setActiveTourType] = useState('all');
@@ -20,6 +20,10 @@ const ManageTours = () => {
     'Educational',
     'Seasonal'
   ];
+
+  useEffect(() => {
+    fetchcompanyTours();
+  }, []);
 
   // Combined filtering effect
   useEffect(() => {

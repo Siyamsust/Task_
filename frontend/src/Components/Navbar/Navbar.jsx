@@ -51,7 +51,7 @@ const Navbar = () => {
     <nav className="navbar">
       <div className="nav-container">
         <Link to="/" className="nav-logo">
-          <i className="fas fa-globe-americas"></i>
+          <i className="fas fa-plane-departure"></i>
           Task
         </Link>
 
@@ -63,19 +63,35 @@ const Navbar = () => {
             className="nav-item"
             onClick={() => navigate('/populartours')}
           >
-            <i className="fas fa-fire"></i> Popular
+            <i className="fas fa-star"></i> Popular
           </button>
+         {user ? <button 
+            className="nav-item"
+            onClick={() => navigate('/chat')}
+          >
+            <i className="fas fa-comments"></i> Chat
+          </button>:
+          <></>
+}
           <button 
             className="nav-item"
             onClick={() => navigate('/explore')}
           >
             <i className="fas fa-compass"></i> Explore
           </button>
+          { user && (
+            <button
+              className="nav-item"
+              onClick={() => navigate('/chat')}
+            >
+              <i className="fas fa-comments"></i> Chat
+            </button>
+          )}
           <button 
             className="nav-item"
             onClick={() => navigate('/review')}
           >
-            <i className="fas fa-envelope"></i>Review
+            <i className="fas fa-star"></i> Review
           </button>
         </div>
 

@@ -72,7 +72,32 @@ exports.createTour=async (req, res) => {
       });
       }
   };
-  
+  exports.getCompanyTours = async (req, res) => {
+    try {
+      const { companyId } = req.params;
+      console.log("Fetching tours for company:", companyId);
+      
+      if (!companyId) {
+        return res.status(400).json({
+          success: false,
+          error: 'Company ID is required'
+        });
+      }
+
+      const tours = await Tour.find({ companyId });
+      
+      res.json({
+        success: true,
+        tours
+      });
+    } catch (error) {
+      console.error('Error fetching company tours:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to fetch company tours'
+      });
+    }
+  };
   // Get all tours
   exports.getTours = async (req, res) => {
       try {

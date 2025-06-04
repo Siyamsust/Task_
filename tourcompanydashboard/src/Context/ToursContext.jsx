@@ -1,4 +1,6 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { useAuth } from './AuthContext';
+
 
 const ToursContext = createContext(null); // Initialize with null
 
@@ -6,6 +8,37 @@ export const ToursProvider = ({ children }) => {
   const [tours, setTours] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { company } = useAuth();
+
+  useEffect(() => {
+    if (company) {
+      console.log("Current logged in company:", company);
+      console.log("Company ID:", company._id);
+    }
+  }, [company]);
+
+  const fetchcompanyTours = useCallback(async () => {
+    try {
+      setLoading(true);
+      if (!company) {
+        throw new Error('No company logged in');
+      }
+      const companyId = company.company._id;
+      console.log("Fetching tours for company ID:", companyId);
+      const response = await fetch(`http://localhost:4000/api/companytours/${companyId}`);
+      const data = await response.json();
+      if (data.success) {
+        setTours(data.tours);
+      } else {
+        throw new Error(data.error);
+      }
+    } catch (err) {
+      setError(err.message);
+      console.error('Error fetching tours:', err);
+    } finally {
+      setLoading(false);
+    }
+  }, [company]);
 
   const fetchTours = async () => {
     try {
@@ -71,8 +104,8 @@ export const ToursProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    fetchTours();
-  }, []);
+    fetchcompanyTours();
+  }, [fetchcompanyTours]);
 
   const value = {
     tours,
@@ -80,7 +113,8 @@ export const ToursProvider = ({ children }) => {
     error,
     fetchTours,
     deleteTour,
-    updateTourStatus
+    updateTourStatus,
+    fetchcompanyTours
   };
 
   return (

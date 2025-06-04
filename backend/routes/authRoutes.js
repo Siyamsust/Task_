@@ -87,6 +87,38 @@ router.post('/login', async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
+router.get('/search', async (req, res) => {
+  try {
+    const { query } = req.query;
+    
+    if (!query) {
+      return res.status(400).json({ message: 'Search query is required' });
+    }
+
+    // Create a case-insensitive regex pattern for the search
+    const searchPattern = new RegExp(query, 'i');
+
+    // Search in company name and description
+    const users = await User.find({
+      $or: [
+        { name: searchPattern } 
+      ],
+      
+    }).select('_id name description logo email phone website') // Select only necessary fields
+      .limit(10); // Limit results to 10 companies
+
+    res.json({
+      success: true,
+      users: users
+    });
+  } catch (error) {
+    console.error('Search error:', error);
+    res.status(500).json({ 
+      success: false,
+      message: 'Error searching companies' 
+    });
+  }
+});
 router.put('/update', authMiddleware, async (req, res) => {
   try {
     const { name, email, phone } = req.body;
