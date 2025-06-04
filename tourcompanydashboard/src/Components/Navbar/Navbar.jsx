@@ -1,12 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { 
-  FaHome, 
-  FaSuitcase, 
-  FaUpload, 
-  FaChartBar, 
-  FaEnvelope, 
-  FaIdCard, 
+import {
+  FaHome,
+  FaSuitcase,
+  FaUpload,
+  FaChartBar,
+  FaEnvelope,
+  FaIdCard,
   FaUserCircle,
   FaCog,
   FaBell,
@@ -19,7 +19,7 @@ const Navbar = () => {
   const location = useLocation();
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
-  const {company,logout} = useAuth();
+  const { company, logout } = useAuth();
   const notificationRef = useRef(null);
   const profileRef = useRef(null);
   const navigate = useNavigate();
@@ -28,12 +28,12 @@ const Navbar = () => {
     { id: 2, text: 'Tour package approved', time: '1 hour ago' },
     { id: 3, text: 'New customer review', time: '2 hours ago' }
   ];
-  const companyDetails =company.company;
-  console.log("company",companyDetails)
- const handleLogout = ()=>{
-  logout();
-  navigate('/login');
- }
+  const companyDetails = company.company;
+  console.log("company", companyDetails)
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  }
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (notificationRef.current && !notificationRef.current.contains(event.target)) {
@@ -62,6 +62,9 @@ const Navbar = () => {
         </Link>
         <Link to="/manage-tours" className={location.pathname === '/manage-tours' ? 'active' : ''}>
           <FaSuitcase /> <span>Manage Tours</span>
+        </Link>
+        <Link to="/bookings" className={location.pathname === '/bookings' ? 'active' : ''}>
+          <FaSuitcase /> <span>Tour & Bookings</span>
         </Link>
         <Link to="/upload-tour" className={location.pathname === '/upload-tour' ? 'active' : ''}>
           <FaUpload /> <span>Upload Tour</span>
@@ -104,7 +107,7 @@ const Navbar = () => {
               <Link to="/settings">
                 <FaCog /> Settings
               </Link>
-              <button  onClick={handleLogout}>
+              <button onClick={handleLogout}>
                 <FaSignOutAlt /> Logout
               </button>
             </div>

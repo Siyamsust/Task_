@@ -10,6 +10,8 @@ import { useAuth } from './Context/AuthContext';
 import LoginSignup from './Components/LoginSignup/LoginSignup';
 import EditTour from './Components/EditTour/EditTour';
 import ChatPage from './Components/ChatPage/ChatPage';
+import BookingList from './Components/BookingList/BookingList';
+import AllBookingsList from './Components/AllBookingsList/AllBookingsList'; // Import the AllBookingsList component
 // Import the Navbar component
 
 const AppContent = () => {
@@ -30,6 +32,8 @@ const AppContent = () => {
               <Route path="/manage-tours" element={<ManageTours />} />
               <Route path="/edit-tour/:tourId" element={<EditTour />} />
               <Route path="/login" element={<LoginSignup />} />
+               <Route path="/bookings" element={<AllBookingsList />} />
+              <Route path="/bookings/:tourId" element={<BookingList />} />
             </Routes>
           </div>
         </div>

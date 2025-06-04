@@ -7,7 +7,7 @@ const path = require('path');
 const fs = require('fs');
 const http = require('http');
 const socketIO = require('socket.io');
-
+const Message = require('./models/Message');
 
 const chatRoutes = require('./routes/chatRoutes');
 const authRoutes = require('./routes/authRoutes');
@@ -17,8 +17,7 @@ const errorHandler = require('./middleware/errorHandler');
 const toursRoutes = require('./routes/tours');
 const tourController = require('./controllers/tour');
 const reviewRoutes = require('./routes/reviewRoutes');
-const companyRoutes = require('./routes/company');
-const weatherRoute = require('./routes/weatherRoutes'); 
+
 //Admin Section
 const adminAuthRoutes = require('./routes/adminauth');
 // <-- register route
@@ -38,9 +37,8 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 // Routes
-app.use('/company/auth', companyRoutes);
-app.use('/user/auth', authRoutes);
-app.use('/api/chat', chatRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/chats', chatRoutes);
 app.use('/api/wishlist', wishlistRoutes);
 
 
@@ -86,7 +84,8 @@ app.post('/api/tours', upload.array('images'), tourController.createTour);
   // Update tour
 app.put('/api/tours/:id', upload.array('newImages'), tourController.updateTour);
 app.use('/api', toursRoutes);
-
+app.use('/api', require('./routes/weatherRoutes'));
+app.use('/api/bookings', bookingRoutes);
 // Admin Routes
 app.use('/api/admin', adminAuthRoutes);
 
@@ -151,12 +150,40 @@ app.get('/api/tours/:id/seat-availability', tourController.getSeatAvailability);
 app.patch('/api/tours/:id/release-seats', tourController.releaseSeats);
 
 
-// ✅ Make sure this matches your filename
 
-app.use('/api', weatherRoute); // ✅ using a valid router
 
 
 // Socket.IO connection handling
+io.on('connection', (socket) => {
+  const userId = socket.handshake.query.userId;
+  
+  socket.join(userId);
+  
+  socket.on('send_message', async (data) => {
+    try {
+      const { chatId, content, recipientId } = data;
+      
+      // Save message to database
+      const message = await Message.create({
+        chatId,
+        senderId: userId,
+        content
+      });
+
+      // Emit to recipient
+      io.to(recipientId).emit('receive_message', message);
+      
+      // Emit to sender
+      socket.emit('receive_message', message);
+    } catch (error) {
+      console.error('Error sending message:', error);
+    }
+  });
+
+  socket.on('disconnect', () => {
+    console.log('User disconnected:', userId);
+  });
+});
 
 // Add error handler
 app.use(errorHandler);
