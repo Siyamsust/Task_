@@ -70,7 +70,6 @@ const PackageDetails = () => {
       {/* Main Content Section */}
       <div className="main-content-section">
         <PackageInfo tour={tour} companyId={1} />
-        <h1>Popularity score{tour.popularity.views}</h1>
       </div>
 
       {/* Booking Card Section */}

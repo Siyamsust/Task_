@@ -18,7 +18,6 @@ const PackageInfo = ({ tour, companyId }) => {
     <div className="package-info">
       {/* Package Title Section */}
 
-
       <div className="package-content">
         {/* Left Column */}
           <h1>{tour.name}</h1>
@@ -74,9 +73,12 @@ const PackageInfo = ({ tour, companyId }) => {
 
           <div className="company-section">
             <div className="company-details">
-              <img src={tour.companyLogo} alt={tour.companyName} />
+              {/* Simple company icon instead of image */}
+              <div className="company-icon">
+                <i className="fas fa-building"></i>
+              </div>
               <div>
-                <h3>{tour.companyName}</h3>
+                <h3>{tour.companyName || "Tour Company"}</h3>
                 <button onClick={handleChatClick}>
                   <i className="fas fa-comments"></i> Chat with Company
                 </button>
