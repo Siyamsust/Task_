@@ -198,7 +198,7 @@ const weatherRoute = require('./routes/weatherRoutes'); // ✅ Make sure this ma
 app.use(express.json());
 app.use('/api', weatherRoute); // ✅ using a valid router
 
-app.listen(4000, () => {
+app.listen(4001, () => {
   console.log('Server running on http://localhost:4000');
 });
 
