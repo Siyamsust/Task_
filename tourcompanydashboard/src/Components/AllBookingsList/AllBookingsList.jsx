@@ -131,7 +131,7 @@ const AllBookingsList = () => {
                 <div className="tour-image">
                   {tour.images && tour.images.length > 0 ? (
                     <img 
-                      src={`http://localhost:4000/uploads/${tour.images[0]}`} 
+                      src={`http://localhost:4000/${tour.images[0]}`} 
                       alt={tour.title}
                     />
                   ) : (

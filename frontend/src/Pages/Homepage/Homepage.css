@@ -60,8 +60,18 @@
   /* Allow the HeroSection component to handle its own background */
   position: relative;
   border-radius: 16px;
+  margin-bottom: 40px;
+}
+.upcoming-section {
+  padding: 0 20px;
 }
 
+@media (max-width: 768px) {
+  .upcoming-section {
+    margin: 40px 0;
+    padding: 0 15px;
+  }
+}
 /* Add background for sections after hero */
 .popular-section,
 .categories-section,

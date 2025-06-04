@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react'; 
+import React, { useContext, useEffect, useState } from 'react';
 import { ToursContext } from '../../Context/ToursContext';
 import { Link, useNavigate } from 'react-router-dom';
 import './PopularTours.css';
@@ -6,13 +6,12 @@ import './PopularTours.css';
 const PopularTours = () => {
   const { tours, loading, error } = useContext(ToursContext);
   const [averageRatings, setAverageRatings] = useState({});
-  const navigate = useNavigate();
   const [sortedTours, setSortedTours] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const computePopularityAndSort = async () => {
       try {
-        // Fetch reviews for rating fallback (optional)
         const res = await fetch('http://localhost:4000/reviews');
         const reviews = await res.json();
 
@@ -36,7 +35,6 @@ const PopularTours = () => {
 
         setAverageRatings(averages);
 
-        // Compute popularity score
         const scored = [...tours].map(tour => {
           const {
             bookings = 0,
@@ -46,7 +44,7 @@ const PopularTours = () => {
           } = tour.popularity || {};
 
           const averageRating = rating.average ?? averages[tour._id] ?? 0;
-          const popularityScore = 
+          const popularityScore =
             (bookings * 0.5) +
             (averageRating * 10 * 0.2) +
             (views * 0.2) +
@@ -55,13 +53,10 @@ const PopularTours = () => {
           return { ...tour, popularityScore };
         });
 
-        // Sort by popularityScore descending
         const sorted = scored.sort((a, b) => b.popularityScore - a.popularityScore);
-
         setSortedTours(sorted);
       } catch (err) {
         console.error("Error computing popularity scores:", err);
-        // Fallback to original tours if popularity calculation fails
         setSortedTours(tours);
       }
     };
@@ -83,8 +78,15 @@ const PopularTours = () => {
       navigate(`/package/${tourId}`);
     } catch (error) {
       console.error('Failed to increment view count:', error);
-      navigate(`/package/${tourId}`); // Navigate anyway
+      navigate(`/package/${tourId}`);
     }
+  };
+
+  const isTourCompleted = (startDate) => {
+    if (!startDate) return false;
+    const now = new Date();
+    const tourStartDate = new Date(startDate);
+    return tourStartDate < now;
   };
 
   if (loading) {
@@ -105,7 +107,6 @@ const PopularTours = () => {
     );
   }
 
-  // Use sortedTours if available, otherwise fallback to tours
   const toursToDisplay = sortedTours.length > 0 ? sortedTours : tours || [];
 
   return (
@@ -119,16 +120,16 @@ const PopularTours = () => {
       <div className="tour-scroll-container">
         <div className="tour-row">
           {toursToDisplay.slice(0, 5).map(tour => {
-            // Ensure tour has required properties
             if (!tour || !tour._id) return null;
-            
+
             const averageRating = averageRatings[tour._id];
             const tourName = tour.name || 'Untitled Tour';
             const tourPrice = tour.price || 'N/A';
-            const tourCategory = tour.packageCategories || 'General';
-            const tourImage = tour.images && tour.images.length > 0 
-              ? `http://localhost:4000/${tour.images[0]}` 
+            const tourCategory = tour.packageCategories?.join(', ') || 'General';
+            const tourImage = tour.images && tour.images.length > 0
+              ? `http://localhost:4000/${tour.images[0]}`
               : 'https://picsum.photos/300/200';
+            const isCompleted = isTourCompleted(tour.startDate);
 
             return (
               <div key={tour._id} className="tour-card">
@@ -140,6 +141,7 @@ const PopularTours = () => {
                       e.target.src = 'https://picsum.photos/300/200';
                     }}
                   />
+                  {isCompleted && <span className="completed-tag">Completed</span>}
                 </div>
                 <div className="tour-info">
                   <h3>{tourName}</h3>
@@ -156,13 +158,17 @@ const PopularTours = () => {
                     </span>
                   </div>
                   <div className="tour-actions">
-                    <button 
-                      onClick={() => handleExploreNow(tour._id)} 
+                    <button
+                      onClick={() => handleExploreNow(tour._id)}
                       className="view-details-btn"
                     >
-                      Explore Now <i className="fas fa-arrow-right"></i>
+                      Explore Now
+                      {isTourCompleted(tour.startDate) && ' (Tour Ended)'}{' '}
+                      {!isTourCompleted(tour.startDate) && <i className="fas fa-arrow-right"></i>}
                     </button>
                   </div>
+
+
                 </div>
               </div>
             );

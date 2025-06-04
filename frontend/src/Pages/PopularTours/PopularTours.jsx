@@ -7,6 +7,14 @@ const PopularTours = () => {
   const { tours = [], loading } = useContext(ToursContext);
   const [searchQuery, setSearchQuery] = useState('');
 
+  // Helper function to check if tour is completed
+  const isTourCompleted = (startDate) => {
+    if (!startDate) return false;
+    const now = new Date();
+    const tourStartDate = new Date(startDate);
+    return tourStartDate < now;
+  };
+
   // 🔢 Calculate popularity score and sort
   const sortedAndFilteredTours = useMemo(() => {
     // Step 1: Compute popularity score
@@ -26,7 +34,10 @@ const PopularTours = () => {
         views * 0.2 +
         wishlistCount * 0.1;
 
-      return { ...tour, popularityScore };
+      // Add completed status to tour object
+      const isCompleted = isTourCompleted(tour.startDate);
+
+      return { ...tour, popularityScore, isCompleted };
     });
 
     // Step 2: Filter by search
@@ -42,18 +53,18 @@ const PopularTours = () => {
   }, [tours, searchQuery]);
 
   return (
-    <div className="popular-packages">
+    <div className="popular-packages-container">
       {/* Header Section */}
-      <div className="packages-header">
-        <div className="packages-header-content">
+      <div className="popular-packages-header">
+        <div className="popular-packages-header-content">
           <h1>Explore Our Popular Packages</h1>
           <p>Discover the best travel experiences curated just for you</p>
         </div>
       </div>
 
       {/* Search Section */}
-      <div className="packages-controls">
-        <div className="search-bar">
+      <div className="popular-packages-controls">
+        <div className="popular-search-bar">
           <i className="fas fa-search"></i>
           <input
             type="text"
@@ -65,20 +76,18 @@ const PopularTours = () => {
       </div>
 
       {/* Results Summary */}
-      <div className="results-summary">
+      <div className="popular-results-summary">
         <p>Showing {sortedAndFilteredTours.length} packages</p>
       </div>
 
       {/* Packages Grid */}
-      <div className='pop'>
+      <div className='popular-packages-grid'>
         {loading ? (
-          <div className="loading-spinner">Loading packages...</div>
+          <div className="popular-loading-spinner">Loading packages...</div>
         ) : (
           <PackageGrid packages={sortedAndFilteredTours} />
         )}
       </div>
-
-
     </div>
   );
 };

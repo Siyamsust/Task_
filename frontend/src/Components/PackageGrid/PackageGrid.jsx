@@ -1,17 +1,22 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { useNavigate , Link} from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import './PackageGrid.css';
 import { ToursContext } from '../../Context/ToursContext';
+
 const PackageGrid = ({ packages }) => {
   const navigate = useNavigate();
   const { tours, loading, error } = useContext(ToursContext);
   const [averageRatings, setAverageRatings] = useState({});
   const [sortedTours, setSortedTours] = useState([]);
-  // Helper functions
-  const getDestinations = (destinations) => {
-    if (!destinations || destinations.length === 0) return 'Various destinations';
-    return destinations.map(dest => dest.name).join(', ');
+
+  // Helper function to check if tour is completed
+  const isTourCompleted = (startDate) => {
+    if (!startDate) return false;
+    const now = new Date();
+    const tourStartDate = new Date(startDate);
+    return tourStartDate < now;
   };
+
   const handleExploreNow = async (tourId) => {
     try {
       await fetch(`http://localhost:4000/api/tours/${tourId}/increment-view`, {
@@ -20,13 +25,13 @@ const PackageGrid = ({ packages }) => {
       navigate(`/package/${tourId}`);
     } catch (error) {
       console.error('Failed to increment view count:', error);
-      navigate(`/package/${tourId}`); // Navigate anyway
+      navigate(`/package/${tourId}`);
     }
   };
+
   useEffect(() => {
     const computePopularityAndSort = async () => {
       try {
-        // Fetch reviews for rating fallback (optional)
         const res = await fetch('http://localhost:4000/reviews');
         const reviews = await res.json();
 
@@ -50,7 +55,6 @@ const PackageGrid = ({ packages }) => {
 
         setAverageRatings(averages);
 
-        // Compute popularity score
         const scored = [...tours].map(tour => {
           const {
             bookings = 0,
@@ -69,9 +73,7 @@ const PackageGrid = ({ packages }) => {
           return { ...tour, popularityScore };
         });
 
-        // Sort by popularityScore descending
         const sorted = scored.sort((a, b) => b.popularityScore - a.popularityScore);
-
         setSortedTours(sorted);
       } catch (err) {
         console.error("Error computing popularity scores:", err);
@@ -82,23 +84,6 @@ const PackageGrid = ({ packages }) => {
       computePopularityAndSort();
     }
   }, [tours]);
-
-  const getTourType = (tourType) => {
-    if (!tourType) return 'Standard Tour';
-    if (tourType.single && tourType.group) return 'Single & Group';
-    if (tourType.single) return 'Single Tour';
-    if (tourType.group) return 'Group Tour';
-    return 'Standard Tour';
-  };
-
-  const formatMeals = (meals) => {
-    if (!meals) return 'No meals included';
-    const included = [];
-    if (meals.breakfast) included.push('Breakfast');
-    if (meals.lunch) included.push('Lunch');
-    if (meals.dinner) included.push('Dinner');
-    return included.length > 0 ? included.join(', ') : 'No meals included';
-  };
 
   if (packages.length === 0) {
     return (
@@ -113,41 +98,52 @@ const PackageGrid = ({ packages }) => {
   return (
     <div className="package-grid">
       {sortedTours.map(tour => {
-            const averageRating = averageRatings[tour._id];
-            return (
-              <div key={tour._id} className="tour-card">
-                <div className="tour-image">
-                  <img
-                    src={`http://localhost:4000/${tour.images[0]}`}
-                    alt={tour.name}
-                    onError={(e) => {
-                      e.target.src = 'https://picsum.photos/300/200';
-                    }}
-                  />
-                </div>
-                <div className="tour-info">
-                  <h3>{tour.name || 'Untitled Tour'}</h3>
-                  <div className="tour-details">
-                    <span>
-                      Price: <strong>${tour.price || 'N/A'}</strong>
-                    </span>
-                    <span>
-                      <i className="fas fa-tag"></i> {tour.packageCategories || 'General'}
-                    </span>
-                    <span>
-                      <i className="fas fa-star"></i>{' '}
-                      {averageRating ? `${averageRating} / 5` : 'No Rating'}
-                    </span>
-                  </div>
-                  <div className="tour-actions">
-                    <Link to="#" onClick={() => handleExploreNow(tour._id)} className="view-details-btn">
-                      Explore Now <i className="fas fa-arrow-right"></i>
-                    </Link>
-                  </div>
-                </div>
+        const averageRating = averageRatings[tour._id];
+        const isCompleted = isTourCompleted(tour.startDate);
+        
+        return (
+          <div key={tour._id} className="package-card">
+            <div className="package-image">
+              <img
+                src={`http://localhost:4000/${tour.images[0]}`}
+                alt={tour.name}
+                onError={(e) => {
+                  e.target.src = 'https://picsum.photos/300/200';
+                }}
+              />
+              {isCompleted && <span className="package-completed-tag">Completed</span>}
+            </div>
+            <div className="package-info">
+              <h3>{tour.name || 'Untitled Tour'}</h3>
+              <div className="package-details">
+                <span>
+                  <i className="fas fa-dollar-sign"></i>
+                  <strong>${tour.price || 'N/A'}</strong>
+                </span>
+                <span>
+                  <i className="fas fa-tag"></i>
+                  {tour.packageCategories || 'General'}
+                </span>
+                <span>
+                  <i className="fas fa-star"></i>
+                  {averageRating ? `${averageRating.toFixed(1)} / 5` : 'No Rating'}
+                </span>
               </div>
-            );
-          })}
+              <div className="package-actions">
+                <Link 
+                  to="#" 
+                  onClick={() => handleExploreNow(tour._id)} 
+                  className="package-view-btn"
+                >
+                  Explore Now
+                  {!isCompleted && <i className="fas fa-arrow-right"></i>}
+                  {isCompleted && ' (Tour Ended)'}
+                </Link>
+              </div>
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 };
