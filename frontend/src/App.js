@@ -17,6 +17,8 @@ import PopularTours from './Pages/PopularTours/PopularTours';
 import Checkout from './Pages/Checkout/Checkout';
 import './App.css';
 import { ThemeProvider } from './Context/ThemeContext';
+import WeatherSuggestion from './Pages/weatherSuggestion/WeatherSuggestion';
+
 
 function App() {
   return (
@@ -47,6 +49,7 @@ function App() {
                   <Route path="/terms/:section" element={<TermsAndConditions />} />
                   <Route path="/faq" element={<Faq />} />
                   <Route path="/review" element={<ReviewPage />} />
+                  <Route path="/weather" element={<WeatherSuggestion />} />
                 </Routes>
               </div>
             </BrowserRouter>
@@ -55,5 +58,3 @@ function App() {
     </AuthProvider>
   );
 }
-
-export default App;
