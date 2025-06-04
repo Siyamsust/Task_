@@ -84,6 +84,7 @@ app.post('/api/tours', upload.array('images'), tourController.createTour);
   // Update tour
 app.put('/api/tours/:id', upload.array('newImages'), tourController.updateTour);
 app.use('/api', toursRoutes);
+app.use('/api', require('./routes/weatherRoutes'));
 
 // Admin Routes
 app.use('/api/admin', adminAuthRoutes);
@@ -151,6 +152,7 @@ app.patch('/api/tours/:id/release-seats', tourController.releaseSeats);
 
 
 
+
 // Socket.IO connection handling
 io.on('connection', (socket) => {
   const userId = socket.handshake.query.userId;
@@ -189,4 +191,17 @@ app.use(errorHandler);
 // Start server
 server.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
+});
+
+const weatherRoute = require('./routes/weatherRoutes'); // ✅ Make sure this matches your filename
+
+app.use(express.json());
+app.use('/api', weatherRoute); // ✅ using a valid router
+
+app.listen(5000, () => {
+  console.log('Server running on http://localhost:5000');
+});
+
+app.get('/', (req, res) => {
+  res.send('Backend is running!');
 });
