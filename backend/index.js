@@ -140,7 +140,13 @@ app.use('/api/admin', adminAuthRoutes);
 // });
 app.patch('/api/tours/:id/increment-view', tourController.incrementViewCount);
 app.patch('/api/tours/:id/increment-booking', tourController.incrementBookingCount);
+app.patch('/api/tours/:id/book-seats', tourController.bookSeats);
 
+// Get seat availability
+app.get('/api/tours/:id/seat-availability', tourController.getSeatAvailability);
+
+// Release seats (for cancellations)
+app.patch('/api/tours/:id/release-seats', tourController.releaseSeats);
 
 
 

@@ -425,4 +425,127 @@ exports.incrementBookingCount = async (req, res) => {
   }
 };
 
+exports.bookSeats = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { seatsToBook } = req.body;
 
+    if (!seatsToBook || seatsToBook < 1) {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid number of seats to book'
+      });
+    }
+
+    const tour = await Tour.findById(id);
+    if (!tour) {
+      return res.status(404).json({
+        success: false,
+        error: 'Tour not found'
+      });
+    }
+
+    if (tour.availableSeats < seatsToBook) {
+      return res.status(400).json({
+        success: false,
+        error: `Only ${tour.availableSeats} seat${tour.availableSeats !== 1 ? 's' : ''} available`,
+        availableSeats: tour.availableSeats
+      });
+    }
+
+    tour.availableSeats -= seatsToBook;
+    tour.popularity.bookings += 1;
+    await tour.save();
+
+    res.json({
+      success: true,
+      message: 'Seats booked successfully',
+      tour,
+      seatsBooked: seatsToBook,
+      remainingSeats: tour.availableSeats
+    });
+
+  } catch (error) {
+    console.error('Error booking seats:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Server error while booking seats',
+      details: error.message
+    });
+  }
+};
+exports.releaseSeats = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { seatsToRelease } = req.body;
+
+    if (!seatsToRelease || seatsToRelease < 1) {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid number of seats to release'
+      });
+    }
+
+    const tour = await Tour.findById(id);
+    if (!tour) {
+      return res.status(404).json({
+        success: false,
+        error: 'Tour not found'
+      });
+    }
+
+    tour.availableSeats = Math.min(
+      tour.availableSeats + seatsToRelease,
+      tour.maxGroupSize || tour.availableSeats + seatsToRelease
+    );
+
+    if (tour.popularity.bookings > 0) {
+      tour.popularity.bookings -= 1;
+    }
+
+    await tour.save();
+
+    res.json({
+      success: true,
+      message: 'Seats released successfully',
+      tour,
+      seatsReleased: seatsToRelease,
+      availableSeats: tour.availableSeats
+    });
+
+  } catch (error) {
+    console.error('Error releasing seats:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Server error while releasing seats'
+    });
+  }
+};
+exports.getSeatAvailability = async (req, res) => {
+  try {
+    const tour = await Tour.findById(req.params.id);
+
+    if (!tour) {
+      return res.status(404).json({
+        success: false,
+        error: 'Tour not found'
+      });
+    }
+
+    res.json({
+      success: true,
+      tourId: tour._id,
+      tourName: tour.name,
+      maxGroupSize: tour.maxGroupSize || null,
+      availableSeats: tour.availableSeats,
+      totalBookings: tour.popularity.bookings
+    });
+
+  } catch (error) {
+    console.error('Error getting seat availability:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to get seat availability'
+    });
+  }
+};

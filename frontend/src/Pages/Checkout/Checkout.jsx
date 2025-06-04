@@ -11,7 +11,7 @@ import './Checkout.css';
 const Checkout = () => {
   const [step, setStep] = useState(1); 
   const { tourId } = useParams();
-  const { tours = [], loading } = useContext(ToursContext);
+  const { tours = [], loading, updateTour } = useContext(ToursContext);
   const { user } = useAuth(); 
   
   const [formData, setFormData] = useState({
@@ -28,7 +28,7 @@ const Checkout = () => {
     cardHolder: '',
     expiryDate: '',
     cvv: '',
-    travelers: 1, // Add travelers count
+    travelers: 1,
   });
 
   // Find the actual tour from context
@@ -41,6 +41,18 @@ const Checkout = () => {
 
   const handleSubmitContactInfo = (e) => {
     e.preventDefault();
+    
+    // Validate traveler count for group tours
+    if (selectedTour?.tourType?.group) {
+      const availableSeats = selectedTour?.availableSeats || 0;
+      const requestedTravelers = parseInt(formData.travelers);
+      
+      if (requestedTravelers > availableSeats) {
+        alert(`Sorry, only ${availableSeats} seat${availableSeats !== 1 ? 's' : ''} available for this tour.`);
+        return;
+      }
+    }
+    
     setStep(2);
     window.scrollTo(0, 0);
   };
@@ -50,6 +62,16 @@ const Checkout = () => {
 
     try {
       const token = localStorage.getItem('token');
+      const requestedTravelers = parseInt(formData.travelers);
+
+      // Final validation before booking
+      if (selectedTour?.tourType?.group) {
+        const availableSeats = selectedTour?.availableSeats || 0;
+        if (requestedTravelers > availableSeats) {
+          alert(`Sorry, only ${availableSeats} seat${availableSeats !== 1 ? 's' : ''} available for this tour.`);
+          return;
+        }
+      }
 
       const bookingResponse = await fetch('http://localhost:4000/api/bookings/add', {
         method: 'POST',
@@ -61,7 +83,7 @@ const Checkout = () => {
           email: user?.user?.email,
           tourId: tourId,
           startDate: selectedTour?.startDate || new Date().toISOString(),
-          travelers: formData.travelers
+          travelers: requestedTravelers
         })
       });
 
@@ -71,12 +93,31 @@ const Checkout = () => {
         throw new Error(bookingData.message || 'Failed to save booking');
       }
 
-      // Increment booking count
-      await fetch(`http://localhost:4000/api/tours/${tourId}/increment-booking`, {
-        method: 'PATCH'
+      // Increment booking count and reduce available seats
+      const updateResponse = await fetch(`http://localhost:4000/api/tours/${tourId}/book-seats`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          seatsToBook: requestedTravelers
+        })
       });
 
+      if (updateResponse.ok) {
+        const updatedTour = await updateResponse.json();
+        
+        // Update the tour in context if updateTour function is available
+        if (updateTour) {
+          updateTour(updatedTour.tour);
+        }
+      }
+
       alert("Payment processed successfully! Your booking is confirmed.");
+      
+      // Optionally redirect to a confirmation page
+      // navigate('/booking-confirmation');
+      
     } catch (err) {
       console.error("Error confirming booking:", err);
       alert("Failed to confirm booking. Please try again.");

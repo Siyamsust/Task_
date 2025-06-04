@@ -3,6 +3,19 @@ import { User, Mail, Phone, MapPin, Users } from 'lucide-react';
 import './ContactInfoForm.css';
 
 const ContactInfoForm = ({ formData, handleChange, handleSubmitContactInfo, selectedTour }) => {
+  // Calculate maximum travelers based on tour type
+  const getMaxTravelers = () => {
+    if (selectedTour) {
+      return selectedTour?.availableSeats || 0;
+    } else {
+      // For individual tours, allow up to 10 travelers
+      return 10;
+    }
+  };
+
+  const maxTravelers = getMaxTravelers();
+  const isGroupTour = selectedTour?.tourType?.group;
+
   return (
     <div className="card">
       <h2 className="card-title">Contact Information</h2>
@@ -82,7 +95,14 @@ const ContactInfoForm = ({ formData, handleChange, handleSubmitContactInfo, sele
           </div>
           
           <div className="form-group">
-            <label htmlFor="travelers" className="label">Number of Travelers</label>
+            <label htmlFor="travelers" className="label">
+              Number of Travelers
+              {isGroupTour && (
+                <span style={{ fontSize: '12px', color: 'var(--color-subtext)', fontWeight: 'normal' }}>
+                  ({maxTravelers} seats available)
+                </span>
+              )}
+            </label>
             <div className="input-wrapper">
               <div className="input-icon">
                 <Users size={16} />
@@ -95,13 +115,22 @@ const ContactInfoForm = ({ formData, handleChange, handleSubmitContactInfo, sele
                 className="input"
                 required
               >
-                {[...Array(10)].map((_, i) => (
-                  <option key={i + 1} value={i + 1}>
-                    {i + 1} {i + 1 === 1 ? 'Person' : 'People'}
-                  </option>
-                ))}
+                {maxTravelers === 0 ? (
+                  <option value="">No seats available</option>
+                ) : (
+                  [...Array(maxTravelers)].map((_, i) => (
+                    <option key={i + 1} value={i + 1}>
+                      {i + 1} {i + 1 === 1 ? 'Person' : 'People'}
+                    </option>
+                  ))
+                )}
               </select>
             </div>
+            {isGroupTour && maxTravelers === 0 && (
+              <p style={{ fontSize: '12px', color: 'var(--accent-error)', marginTop: '5px' }}>
+                This tour is fully booked.
+              </p>
+            )}
           </div>
         </div>
 
@@ -166,7 +195,11 @@ const ContactInfoForm = ({ formData, handleChange, handleSubmitContactInfo, sele
         </div>
 
         <div className="flex-end">
-          <button type="submit" className="button button-primary">
+          <button 
+            type="submit" 
+            className="button button-primary"
+            disabled={isGroupTour && maxTravelers === 0}
+          >
             Continue to Payment
           </button>
         </div>
