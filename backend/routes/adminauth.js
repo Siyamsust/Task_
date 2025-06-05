@@ -26,8 +26,8 @@ router.post('/login', async (req, res) => {
     const admin = await Admin.findOne({ email });
     
     if (admin && (await bcrypt.compare(password, admin.password))) {
-        const token = jwt.sign({ id: admin._id }, 'your_jwt_secret', { expiresIn: '1h' });
-        res.json({ token, user: { id: admin._id, email: admin.email } });
+        const token = jwt.sign({ id: admin._id, isAdmin: true }, 'your_jwt_secret', { expiresIn: '1h' });
+        res.json({ token, user: { id: admin._id, email: admin.email, isAdmin: true } });
     } else {
         res.status(401).json({ error: 'Invalid credentials' });
     }

@@ -25,7 +25,7 @@ const Signup = () => {
             const data = await response.json();
             if (response.ok) {
                 login(data); // Update context with user data including token
-                window.location.href = '/dashboard';
+                window.location.href = '/';
             } else {
                 setError(data.error);
             }

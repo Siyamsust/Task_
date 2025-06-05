@@ -18,6 +18,7 @@ const toursRoutes = require('./routes/tours');
 const tourController = require('./controllers/tour');
 const reviewRoutes = require('./routes/reviewRoutes');
 const companyRoutes = require('./routes/companyRoutes');
+const adminAuth = require('./middleware/adminAuth');
 
 //Admin Section
 const adminAuthRoutes = require('./routes/adminauth');
@@ -89,6 +90,7 @@ app.use('/api', require('./routes/weatherRoutes'));
 
 // Admin Routes
 app.use('/api/admin', adminAuthRoutes);
+app.use('/api/admin', adminAuth, adminAuthRoutes);
 
 // Get all tours
 
@@ -196,31 +198,12 @@ server.listen(PORT, () => {
 
 const weatherRoute = require('./routes/weatherRoutes'); // ✅ Make sure this matches your filename
 
-app.use(express.json());
 app.use('/api', weatherRoute); // ✅ using a valid router
-
-// ✅ Correct - only one connect call
-mongoose.connect('mongodb://localhost:27017/my_database_name', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-})
-.then(() => console.log('✅ Connected to MongoDB'))
-.catch((err) => console.error('❌ MongoDB connection error:', err));
-
-app.use(express.json());
 
 // Routes
 const placeRoutes = require('./routes/placeRoutes');
 app.use('/api', placeRoutes);
 
-// const PORT = 4000;
-// app.listen(PORT, () => {
-//   console.log(`Server is running on port ${PORT}`);
-// });
-
-app.listen(4000, () => {
-  console.log('Server running on http://localhost:4000');
-});
 
 app.get('/', (req, res) => {
   res.send('Backend is running!');

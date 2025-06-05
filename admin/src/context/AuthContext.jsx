@@ -5,6 +5,7 @@ const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -12,17 +13,28 @@ export const AuthProvider = ({ children }) => {
             try {
                 const userData = JSON.parse(atob(token.split('.')[1])); // Decode the token to get user data
                 setUser(userData);
+                console.log(`Yes, logged in: ${userData}`);
             } catch (error) {
                 console.error('Failed to decode token:', error);
                 localStorage.removeItem('token'); // Clear invalid token
             }
         }
+        setLoading(false); // <-- Set loading to false after check
     }, []);
 
-    const login = (userData) => {
-        setUser(userData);
-        const token = userData.token; // Assuming token is returned from the login API
-        localStorage.setItem('token', token); // Store token in localStorage
+    const login = (data) => {
+        const token = data.token;
+        if (token) {
+            localStorage.setItem('token', token);
+            try {
+                const userData = JSON.parse(atob(token.split('.')[1]));
+                setUser(userData);
+                console.log(`Saved user data: ${userData}`);
+            } catch (error) {
+                setUser(null);
+                localStorage.removeItem('token');
+            }
+        }
     };
 
     const logout = () => {
@@ -31,7 +43,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     return (
-        <AuthContext.Provider value={{ user, login, logout }}>
+        <AuthContext.Provider value={{ user, login, logout, loading }}>
             {children}
         </AuthContext.Provider>
     );
