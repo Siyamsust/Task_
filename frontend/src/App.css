@@ -90,7 +90,7 @@ a {
 [data-theme='dark'] {
    --background-primary: #1a1a1a;
   --background-tertiary: #4a5568;
-  
+  --background-secondary: #3a414d;
   --text-primary: #f7fafc;
   --text-secondary: #e2e8f0;
   --text-muted: #f5f8fc;
@@ -98,8 +98,8 @@ a {
   --border-color: #4a5568;
   --shadow-color: rgba(0, 0, 0, 0.3);
   
-  --primary-color: #4299e1;
-  --primary-hover: #3182ce;
+  --primary-color: #2e9fe5;
+  --primary-hover: #4c5d6c;
   --success-color: #48bb78;
   --success-hover: #38a169;
   --warning-color: #ed8936;
@@ -125,6 +125,7 @@ input, select, textarea {
 }
 
 button {
-  background-color: var(--primary-color);
+  background-color:linear-gradient( #4f46e5, #7c3aed);
+  background-color: #7c3aed;
   color: white;
 }

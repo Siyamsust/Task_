@@ -6,7 +6,6 @@
   flex-wrap: wrap;
   gap: 20px;
   justify-content: center;
-  padding: 20px;
 }
 
 .package-grid {
@@ -20,7 +19,7 @@
 /* Package Card - Renamed from tour-card to avoid conflicts */
 .package-card {
   width: 100%;
-  max-width: 320px; /* Add max-width for better control */
+  max-width: 280px; /* Add max-width for better control */
   background: var(--card-bg, white);
   border-radius: 16px;
   box-shadow: 0 4px 15px var(--shadow-color, rgba(0, 0, 0, 0.1));
@@ -89,7 +88,7 @@
   line-height: 1.3;
   /* Allow 2 lines max */
   display: -webkit-box;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 1;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -129,7 +128,7 @@
 }
 
 .package-view-btn {
-  background: var(--accent-color, #10b981);
+  background: linear-gradient( #4f46e5, #7c3aed);
   color: var(--accent-text, white);
   text-decoration: none;
   padding: 12px 20px;

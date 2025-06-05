@@ -33,9 +33,8 @@
 
 /* Main Container */
 .popular-packages-container {
-  max-width: 1500px;
+  width: 100%;
   min-height: 100vh;
-  background-color: var(--popular-background-primary, white);
   transition: background-color 0.3s ease;
   margin: 0 auto;
 }
@@ -68,7 +67,7 @@
 
 /* Search and Filter Controls */
 .popular-packages-controls {
-  max-width: 1500px;
+  max-width: 100%;
   margin: -30px auto 30px;
   padding: 0 20px;
 }

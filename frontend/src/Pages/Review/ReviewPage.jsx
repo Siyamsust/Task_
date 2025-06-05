@@ -253,9 +253,10 @@ const ReviewPage = () => {
   };
 
   const formatDate = (dateString) => {
-    const options = { year: 'numeric', month: 'long', day: 'numeric' };
-    return new Date(dateString).toLocaleDateString(undefined, options);
-  };
+  const options = { year: 'numeric', month: 'long', day: 'numeric' };
+  return new Date(dateString).toLocaleDateString('en-US', options);
+};
+
 
   const getTourById = (id) => {
     return tours.find(tour => tour._id === id) || {};
@@ -294,12 +295,22 @@ const ReviewPage = () => {
                 className={errors.tour ? 'error' : ''}
               >
                 <option value="">-- Select a tour --</option>
-                {userTours.map(tour => (
-                  <option key={tour._id} value={tour._id}>
-                    {tour.name} ({formatDate(tour.startDate)} to {formatDate(tour.endDate)})
-                  </option>
-                ))}
+                {userTours
+                  .filter(tour => {
+                    if (!tour.endDate) return false;
+                    const endDate = new Date(tour.endDate);
+                    const today = new Date();
+                    endDate.setHours(0, 0, 0, 0);
+                    today.setHours(0, 0, 0, 0);
+                    return endDate < today; // Only completed tours
+                  })
+                  .map(tour => (
+                    <option key={tour._id} value={tour._id}>
+                      {tour.name} ({formatDate(tour.startDate)} to {formatDate(tour.endDate)})
+                    </option>
+                  ))}
               </select>
+
               {errors.tour && <div className="error-message">{errors.tour}</div>}
             </div>
 
@@ -444,7 +455,7 @@ const ReviewPage = () => {
                     <div className="review-comment">{review.comment}</div>
                   )}
 
-                  
+
                   {review.photos && review.photos.length > 0 && (
                     <div className="review-photos">
                       {review.photos.map((photo, index) => (

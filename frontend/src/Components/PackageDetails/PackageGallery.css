@@ -375,7 +375,7 @@
 }
 
 .add-wishlist {
-  background-color: transparent;
+  background-color: #e11010;
   border: 1px solid var(--border-color) !important;
   color: var(--text-secondary);
 }

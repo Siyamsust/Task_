@@ -239,7 +239,7 @@
   justify-content: center;
   width: 100%;
   padding: 10px 16px;
-  background: var(--primary-color, #3498db);
+  background: linear-gradient( #4f46e5, #7c3aed);
   color: var(--button-text, white);
   text-decoration: none;
   border-radius: 6px;
@@ -259,12 +259,6 @@
   flex-shrink: 0;
 }
 
-.popular-tours .view-details-btn:hover {
-  background: var(--primary-hover, #2980b9);
-  transform: translateY(-1px);
-  text-decoration: none;
-  color: white;
-}
 
 .popular-tours .view-details-btn:hover i {
   transform: translateX(3px);

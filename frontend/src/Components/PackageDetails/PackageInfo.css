@@ -2,7 +2,7 @@
 :root {
   /* Light theme colors */
   --bg-primary: #ffffff;
-  --bg-secondary: #f8f9fa;
+  --bgg-secondary: #f8f9fa;
   --bg-tertiary: #f5f5f5;
   --text-primary: #333333;
   --text-secondary: #666666;
@@ -22,8 +22,8 @@
 /* Dark theme colors */
 [data-theme="dark"] {
   --bg-primary: #1a1a1a;
-  --bg-secondary: #2d2d2d;
-  --bg-tertiary: #363636;
+  --bgg-secondary: #2b2f32;
+  --bg-tertiary: #2d272a;
   --text-primary: #ffffff;
   --text-secondary: #cccccc;
   --text-tertiary: #aaaaaa;
@@ -303,7 +303,7 @@
   gap: 12px;
   margin-bottom: 1.5rem;
   padding: 15px;
-  background-color: var(--bg-secondary);
+  background-color: var(--bgg-secondary);
   border-radius: 8px;
   transition: background-color 0.3s ease;
 }
@@ -366,7 +366,7 @@
 }
 
 .book-now {
-  background-color: var(--accent-primary);
+  background-color: linear-gradient( #4f46e5, #7c3aed);
   color: white;
 }
 
@@ -376,8 +376,8 @@
 }
 
 .add-wishlist {
-  background-color: var(--bg-secondary);
-  color: var(--text-secondary);
+  background-color: #dd4e9a;
+  color: white;
 }
 
 .add-wishlist:hover {
@@ -450,7 +450,7 @@
 
 .detail-item {
   padding: 0.8rem;
-  background-color: var(--bg-secondary);
+  background-color: var(--bgg-secondary);
   border-radius: 8px;
   transition: background-color 0.3s ease;
 }
@@ -530,7 +530,7 @@
 
 .destination-item {
   padding: 1rem;
-  background-color: var(--bg-secondary);
+  background-color: var(--bgg-secondary);
   border-radius: 8px;
   border-left: 4px solid var(--accent-primary);
   transition: all 0.3s ease;
@@ -562,7 +562,7 @@
 
 .company-section {
   padding: 1.5rem;
-  background-color: var(--bg-secondary);
+  background-color: var(--bgg-secondary);
   border-radius: 8px;
   margin-top: 2rem;
   transition: all 0.3s ease;

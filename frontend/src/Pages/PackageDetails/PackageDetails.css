@@ -15,6 +15,9 @@
   height: 50vh;
   color: #666;
 }
+.review-rating{
+  color: yellow;
+}
 
 .loading-spinner {
   width: 50px;

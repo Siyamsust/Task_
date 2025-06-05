@@ -30,10 +30,7 @@ const PackageInfo = ({ tour, companyId }) => {
                 <span className="label">Duration</span>
                 <p>{tour.duration.days} days, {tour.duration.nights} nights</p>
               </div>
-              <div className="detail-item">
-                <span className="label">Group Size</span>
-                <p>Maximum {tour.maxGroupSize} people</p>
-              </div>
+              
               <div className="detail-item">
                 <span className="label">Price</span>
                 <p>${tour.price} per person</p>
