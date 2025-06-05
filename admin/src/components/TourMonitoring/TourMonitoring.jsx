@@ -1,109 +1,107 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import './TourMonitoring.css';
+import PackageInfo from '../TourDetails/PackageInfo';
+import PackageGallery from '../TourDetails/PackageGallery';
 
 const TourMonitoring = () => {
+  const [tours, setTours] = useState([]);
   const [activeTab, setActiveTab] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
-  
-  const [tours, setTours] = useState([
-    { 
-      id: 1, 
-      name: "Cox's Bazar Beach Tour", 
-      status: 'ongoing',
-      company: 'Travel Buddy Ltd',
-      startDate: '2023-05-15',
-      endDate: '2023-05-20',
-      participants: 24,
-      guide: 'Mohammad Rafiq',
-      location: "Cox's Bazar, Bangladesh",
-      lastUpdate: '2 hours ago'
-    },
-    { 
-      id: 2, 
-      name: 'Sundarbans Mangrove Forest Expedition', 
-      status: 'upcoming',
-      company: 'Green Tours',
-      startDate: '2023-06-10',
-      endDate: '2023-06-15',
-      participants: 18,
-      guide: 'Arif Hossain',
-      location: 'Sundarbans, Bangladesh',
-      lastUpdate: '1 day ago'
-    },
-    { 
-      id: 3, 
-      name: 'Sylhet Tea Gardens Tour', 
-      status: 'completed',
-      company: 'Explore Bangladesh',
-      startDate: '2023-04-20',
-      endDate: '2023-04-25',
-      participants: 30,
-      guide: 'Tania Akter',
-      location: 'Sylhet, Bangladesh',
-      lastUpdate: '5 days ago'
-    },
-    { 
-      id: 4, 
-      name: 'Rangamati Lake Adventure', 
-      status: 'cancelled',
-      company: 'Adventure Tours',
-      startDate: '2023-05-05',
-      endDate: '2023-05-10',
-      participants: 15,
-      guide: 'Kamal Ahmed',
-      location: 'Rangamati, Bangladesh',
-      lastUpdate: '3 days ago'
-    },
-    { 
-      id: 5, 
-      name: 'Saint Martin Island Tour', 
-      status: 'ongoing',
-      company: 'Island Explorers',
-      startDate: '2023-05-12',
-      endDate: '2023-05-17',
-      participants: 22,
-      guide: 'Sabina Akter',
-      location: 'Saint Martin, Bangladesh',
-      lastUpdate: '5 hours ago'
-    }
-  ]);
+  const [loading, setLoading] = useState(true);
+  const [selectedTourId, setSelectedTourId] = useState(null);
+  const [selectedTour, setSelectedTour] = useState(null);
+  const [galleryActiveImage, setGalleryActiveImage] = useState(0);
+  const [modalLoading, setModalLoading] = useState(false);
 
-  const handleStatusChange = (id, newStatus) => {
-    setTours(tours.map((tour) => (tour.id === id ? { ...tour, status: newStatus } : tour)));
+  useEffect(() => {
+    const fetchTours = async () => {
+      try {
+        const res = await axios.get('http://localhost:4000/api/tours');
+        const fetchedTours = Array.isArray(res.data) ? res.data : res.data.tours;
+        setTours(fetchedTours || []);
+      } catch (err) {
+        console.error('Failed to fetch tours:', err);
+        setTours([]); // fallback to empty array
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchTours();
+  }, []);
+
+  useEffect(() => {
+    if (selectedTourId) {
+      // Try to find in loaded tours first
+      const found = tours.find(t => t._id === selectedTourId);
+      if (found) {
+        setSelectedTour(found);
+        setGalleryActiveImage(0);
+      } else {
+        // Fetch from API if not found
+        setModalLoading(true);
+        axios.get(`http://localhost:4000/api/tours/${selectedTourId}`)
+          .then(res => {
+            setSelectedTour(res.data.tour || res.data);
+            setGalleryActiveImage(0);
+          })
+          .catch(err => {
+            setSelectedTour(null);
+          })
+          .finally(() => setModalLoading(false));
+      }
+    } else {
+      setSelectedTour(null);
+    }
+  }, [selectedTourId, tours]);
+
+  const handleStatusChange = async (id, newStatus) => {
+    try {
+      await axios.patch(`http://localhost:4000/api/tours/${id}/status`, { status: newStatus });
+      setTours(tours.map((tour) =>
+        tour._id === id ? { ...tour, status: newStatus } : tour
+      ));
+    } catch (error) {
+      console.error('Error updating status:', error);
+    }
   };
 
-  const filteredTours = tours.filter(tour => {
-    // Filter by tab
+  const filteredTours = tours.filter((tour) => {
     if (activeTab !== 'all' && tour.status !== activeTab) return false;
-    
-    // Filter by search term
-    if (searchTerm && !tour.name.toLowerCase().includes(searchTerm.toLowerCase()) && 
-        !tour.location.toLowerCase().includes(searchTerm.toLowerCase()) &&
-        !tour.company.toLowerCase().includes(searchTerm.toLowerCase())) {
+    if (
+      searchTerm &&
+      !tour.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
+      !tour.destinations.some(dest => dest.name.toLowerCase().includes(searchTerm.toLowerCase()))
+    ) {
       return false;
     }
-    
     return true;
   });
 
   const getStatusClass = (status) => {
-    switch(status) {
-      case 'ongoing': return 'status-ongoing';
-      case 'upcoming': return 'status-upcoming';
-      case 'completed': return 'status-completed';
-      case 'cancelled': return 'status-cancelled';
+    switch (status) {
+      case 'approved': return 'status-approved';
+      case 'pending': return 'status-pending';
+      case 'rejected': return 'status-rejected';
       default: return '';
     }
   };
 
   const getStatusIcon = (status) => {
-    switch(status) {
-      case 'ongoing': return <i className="fas fa-route"></i>;
-      case 'upcoming': return <i className="fas fa-calendar-alt"></i>;
-      case 'completed': return <i className="fas fa-check-circle"></i>;
-      case 'cancelled': return <i className="fas fa-ban"></i>;
+    switch (status) {
+      case 'approved': return <i className="fas fa-check-circle"></i>;
+      case 'pending': return <i className="fas fa-hourglass-half"></i>;
+      case 'rejected': return <i className="fas fa-times-circle"></i>;
       default: return null;
     }
+  };
+
+  // Helper to get company name (simulate, or use tour.company?.name if available)
+  const getCompanyName = (tour) => {
+    if (!tour) return '';
+    if (tour.company && tour.company.name) return tour.company.name;
+    if (tour.companyName) return tour.companyName;
+    return 'Unknown Company';
   };
 
   return (
@@ -111,131 +109,161 @@ const TourMonitoring = () => {
       <div className="monitoring-header">
         <h2>Tour Monitoring</h2>
         <div className="search-container">
-          <input 
-            type="text" 
-            placeholder="Search tours by name, location or company..." 
+          <input
+            type="text"
+            placeholder="Search tours by name or destination..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
           <i className="fas fa-search search-icon"></i>
         </div>
       </div>
-      
+
       <div className="monitoring-tabs">
-        <button 
-          className={activeTab === 'all' ? 'active' : ''} 
-          onClick={() => setActiveTab('all')}
-        >
-          All Tours
-        </button>
-        <button 
-          className={activeTab === 'ongoing' ? 'active' : ''} 
-          onClick={() => setActiveTab('ongoing')}
-        >
-          Ongoing
-        </button>
-        <button 
-          className={activeTab === 'upcoming' ? 'active' : ''} 
-          onClick={() => setActiveTab('upcoming')}
-        >
-          Upcoming
-        </button>
-        <button 
-          className={activeTab === 'completed' ? 'active' : ''} 
-          onClick={() => setActiveTab('completed')}
-        >
-          Completed
-        </button>
-        <button 
-          className={activeTab === 'cancelled' ? 'active' : ''} 
-          onClick={() => setActiveTab('cancelled')}
-        >
-          Cancelled
-        </button>
+        {['all', 'approved', 'pending', 'rejected'].map(tab => (
+          <button
+            key={tab}
+            className={activeTab === tab ? 'active' : ''}
+            onClick={() => setActiveTab(tab)}
+          >
+            {tab.charAt(0).toUpperCase() + tab.slice(1)}
+          </button>
+        ))}
       </div>
-      
+
       <div className="tours-count">
         <p>Showing {filteredTours.length} tours</p>
       </div>
-      
+
       <div className="tours-list">
-        {filteredTours.map((tour) => (
-          <div key={tour.id} className="tour-card">
-            <div className="tour-header">
-              <h3>{tour.name}</h3>
-              <div className={`tour-status ${getStatusClass(tour.status)}`}>
-                {getStatusIcon(tour.status)} {tour.status.charAt(0).toUpperCase() + tour.status.slice(1)}
+        {loading ? (
+          <p>Loading tours...</p>
+        ) : filteredTours.length > 0 ? (
+          filteredTours.map((tour) => (
+            <React.Fragment key={tour._id}>
+              <div className="tour-card">
+                <div className="tour-header">
+                  <h3>{tour.name}</h3>
+                  <div className={`tour-status ${getStatusClass(tour.status)}`}>
+                    {getStatusIcon(tour.status)}{' '}
+                    {tour.status.charAt(0).toUpperCase() + tour.status.slice(1)}
+                  </div>
+                </div>
+
+                <div className="tour-details">
+                  <div className="detail-item">
+                    <i className="fas fa-calendar"></i>
+                    <span>
+                      {new Date(tour.startDate).toLocaleDateString()} to {new Date(tour.endDate).toLocaleDateString()}
+                    </span>
+                  </div>
+                  <div className="detail-item">
+                    <i className="fas fa-map-marker-alt"></i>
+                    <span>
+                      {tour.destinations.map((d) => d.name).join(', ')}
+                    </span>
+                  </div>
+                  <div className="detail-item">
+                    <i className="fas fa-users"></i>
+                    <span>{tour.maxGroupSize || 0} seats</span>
+                  </div>
+                  <div className="detail-item">
+                    <i className="fas fa-dollar-sign"></i>
+                    <span>Price: ${tour.price}</span>
+                  </div>
+                  <div className="detail-item">
+                    <i className="fas fa-car"></i>
+                    <span>{tour.transportation?.type}</span>
+                  </div>
+                </div>
+
+                <div className="tour-actions">
+                  {tour.status === 'pending' && (
+                    <>
+                      <button
+                        className="action-btn approve-btn"
+                        onClick={() => handleStatusChange(tour._id, 'approved')}
+                      >
+                        <i className="fas fa-check"></i> Approve
+                      </button>
+                      <button
+                        className="action-btn reject-btn"
+                        onClick={() => handleStatusChange(tour._id, 'rejected')}
+                      >
+                        <i className="fas fa-times"></i> Reject
+                      </button>
+                      <button
+                        className="action-btn view-btn"
+                        onClick={() => setSelectedTourId(tour._id)}
+                      >
+                        <i className="fas fa-eye"></i> View Details
+                      </button>
+
+                    </>
+                  )}
+
+                  {tour.status === 'approved' && (
+                    <>
+                      <button
+                        className="action-btn view-btn"
+                        onClick={() => setSelectedTourId(tour._id)}
+                      >
+                        <i className="fas fa-eye"></i> View Details
+                      </button>
+
+                    </>
+                  )}
+
+                  {(tour.status === 'rejected' || tour.status === 'draft') && (
+                    <>
+                      <button
+                        className="action-btn pending-btn"
+                        onClick={() => handleStatusChange(tour._id, 'pending')}
+                      >
+                        <i className="fas fa-undo"></i> Re-submit
+                      </button>
+                      <button
+                        className="action-btn view-btn"
+                        onClick={() => setSelectedTourId(tour._id)}
+                      >
+                        <i className="fas fa-eye"></i> View Details
+                      </button>
+
+                    </>
+                  )}
+                </div>
               </div>
-            </div>
-            
-            <div className="tour-details">
-              <div className="detail-item">
-                <i className="fas fa-building"></i>
-                <span>{tour.company}</span>
-              </div>
-              <div className="detail-item">
-                <i className="fas fa-map-marker-alt"></i>
-                <span>{tour.location}</span>
-              </div>
-              <div className="detail-item">
-                <i className="fas fa-calendar"></i>
-                <span>{tour.startDate} to {tour.endDate}</span>
-              </div>
-              <div className="detail-item">
-                <i className="fas fa-users"></i>
-                <span>{tour.participants} participants</span>
-              </div>
-              <div className="detail-item">
-                <i className="fas fa-user-tie"></i>
-                <span>Guide: {tour.guide}</span>
-              </div>
-              <div className="detail-item">
-                <i className="fas fa-clock"></i>
-                <span>Last update: {tour.lastUpdate}</span>
-              </div>
-            </div>
-            
-            <div className="tour-actions">
-              <button className="action-btn view-btn">
-                <i className="fas fa-eye"></i> View Details
-              </button>
-              
-              {tour.status === 'upcoming' && (
-                <>
-                  <button 
-                    className="action-btn start-btn"
-                    onClick={() => handleStatusChange(tour.id, 'ongoing')}
-                  >
-                    <i className="fas fa-play"></i> Start Tour
-                  </button>
-                  <button 
-                    className="action-btn cancel-btn"
-                    onClick={() => handleStatusChange(tour.id, 'cancelled')}
-                  >
-                    <i className="fas fa-times"></i> Cancel
-                  </button>
-                </>
+              {/* Inline modal after the selected tour card */}
+              {selectedTourId === tour._id && (
+                <div className="admin-inline-modal-outer">
+                  <div className="admin-inline-modal">
+                    <button className="admin-modal-close" onClick={() => setSelectedTourId(null)}>&times;</button>
+                    {modalLoading || !selectedTour ? (
+                      <div style={{ textAlign: 'center', padding: '2rem' }}>Loading...</div>
+                    ) : (
+                      <div className="admin-modal-flex">
+                        <div className="admin-modal-gallery">
+                          <PackageGallery
+                            images={selectedTour.images || []}
+                            activeImage={galleryActiveImage}
+                            setActiveImage={setGalleryActiveImage}
+                          />
+                        </div>
+                        <div className="admin-modal-details">
+                          {/* Company Name */}
+                          <div className="admin-company-name">
+                            <i className="fas fa-building"></i> {getCompanyName(selectedTour)}
+                          </div>
+                          <PackageInfo tour={selectedTour} companyId={selectedTour.companyId} />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
               )}
-              
-              {tour.status === 'ongoing' && (
-                <button 
-                  className="action-btn complete-btn"
-                  onClick={() => handleStatusChange(tour.id, 'completed')}
-                >
-                  <i className="fas fa-check"></i> Complete
-                </button>
-              )}
-              
-              {(tour.status === 'completed' || tour.status === 'cancelled') && (
-                <button className="action-btn report-btn">
-                  <i className="fas fa-file-alt"></i> View Report
-                </button>
-              )}
-            </div>
-          </div>
-        ))}
-        
-        {filteredTours.length === 0 && (
+            </React.Fragment>
+          ))
+        ) : (
           <div className="no-tours">
             <i className="fas fa-search"></i>
             <p>No tours found matching your criteria</p>
