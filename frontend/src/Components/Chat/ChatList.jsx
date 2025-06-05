@@ -2,50 +2,79 @@ import React from 'react';
 import './ChatList.css';
 import avatar from '../Assets/chat_avatar.png';
 import {useAuth} from '../../Context/AuthContext';
-import {useState,useEffect} from 'react';
+import {useState, useEffect} from 'react';
 
-const ChatList = ({ chatType, selectedChat, setSelectedChat, userId, username }) => {
-  const {user}=useAuth();
-  const [chats,setChats]=useState([]);
-  const [isloading,setIsloading]=useState(false);
-  const [filter,setFilter]=useState('all');
+const ChatList = ({ chatType, selectedChat, setSelectedChat, userId, username, socket }) => {
+  const {user} = useAuth();
+  const [chats, setChats] = useState([]);
+  const [isloading, setIsloading] = useState(false);
+  const [filter, setFilter] = useState('all');
   const [showSearch, setShowSearch] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
-let response,responseData;
-  useEffect(()=>{
-    const fetchChats=async()=>{
-      setIsloading(true);
-      try {
-        const authtoken=localStorage.getItem('token');
-        console.log(authtoken);
-        if(!authtoken){
-          throw new Error('No token found');
+
+  const fetchChats = async () => {
+    setIsloading(true);
+    try {
+      const authtoken = localStorage.getItem('token');
+      if (!authtoken) {
+        throw new Error('No token found');
+      }
+      
+      const response = await fetch(`http://localhost:4000/api/chat/get-user-chat/${userId}?query=${chatType}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${authtoken}`
         }
-        console.log(userId);
-         response=await fetch(`http://localhost:4000/api/chat/get-user-chat/${userId}?query=${chatType}`,{
-          
-        })
-        responseData=await response.json();
-        console.log(responseData);
-        if(!response.ok){
-          throw new Error('Failed to fetch chats');
-        }
-        setChats(responseData || []);
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch chats');
       }
-      catch(error){
-        console.error('Error fetching chats:',error);
-        setChats([]);
-      }
-      finally{
-        setIsloading(false);
-      }
+
+      const responseData = await response.json();
+      setChats(responseData || []);
+    } catch (error) {
+      console.error('Error fetching chats:', error);
+      setChats([]);
+    } finally {
+      setIsloading(false);
     }
+  };
+
+  // Initial fetch of chats
+  useEffect(() => {
     if (userId) {
+      console.log('its happening');
+      console.log(userId);
       fetchChats();
     }
-  },[userId]);
+  }, [userId, chatType]);
+   
+  // Socket event handling
+  useEffect(() => {
+    if (socket) {
+      socket.on('posts', (data) => {
+        if (data.action === 'create' && data.updatedChat) {
+          // Check if the updated chat is for the current chat window
+          if (data.updatedChat.participants === userId) {
+            console.log(data.updatedChat.participants);
+            setSelectedChat(data.updatedChat);
+            fetchChats();
+          }
+        }
+      });
+    }
+
+    // Cleanup socket listener on component unmount
+    return () => {
+      if (socket) {
+        socket.off('posts');
+      }
+    };
+  }, [socket, selectedChat?._id]);
 
   const searchCompanies = async (query) => {
     if (!query.trim()) {
@@ -83,30 +112,27 @@ let response,responseData;
   };
 
   const handleCompanySelect = async (company) => {
-    const selectedData = chats.find(chat=>chat.companyId===company._id);
+    const selectedData = chats.find(chat => chat.companyId === company._id);
     let tempchat;
-    if(!selectedData){
-      
-    // Create a temporary chat object without saving to database
-    tempchat = {
-      _id: `temp_${company._id}`, // Temporary ID
-      companyName: company.name,
-      userName:username,
-      logo: company.logo || avatar,
-      messages: [],
-      lastMessage: '',
-      lastMessageTime: new Date(),
-      chatType:'comuse',
-      unreadCount: 0,
-      online: false,
-      companyId: company._id,
-      isTemporary: true // Flag to identify this is a temporary chat
-    };
-    console.log(tempchat);
-  }
-  else{
-     tempchat=selectedData;
-  }
+    
+    if (!selectedData) {
+      tempchat = {
+        _id: `temp_${company._id}`,
+        companyName: company.name,
+        userName: username,
+        logo: company.logo || avatar,
+        messages: [],
+        lastMessage: '',
+        lastMessageTime: new Date(),
+        chatType: 'comuse',
+        unreadCount: 0,
+        online: false,
+        companyId: company._id,
+        isTemporary: true
+      };
+    } else {
+      tempchat = selectedData;
+    }
 
     setSelectedChat(tempchat);
     setShowSearch(false);
@@ -178,13 +204,12 @@ let response,responseData;
               className={`chat-item ${selectedChat?._id === chat._id ? 'active' : ''}`}
               onClick={() => setSelectedChat(chat)}
             >
-              
               <div className="chat-avatar">
                 <img src={chat.logo || avatar} alt={chat.name} />
                 <span className={`status ${chat.online ? 'online' : 'offline'}`}></span>
               </div>
               <div className="chat-info">
-                <h3>{chat.companyId.name}</h3>
+                <h3>{chat.companyId?.name || chat.companyName}</h3>
                 <p>{chat.lastMessage}</p>
               </div>
               {chat.unreadCount > 0 && (

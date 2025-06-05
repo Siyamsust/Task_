@@ -7,6 +7,10 @@ const chatSchema = new mongoose.Schema({
     ref: 'User',
    
   },
+  adminId:{
+    type:mongoose.Schema.Types.ObjectId,
+    ref:'admin',
+  },
   userName: {
     type: String,
   required: function() { return this.chatType === 'aduse'||this.chatType==='comuse'; }

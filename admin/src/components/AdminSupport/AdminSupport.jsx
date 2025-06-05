@@ -2,8 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import './AdminSupport.css';
 import avatar from '../Assets/chat_avatar.png'; // Use a default avatar if needed
 import { useAuth } from '../../context/AuthContext';
+import socket from '../../socket'
 
-// Default admin ID (MongoDB ObjectId format)
 const DEFAULT_ADMIN_ID = '65f1a2b3c4d5e6f7a8b9c0d1'; // Valid 24-character hex string
 
 const AdminSupport = () => {
@@ -14,24 +14,123 @@ const AdminSupport = () => {
   const [activeChat, setActiveChat] = useState(null);
   const [newMessage, setNewMessage] = useState('');
   const messagesEndRef = useRef(null);
+  const messagesContainerRef = useRef(null); // Ref for the scrollable container
+  const chatMainRef = useRef(null); // Ref for the main chat container
+  const [showScrollButton, setShowScrollButton] = useState(false);
+  const chatHeaderRef = useRef(null);
+  const messageInputRef = useRef(null);
 
+  const fetchUserChats = async () => {
+    try {
+      const response = await fetch(`http://localhost:4000/api/chat/get-all-admin-chats?query=aduse`);
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error('Failed to fetch user chats');
+      }
+      console.log('User chats:', data);
+      setUserChats(Array.isArray(data) ? data : []);
+    } catch (error) {
+      console.error('Error fetching user chats:', error);
+      setUserChats([]);
+    }
+  };
+
+  const fetchCompanyChats = async () => {
+    try {
+      const response = await fetch(`http://localhost:4000/api/chat/get-all-admin-chats?query=adcom`);
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error('Failed to fetch company chats');
+      }
+      console.log('Company chats:', data);
+      setCompanyChats(Array.isArray(data) ? data : []);
+    } catch (error) {
+      console.error('Error fetching company chats:', error);
+      setCompanyChats([]);
+    }
+  };
+
+  // Initial fetch of chats
   useEffect(() => {
-    // Fetch all aduse chats (user-admin)
-    fetch(`http://localhost:4000/api/chat/get-all-admin-chats?query=aduse`)
-      .then(res => res.json())
-      .then(data => setUserChats(data));
-
-    // Fetch all adcom chats (company-admin)
-    fetch(`http://localhost:4000/api/chat/get-all-admin-chats?query=adcom`)
-      .then(res => res.json())
-      .then(data => setCompanyChats(data));
+    fetchUserChats();
+    fetchCompanyChats();
   }, []);
 
+  // Socket event handling
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [activeChat?.messages]);
+    if (socket) {
+      socket.on('posts', (data) => {
+        console.log('Received socket event:', data);
+        if (data.action === 'create' && data.updatedChat) {
+          // Update the active chat if it matches
+          if (activeChat && activeChat._id === data.updatedChat._id) {
+            setActiveChat(data.updatedChat);
+          }
+          
+          // Refresh the appropriate chat list
+          if (data.updatedChat.chatType === 'aduse') {
+            fetchUserChats();
+          } else if (data.updatedChat.chatType === 'adcom') {
+            fetchCompanyChats();
+          }
+        }
+      });
+    }
 
-  const chatList = filter === 'users' ? userChats : companyChats;
+    return () => {
+      if (socket) {
+        socket.off('posts');
+      }
+    };
+  }, [socket, activeChat]);
+
+  // Function to scroll to the bottom
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  // Auto-scroll to bottom when messages change
+  useEffect(() => {
+    scrollToBottom();
+  }, [activeChat?.messages?.length]);
+
+  // Measure header, input, and chat main heights and set messages container height
+  useEffect(() => {
+    const mainHeight = chatMainRef.current?.offsetHeight || 0;
+    const headerHeight = chatHeaderRef.current?.offsetHeight || 0;
+    const inputHeight = messageInputRef.current?.offsetHeight || 0;
+    const messagesContainer = messagesContainerRef.current;
+
+    if (messagesContainer && mainHeight > 0) {
+      const messagesHeight = mainHeight - headerHeight - inputHeight;
+      messagesContainer.style.height = `${messagesHeight}px`;
+      messagesContainer.style.overflowY = 'auto'; // Ensure scrolling is enabled
+
+      // Re-check scroll button visibility after layout change
+      const isAtBottom = messagesContainer.scrollHeight - messagesContainer.scrollTop <= messagesContainer.clientHeight + 100;
+      setShowScrollButton(!isAtBottom);
+    }
+
+  }, [activeChat, userChats, companyChats, messagesContainerRef.current, chatMainRef.current, chatHeaderRef.current, messageInputRef.current]); // Depend on refs to re-measure on resize/layout change
+
+  // Show/hide scroll button based on scroll position
+  useEffect(() => {
+    const container = messagesContainerRef.current;
+    if (!container) return;
+
+    const handleScroll = () => {
+      // Show button if scrolled up more than 100px from bottom
+      const isAtBottom = container.scrollHeight - container.scrollTop <= container.clientHeight + 100;
+      setShowScrollButton(!isAtBottom);
+    };
+
+    container.addEventListener('scroll', handleScroll);
+
+    return () => {
+      container.removeEventListener('scroll', handleScroll);
+    };
+  }, [messagesContainerRef.current]); // Re-attach listener if container changes
+
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
@@ -49,21 +148,18 @@ const AdminSupport = () => {
           chatId: activeChat._id,
           content: newMessage,
           userId: activeChat.userId || null,
+          adminId: DEFAULT_ADMIN_ID,
           companyId: activeChat.companyId || null,
           companyName: activeChat.companyName || null,
           userName: activeChat.userName || null,
           chatType: filter === 'users' ? 'aduse' : 'adcom',
-          senderId: user?.id || DEFAULT_ADMIN_ID // Use default admin ID if user.id is not available
+          senderId: DEFAULT_ADMIN_ID
         })
       });
 
       if (response.ok) {
-        const updatedChat = await response.json();
-        setActiveChat(prev => ({
-          ...prev,
-          messages: [...(prev.messages || []), updatedChat.messages[updatedChat.messages.length - 1]]
-        }));
         setNewMessage('');
+        // Socket event will handle the state update and auto-scrolling
       }
     } catch (error) {
       console.error('Error sending message:', error);
@@ -79,7 +175,6 @@ const AdminSupport = () => {
             <input
               type="text"
               placeholder="Search conversations..."
-              // Implement search if needed
               disabled
             />
           </div>
@@ -87,20 +182,26 @@ const AdminSupport = () => {
           <div className="filter-tabs">
             <button 
               className={`filter-btn ${filter === 'users' ? 'active' : ''}`}
-              onClick={() => setFilter('users')}
+              onClick={() => {
+                setFilter('users');
+                setActiveChat(null);
+              }}
             >
               Users
             </button>
             <button 
               className={`filter-btn ${filter === 'companies' ? 'active' : ''}`}
-              onClick={() => setFilter('companies')}
+              onClick={() => {
+                setFilter('companies');
+                setActiveChat(null);
+              }}
             >
               Companies
             </button>
           </div>
 
           <div className="chat-list">
-            {chatList.map(chat => (
+            {(filter === 'users' ? userChats : companyChats).map(chat => (
               <div 
                 key={chat._id}
                 className={`chat-item ${activeChat?._id === chat._id ? 'active' : ''}`}
@@ -120,15 +221,16 @@ const AdminSupport = () => {
         </div>
 
         {/* Main Chat Area */}
-        <div className="chat-main">
+        <div className="chat-main" ref={chatMainRef}> {/* Attach ref here */}
           {activeChat ? (
             <>
-              <div className="chat-header">
+              <div className="chat-header" ref={chatHeaderRef}> {/* Ref to measure header height */}
                 <div className="chat-user-info">
                   <img src={activeChat.logo || avatar} alt={activeChat.userName || activeChat.companyName} className="chat-avatar" />
                   <div>
                     <h3>{activeChat.userName || activeChat.companyName}</h3>
-                    <span className="status-indicator online">Online</span>
+                    <span className="status-indicator online"></span>
+                    <span className="status-text"> Online</span>
                   </div>
                 </div>
                 <div className="chat-actions">
@@ -144,7 +246,12 @@ const AdminSupport = () => {
                 </div>
               </div>
 
-              <div className="chat-messages">
+              {/* Chat Messages - Height set dynamically */}
+              <div 
+                className="chat-messages" 
+                ref={messagesContainerRef} 
+                // Style will be set dynamically in useEffect
+              > 
                 {(activeChat.messages || []).map(message => (
                   <div 
                     key={message._id} 
@@ -156,10 +263,21 @@ const AdminSupport = () => {
                     </div>
                   </div>
                 ))}
+                {/* Scroll reference at the end of messages */}
                 <div ref={messagesEndRef} />
               </div>
 
-              <form className="message-input" onSubmit={handleSendMessage}>
+              {/* Scroll to Bottom Button - Positioned relative to .chat-main */}
+              {showScrollButton && activeChat?.messages?.length > 0 && (
+                <button 
+                  className="scroll-to-bottom-btn"
+                  onClick={scrollToBottom}
+                >
+                  <i className="fas fa-arrow-down"></i>
+                </button>
+              )}
+
+              <form className="message-input" onSubmit={handleSendMessage} ref={messageInputRef}> {/* Ref to measure input height */}
                 <button type="button" className="attachment-btn">
                   <i className="fas fa-paperclip"></i>
                 </button>

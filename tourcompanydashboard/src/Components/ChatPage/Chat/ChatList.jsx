@@ -3,7 +3,7 @@ import './ChatList.css';
 import avatar from '../../Assets/chat_avatar.png';
 import {useState,useEffect} from 'react';
 
-const ChatList = ({ chatType, selectedChat, setSelectedChat,companyId,companyname,username,token }) => {
+const ChatList = ({ chatType, selectedChat, setSelectedChat,companyId,companyname,username,token ,socket}) => {
   
   const [chats,setChats]=useState([]);
   const [isloading,setIsloading]=useState(false);
@@ -14,43 +14,67 @@ const ChatList = ({ chatType, selectedChat, setSelectedChat,companyId,companynam
   const [isSearching, setIsSearching] = useState(false);
   console.log(username);
 let response,responseData;
-  useEffect(()=>{
-    const fetchChats=async()=>{
-      setIsloading(true);
-      try {
-        console.log("useEffect triggered. Token:", token, "Company ID:", companyId);
-        const authtoken=localStorage.getItem('token');
-        console.log("token",authtoken);
-        if(!token){
-          throw new Error('No token found');
-        }
-        console.log(token)
-         response=await fetch(`http://localhost:4000/api/chat/get-chat/${companyId}?query=${'comuse'}`
-, {
-          method: 'GET',
-      
-         
-        }
-         )
-        responseData=await response.json();
-        console.log(responseData);
-        if(!response.ok){
-          throw new Error('Failed to fetch chats');
-        }
-        setChats(responseData || []);
-      }
-      catch(error){
-        console.error('Error fetching chats:',error);
-        setChats([]);
-      }
-      finally{
-        setIsloading(false);
-      }                           
+const fetchChats=async()=>{
+  setIsloading(true);
+  try {
+    console.log("useEffect triggered. Token:", token, "Company ID:", companyId);
+    const authtoken=localStorage.getItem('token');
+    console.log("token",authtoken);
+    if(!token){
+      throw new Error('No token found');
     }
+    console.log(token)
+     response=await fetch(`http://localhost:4000/api/chat/get-chat/${companyId}?query=${'comuse'}`
+, {
+      method: 'GET',
+  
+     
+    }
+     )
+    responseData=await response.json();
+    console.log(responseData);
+    if(!response.ok){
+      throw new Error('Failed to fetch chats');
+    }
+    setChats(responseData || []);
+  }
+  catch(error){
+    console.error('Error fetching chats:',error);
+    setChats([]);
+  }
+  finally{
+    setIsloading(false);
+  }                           
+}
+  useEffect(()=>{
+    
     if (companyId) {
       fetchChats();
     }
   },[companyId]);
+  useEffect(() => {
+    if (socket) {
+      socket.on('posts', (data) => {
+        if (data.action === 'create' && data.updatedChat) {
+          // Check if the updated chat is for the current chat window
+          if (data.updatedChat.companyId === companyId) {
+            console.log(data.updatedChat.participants);
+            setSelectedChat(data.updatedChat);
+            fetchChats();
+          }
+        }
+      });
+    }
+
+    // Cleanup socket listener on component unmount
+    return () => {
+      if (socket) {
+        socket.off('posts');
+      }
+    };
+  }, [socket, selectedChat?._id]);
+
+   
 
   const searchCompanies = async (query) => {
     if (!query.trim()) {
@@ -61,7 +85,7 @@ let response,responseData;
     setIsSearching(true);
     try {
       const authtoken = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:4000/user/auth/search?query=${encodeURIComponent(query)}`, {
+      const response = await fetch(`http://localhost:4000/api/auth/search?query=${encodeURIComponent(query)}`, {
         headers: {
           'Authorization': `Bearer ${authtoken}`
         }

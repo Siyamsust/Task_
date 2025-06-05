@@ -2,14 +2,16 @@ import React, { useState,useEffect } from 'react';
 import ChatList from './Chat/ChatList';
 import ChatWindow from './Chat/ChatWindow';
 import {useAuth} from  '../../Context/AuthContext'
+import socket from '../../socket';
 import './ChatPage.css';
-
+const DEFAULT_ADMIN_ID = '65f1a2b3c4d5e6f7a8b9c0d1'; 
 const ChatPage = () => {
   const [chatType, setChatType] = useState('comuse'); // 'companies' or 'admin'
   const [selectedChat, setSelectedChat] = useState(null);
   const [chats,setChats]=useState([]);
-
+ 
   const {company} = useAuth();
+  
   console.log("this is",company); 
   useEffect(() => {
     if (company) {
@@ -33,7 +35,7 @@ const ChatPage = () => {
           throw new Error('No token found');
         }
         console.log(authtoken)
-         response=await fetch(`http://localhost:4000/api/chat/get-user-chat/${companyId}?query=${'adcom'}`
+         response=await fetch(`http://localhost:4000/api/chat/get-chat/${companyId}?query=${'adcom'}`
 , {
           method: 'GET',
           headers: {
@@ -74,6 +76,7 @@ else
     _id: null,
     messages:[],
     companyId:companyId,
+    adminId:DEFAULT_ADMIN_ID,
     companyName:companyname,
     chatType:'adcom',
     name: 'Admin Support',
@@ -117,6 +120,7 @@ else
                 username={username}
                 companyname={companyname}
                 token={company.token}
+                socket={socket}
               />
             </div>
             {selectedChat && (
@@ -126,6 +130,7 @@ else
                 companyname={companyname}
                 username={username}
                 companyId={companyId}
+             
               />
             )}
           </>
@@ -135,6 +140,7 @@ else
               chatType={chatType}
               selectedChat={adminChat}
               companyId={companyId}
+              socket={socket}
             />
           </div>
         )}

@@ -3,18 +3,41 @@ import './ChatWindow.css';
 import avatar from '../Assets/chat_avatar.png';
 import { useAuth } from '../../Context/AuthContext';
 
-const ChatWindow = ({ selectedChat, userId }) => {
+const ChatWindow = ({ chatType,selectedChat, userId, socket }) => {
   const [newMessage, setNewMessage] = useState('');
   const [messages, setMessages] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const { user } = useAuth();
-  console.log(selectedChat);
-  console.log(selectedChat.companyName+
-    '  '+selectedChat.userName
-  );
 
-console.log(selectedChat.chatType);
- 
+  // Add socket event listener for new messages
+  useEffect(() => {
+    if (socket) {
+      socket.on('posts', (data) => {
+        if (data.action === 'create' && data.updatedChat) {
+          // Check if the updated chat is for the current chat window
+          if (chatType === 'aduse' && data.updatedChat.chatType === 'aduse' && 
+            data.updatedChat.participants === userId) {
+      console.log('Updating admin-company chat messages:', data.updatedChat.messages);
+      setMessages(data.updatedChat.messages || []);
+    }
+        }
+      });
+    }
+
+    // Cleanup socket listener on component unmount
+    return () => {
+      if (socket) {
+        socket.off('posts');
+      }
+    };
+  }, [socket, selectedChat?._id]);
+
+  // Update messages when selectedChat changes
+  useEffect(() => {
+    if (selectedChat?.messages) {
+      setMessages(selectedChat.messages);
+    }
+  }, [selectedChat]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -22,6 +45,10 @@ console.log(selectedChat.chatType);
 
     try {
       const authtoken = localStorage.getItem('token');
+      if (!authtoken) {
+        throw new Error('No authentication token found');
+      }
+
       const response = await fetch('http://localhost:4000/api/chat/send-message', {
         method: 'POST',
         headers: {
@@ -31,22 +58,26 @@ console.log(selectedChat.chatType);
         body: JSON.stringify({
           chatId: selectedChat._id,
           content: newMessage,
-          userId:userId,
+          userId: userId,
           chatType: selectedChat.chatType,
-          companyId:selectedChat.companyId||null,
-          companyName:selectedChat.companyName||null,
-          userName:selectedChat.userName,
+          companyId: selectedChat.companyId || null,
+          companyName: selectedChat.companyName || null,
+          userName: selectedChat.userName,
           senderId: userId
         })
       });
 
-      if (response.ok) {
-        const updatedChat = await response.json();
-        setMessages(prevMessages => [...prevMessages, updatedChat.messages[updatedChat.messages.length - 1]]);
-        setNewMessage('');
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to send message');
       }
+
+      const updatedChat = await response.json();
+      setMessages(updatedChat.messages || []);
+      setNewMessage('');
     } catch (error) {
-      console.error('Error sending message:', error);
+      console.error('Error sending message:', error.message);
+      alert('Failed to send message: ' + error.message);
     }
   };
 
@@ -56,7 +87,7 @@ console.log(selectedChat.chatType);
         <div className="chat-recipient">
           <img src={selectedChat?.logo || avatar} alt={selectedChat?.name} />
           <div>
-            <h3>{selectedChat.companyName}</h3>
+            <h3>{selectedChat?.companyName || selectedChat?.name}</h3>
             <span className={`status ${selectedChat?.online ? 'online' : 'offline'}`}>
               {selectedChat?.online ? 'Online' : 'Offline'}
             </span>
@@ -67,18 +98,17 @@ console.log(selectedChat.chatType);
       <div className="messages-container">
         {isLoading ? (
           <div className="loading">Loading messages...</div>
-        ) : selectedChat.messages.length > 0 ? (
-          selectedChat.messages.map((message) => (
-            
+        ) : messages.length > 0 ? (
+          messages.map((message) => (
             <div 
-              key={message._id}
+              key={message._id || message.timestamp}
               className={`message ${message.senderId === userId ? 'sent' : 'received'}`}
             >
               <div className="message-content">
                 {message.content}
               </div>
               <span className="message-time">
-                {new Date(message.sentAt).toLocaleTimeString()}
+                {new Date(message.timestamp || message.sentAt).toLocaleTimeString()}
               </span>
             </div>
           ))
@@ -94,7 +124,7 @@ console.log(selectedChat.chatType);
           value={newMessage}
           onChange={(e) => setNewMessage(e.target.value)}
         />
-        <button type="submit" onClick={handleSubmit}>
+        <button type="submit">
           <i className="fas fa-paper-plane"></i>
         </button>
       </form>

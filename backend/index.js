@@ -7,8 +7,6 @@ const path = require('path');
 const fs = require('fs');
 const http = require('http');
 const socketIO = require('socket.io');
-const Message = require('./models/Message');
-
 const chatRoutes = require('./routes/chatRoutes');
 const authRoutes = require('./routes/authRoutes');
 const wishlistRoutes = require('./routes/wishlistRoutes');
@@ -16,8 +14,9 @@ const bookingRoutes = require('./routes/bookingRoutes');
 const errorHandler = require('./middleware/errorHandler');
 const toursRoutes = require('./routes/tours');
 const tourController = require('./controllers/tour');
+const companyRoutes = require('./routes/company');
 const reviewRoutes = require('./routes/reviewRoutes');
-
+const weatherRoute = require('./routes/weatherRoutes'); 
 //Admin Section
 const adminAuthRoutes = require('./routes/adminauth');
 // <-- register route
@@ -29,16 +28,47 @@ require('dotenv').config();
 const app = express();
 const server = http.createServer(app);
 
+// Define allowed origins
+const allowedOrigins = [
+  'http://localhost:3000',
+  'http://localhost:3001',
+  'http://localhost:3002',
+  'http://localhost:3003',
+  'http://localhost:3004'
+];
+
+// Updated CORS configuration
+app.use(cors({
+  origin: function(origin, callback) {
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+  credentials: true
+}));
+
+// Socket.IO configuration with CORS
+const io = require('socket.io')(server, {
+  cors: {
+    origin: allowedOrigins,
+    methods: ["GET", "POST"],
+    credentials: true
+  }
+});
+
 // Middleware
-app.use(cors());
 app.use(express.json());
 app.use(bodyParser.json());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 // Routes
+app.use('/company/auth', companyRoutes);
 app.use('/api/auth', authRoutes);
-app.use('/api/chats', chatRoutes);
+app.use('/api/chat', chatRoutes);
 app.use('/api/wishlist', wishlistRoutes);
 
 
@@ -48,12 +78,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.use('/reviews', reviewRoutes);
 // Socket.IO setup
-const io = socketIO(server, {
-  cors: {
-    origin: ["http://localhost:3000", "http://localhost:3001"],  // Allow both origins
-    methods: ["GET", "POST"]
-  }
-});
+
 
 // Add this test route at the top of your routes
 app.get('/api/test', (req, res) => {
@@ -63,9 +88,7 @@ app.get('/api/test', (req, res) => {
 
 const PORT = process.env.PORT || 4000;
 
-mongoose.connect(process.env.MONGODB_URI || "mongodb+srv://kaoser614:0096892156428@cluster0.2awol.mongodb.net/")
-  .then(() => console.log('Connected to MongoDB'))
-  .catch(err => console.error('MongoDB connection error:', err));
+
 
 // Configure multer for image upload
 const storage = multer.diskStorage({
@@ -153,55 +176,25 @@ app.patch('/api/tours/:id/release-seats', tourController.releaseSeats);
 
 
 
-// Socket.IO connection handling
-io.on('connection', (socket) => {
-  const userId = socket.handshake.query.userId;
-  
-  socket.join(userId);
-  
-  socket.on('send_message', async (data) => {
-    try {
-      const { chatId, content, recipientId } = data;
-      
-      // Save message to database
-      const message = await Message.create({
-        chatId,
-        senderId: userId,
-        content
-      });
-
-      // Emit to recipient
-      io.to(recipientId).emit('receive_message', message);
-      
-      // Emit to sender
-      socket.emit('receive_message', message);
-    } catch (error) {
-      console.error('Error sending message:', error);
-    }
-  });
-
-  socket.on('disconnect', () => {
-    console.log('User disconnected:', userId);
-  });
-});
-
-// Add error handler
 app.use(errorHandler);
-
-// Start server
-server.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
-
-const weatherRoute = require('./routes/weatherRoutes'); // ✅ Make sure this matches your filename
+// ✅ Make sure this matches your filename
 
 app.use(express.json());
 app.use('/api', weatherRoute); // ✅ using a valid router
-
-app.listen(4001, () => {
-  console.log('Server running on http://localhost:4000');
-});
-
 app.get('/', (req, res) => {
   res.send('Backend is running!');
 });
+mongoose.connect(process.env.MONGODB_URI || "mongodb+srv://kaoser614:0096892156428@cluster0.2awol.mongodb.net/")
+  .then(result => {
+    const server = http.createServer(app);
+    const io = require('./socket').init(server);
+    
+    server.listen(PORT, () => {
+      console.log(`Server is running on port ${PORT}`);
+    });
+  })
+  .catch(err => {
+    console.error('Database connection failed:', err);
+  });
+
+
