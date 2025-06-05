@@ -13,4 +13,4 @@ router.get('/tours', tourController.getTours);
 router.get('/companytours/:companyId', tourController.getCompanyTours);
 router.delete('/tours/:id', tourController.deleteTour);
 router.patch('/tours/:id/status', tourController.updateTourStatus);
-module.exports = router;
+module.exports = router; 
