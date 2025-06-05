@@ -141,10 +141,11 @@
   box-shadow: 0 4px 15px var(--upcoming-shadow-color, rgba(0,0,0,0.1));
   overflow: hidden;
   transition: all 0.3s ease;
-  width: 350px;
+  width: 280px;
   flex-shrink: 0;
   position: relative;
   border: 1px solid var(--upcoming-border-color, #ddd);
+ 
 }
 
 .upcoming-tour-card:hover {
@@ -190,14 +191,21 @@
 
 .upcoming-tour-info h3 {
   color: var(--upcoming-text-primary, #333);
-  font-size: 1.4rem;
+  font-size: 1rem;
   margin-bottom: 15px;
   font-weight: 700;
   line-height: 1.3;
   transition: color 0.3s ease;
   word-wrap: break-word;
   hyphens: auto;
+
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
+
 
 /* Tour Details */
 .upcoming-tour-details {
@@ -239,7 +247,7 @@
 
 .upcoming-view-details-btn {
   width: 100%;
-  background: var(--upcoming-accent-color, green);
+  background: linear-gradient( #4f46e5, #7c3aed);
   color: var(--upcoming-accent-text, white);
   border: none;
   padding: 12px 20px;
@@ -256,26 +264,8 @@
   overflow: hidden;
 }
 
-.upcoming-view-details-btn::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-  transition: left 0.5s ease;
-}
 
-.upcoming-view-details-btn:hover::before {
-  left: 100%;
-}
 
-.upcoming-view-details-btn:hover {
-  background: var(--upcoming-primary-color, #3498db);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
-}
 
 .upcoming-view-details-btn i {
   transition: transform 0.3s ease;

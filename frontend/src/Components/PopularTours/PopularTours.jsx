@@ -119,7 +119,7 @@ const PopularTours = () => {
       </div>
       <div className="tour-scroll-container">
         <div className="tour-row">
-          {toursToDisplay.slice(0, 5).map(tour => {
+          {toursToDisplay.slice(0, 4).map(tour => {
             if (!tour || !tour._id) return null;
 
             const averageRating = averageRatings[tour._id];

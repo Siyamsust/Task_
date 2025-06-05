@@ -116,7 +116,7 @@
 
 .book-now {
   background: var(--btn-primary);
-  color: white;
+  color: rgb(255, 255, 255);
 }
 
 .book-now:hover {
@@ -124,7 +124,7 @@
 }
 
 .add-wishlist {
-  background-color: transparent;
+  background: #ef10e0 !important;
   border: 1px solid var(--btn-outline-border) !important;
   color: var(--text-color);
 }

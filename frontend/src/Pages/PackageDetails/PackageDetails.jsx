@@ -144,9 +144,7 @@ const PackageDetails = () => {
                     </div>
                   </div>
                 </div>
-                <div className="review-date">
-                  {review.createdAt ? new Date(review.createdAt).toLocaleDateString() : 'Date not available'}
-                </div>
+                
               </div>
               {review.comment && (
                 <div className="review-comment">

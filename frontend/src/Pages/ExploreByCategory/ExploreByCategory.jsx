@@ -107,19 +107,25 @@ const ExploreByCategory = () => {
 };
 
 export default ExploreByCategory;
+const isTourCompleted = (startDate) => {
+  if (!startDate) return false;
+  const now = new Date();
+  const tourStartDate = new Date(startDate);
+  return tourStartDate < now;
+};
 
 // Updated TourCard component with unique class names
 const ExploreTourCard = ({ tour, onExplore }) => {
-  // Average rating fallback if you want to pass it as prop or compute here
   const averageRating = tour.averageRating ?? tour.popularity?.rating?.average ?? 0;
 
-  // Convert packageCategories array or string into display string
   let categoriesDisplay = 'General';
   if (Array.isArray(tour.packageCategories)) {
     categoriesDisplay = tour.packageCategories.join(', ');
   } else if (typeof tour.packageCategories === 'string') {
     categoriesDisplay = tour.packageCategories;
   }
+
+  const completed = isTourCompleted(tour.startDate);
 
   return (
     <div className="explore-tour-card">
@@ -129,20 +135,14 @@ const ExploreTourCard = ({ tour, onExplore }) => {
           alt={tour.name}
           onError={(e) => { e.target.src = 'https://picsum.photos/300/200'; }}
         />
+        {completed && <span className="tour-completed-tag">Completed</span>}
       </div>
       <div className="explore-tour-info">
         <h3>{tour.name || 'Untitled Tour'}</h3>
         <div className="explore-tour-details">
-          <span>
-            Price: <strong>${tour.price ?? 'N/A'}</strong>
-          </span>
-          <span>
-            <i className="fas fa-tag"></i> {categoriesDisplay}
-          </span>
-          <span>
-            <i className="fas fa-star"></i>{' '}
-            {averageRating ? `${averageRating.toFixed(1)} / 5` : 'No Rating'}
-          </span>
+          <span>Price: <strong>${tour.price ?? 'N/A'}</strong></span>
+          <span><i className="fas fa-tag"></i> {categoriesDisplay}</span>
+          <span><i className="fas fa-star"></i> {averageRating ? `${averageRating.toFixed(1)} / 5` : 'No Rating'}</span>
         </div>
         <div className="explore-tour-actions">
           <button onClick={() => onExplore && onExplore(tour._id)} className="explore-view-details-btn">

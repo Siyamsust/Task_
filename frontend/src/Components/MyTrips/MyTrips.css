@@ -1,3 +1,29 @@
+:root {
+  --bg-card: #fff;
+  --text-color: #000;
+  --subtext-color: #777;
+  --highlight-color: #3498db;
+  --availability-color: #e67e22;
+  --bg-light: #f8f9fa;
+  --btn-primary: #2563eb;
+  --btn-primary-hover: #2980b9;
+  --btn-outline-border: #ddd;
+  --btn-outline-hover: #f8f9fa;
+}
+
+[data-theme='dark'] {
+  --bg-card: #1e1e1e;
+  --text-color: #f1f1f1;
+  --subtext-color: #aaa;
+  --highlight-color: #4ea8de;
+  --availability-color: #f39c12;
+  --bg-light: #2c2c2c;
+  --btn-primary: #3b82f6;
+  --btn-primary-hover: #2563eb;
+  --btn-outline-border: #444;
+  --btn-outline-hover: #333;
+}
+
 .my-trips {
   padding: 20px;
 }
@@ -40,7 +66,7 @@
 }
 
 .trip-card {
-  background: white;
+  background: var(--bg-card);
   border-radius: 12px;
   overflow: hidden;
   box-shadow: var(--shadow-sm);

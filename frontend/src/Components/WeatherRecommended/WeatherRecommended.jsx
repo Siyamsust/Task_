@@ -80,7 +80,7 @@ const WeatherRecommended = () => {
       </div>
       <div className="tour-scroll-container">
         <div className="tour-row">
-          {tours.map(tour => {
+          {tours.slice(0,4).map(tour => {
             const averageRating = averageRatings[tour._id];
             return (
               <div key={tour._id} className="tour-card">

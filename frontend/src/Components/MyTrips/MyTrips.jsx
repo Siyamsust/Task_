@@ -2,14 +2,25 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './MyTrips.css';
 import { useAuth } from '../../Context/AuthContext';
-
+import { useNavigate } from 'react-router-dom';
 const MyTrips = () => {
   const [bookings, setBookings] = useState([]);
   const [filter, setFilter] = useState('all');
   const [error, setError] = useState('');
   const { user } = useAuth();
-
+  const navigate = useNavigate();
+  const handleViewDetails = async (tourId) => {
+    try {
+      await axios.patch(`http://localhost:4000/api/tours/${tourId}/increment-view`);
+      navigate(`/package/${tourId}`);
+    } catch (error) {
+      console.error('Failed to increment view count:', error);
+      navigate(`/package/${tourId}`); // Navigate anyway
+    }
+  };
   useEffect(() => {
+
+
     const fetchBookings = async () => {
       const token = localStorage.getItem('token');
       if (!token) {
@@ -53,35 +64,35 @@ const MyTrips = () => {
   }, [user]);
 
   // Filter bookings based on status
- const filteredTrips = bookings.filter(trip => {
-  if (filter === 'all') return true;
-  if (!trip.startDate) return false;
+  const filteredTrips = bookings.filter(trip => {
+    if (filter === 'all') return true;
+    if (!trip.startDate) return false;
 
-  const tripDate = new Date(trip.startDate);
-  const today = new Date();
+    const tripDate = new Date(trip.startDate);
+    const today = new Date();
 
-  // Set both to midnight for clean date comparison
-  tripDate.setHours(0, 0, 0, 0);
-  today.setHours(0, 0, 0, 0);
+    // Set both to midnight for clean date comparison
+    tripDate.setHours(0, 0, 0, 0);
+    today.setHours(0, 0, 0, 0);
 
-  if (filter === 'upcoming') {
-    return tripDate.getTime() >= today.getTime();
-  }
+    if (filter === 'upcoming') {
+      return tripDate.getTime() >= today.getTime();
+    }
 
-  if (filter === 'completed') {
-    return tripDate.getTime() < today.getTime();
-  }
-  console.log({
-  trip: trip.name,
-  tripDate: trip.startDate,
-  tripTimestamp: tripDate.getTime(),
-  todayTimestamp: today.getTime(),
-  result: tripDate.getTime() >= today.getTime()
-});
+    if (filter === 'completed') {
+      return tripDate.getTime() < today.getTime();
+    }
+    console.log({
+      trip: trip.name,
+      tripDate: trip.startDate,
+      tripTimestamp: tripDate.getTime(),
+      todayTimestamp: today.getTime(),
+      result: tripDate.getTime() >= today.getTime()
+    });
 
 
-  return true;
-});
+    return true;
+  });
 
 
   if (error) {
@@ -136,7 +147,13 @@ const MyTrips = () => {
                 </div>
                 <div className="trip-footer">
                   <span className="price">${trip.price || 0}</span>
-                  <button className="view-details">View Details</button>
+                  <button
+                    className="view-details"
+                    onClick={() => handleViewDetails(trip.tourId || trip._id)}
+                  >
+                    View Details
+                  </button>
+
                 </div>
               </div>
             </div>

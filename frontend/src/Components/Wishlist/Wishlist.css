@@ -465,7 +465,7 @@ input:checked + .slider:before {
 }
 
 .book-now {
-  background: var(--primary-color);
+  background: linear-gradient( #4f46e5, #7c3aed);
   color: white;
   padding: 8px 16px;
   border: none;
@@ -475,11 +475,7 @@ input:checked + .slider:before {
   font-weight: 500;
 }
 
-.book-now:hover {
-  background: var(--secondary-color);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(77, 171, 247, 0.3);
-}
+
 
 /* Dark mode specific enhancements for wishlist */
 [data-theme="dark"] .wishlist-card {
