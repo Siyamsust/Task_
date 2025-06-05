@@ -17,6 +17,7 @@ const errorHandler = require('./middleware/errorHandler');
 const toursRoutes = require('./routes/tours');
 const tourController = require('./controllers/tour');
 const reviewRoutes = require('./routes/reviewRoutes');
+const companyRoutes = require('./routes/companyRoutes');
 
 //Admin Section
 const adminAuthRoutes = require('./routes/adminauth');
@@ -37,10 +38,10 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 // Routes
+app.use('/company/auth', companyRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/chats', chatRoutes);
 app.use('/api/wishlist', wishlistRoutes);
-
 
 app.use('/api/bookings', bookingRoutes);
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));

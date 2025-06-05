@@ -247,4 +247,14 @@ router.get('/tour/:tourId/count', authMiddleware, async (req, res) => {
   }
 });
 
+// Get all bookings (for admin dashboard)
+router.get('/all', async (req, res) => {
+  try {
+    const bookings = await Booking.find();
+    res.json({ success: true, bookings });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Failed to fetch all bookings', error: error.message });
+  }
+});
+
 module.exports = router;

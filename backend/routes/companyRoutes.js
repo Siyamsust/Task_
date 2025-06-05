@@ -152,4 +152,13 @@ router.post('/register', async (req, res) => {
       });
     }
   });
+  // Get all companies (for dashboard analytics)
+  router.get('/companies', async (req, res) => {
+    try {
+      const companies = await Company.find();
+      res.json({ success: true, companies });
+    } catch (error) {
+      res.status(500).json({ success: false, message: 'Failed to fetch companies', error: error.message });
+    }
+  });
   module.exports = router; 
