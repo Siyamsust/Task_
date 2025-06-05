@@ -18,44 +18,50 @@ import Checkout from './Pages/Checkout/Checkout';
 import './App.css';
 import { ThemeProvider } from './Context/ThemeContext';
 import WeatherSuggestion from './Pages/weatherSuggestion/WeatherSuggestion';
-
+import Places from './Pages/Places'; // adjust path if needed
+import HotelRestaurants from './Pages/HotelRestaurants';
 
 function App() {
   return (
     <AuthProvider>
-          <ToursProvider>
-            <ThemeProvider>
-            <BrowserRouter>
-              <div className="App">
-                <Navbar />
-                <Routes>
-                  <Route path="/" element={<Homepage />} />
-                  <Route path="/package/:id" element={<PackageDetails />} />
-                  <Route path="/login" element={<LoginSignup />} />
-                  <Route path="/chat" element={<ChatPage />} />
-                  <Route path="/populartours" element={<PopularTours />} />
-                  <Route 
-                    path="/profile" 
-                    element={
-                      <PrivateRoute>
-                        <ProfilePage />
-                      </PrivateRoute>
-                    } 
-                  />
-                  <Route path="/search" element={<SearchFilter />} />
-                  <Route path="/explore/:category?" element={<ExploreByCategory />} />
-                  <Route path="/checkout/:tourId" element={<Checkout />} />
-                  <Route path="/terms" element={<TermsAndConditions />} />
-                  <Route path="/terms/:section" element={<TermsAndConditions />} />
-                  <Route path="/faq" element={<Faq />} />
-                  <Route path="/review" element={<ReviewPage />} />
-                  <Route path="/weather" element={<WeatherSuggestion />} />
-                </Routes>
-              </div>
-            </BrowserRouter>
-            </ThemeProvider>
-          </ToursProvider>
+      <ToursProvider>
+        <ThemeProvider>
+          <BrowserRouter>
+            <div className="App">
+              <Navbar />
+              <Routes>
+                <Route path="/" element={<Homepage />} />
+                <Route path="/package/:id" element={<PackageDetails />} />
+                <Route path="/login" element={<LoginSignup />} />
+                <Route path="/chat" element={<ChatPage />} />
+                <Route path="/populartours" element={<PopularTours />} />
+                <Route path="/weather" element={<WeatherSuggestion />} />
+                <Route path="/places" element={<Places />} />
+                <Route path="/places" element={<HotelRestaurants />} />
+
+                <Route 
+                  path="/profile" 
+                  element={
+                    <PrivateRoute>
+                      <ProfilePage />
+                    </PrivateRoute>
+                  } 
+                />
+                <Route path="/search" element={<SearchFilter />} />
+                <Route path="/explore/:category?" element={<ExploreByCategory />} />
+                <Route path="/checkout/:tourId" element={<Checkout />} />
+                <Route path="/terms" element={<TermsAndConditions />} />
+                <Route path="/terms/:section" element={<TermsAndConditions />} />
+                <Route path="/faq" element={<Faq />} />
+                <Route path="/review" element={<ReviewPage />} />
+                <Route path="/weather" element={<WeatherSuggestion />} />
+              </Routes>
+            </div>
+          </BrowserRouter>
+        </ThemeProvider>
+      </ToursProvider>
     </AuthProvider>
   );
 }
+
 export default App;
