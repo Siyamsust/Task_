@@ -1,11 +1,12 @@
 // src/components/Auth/Login.js
 import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import './Login.css';
 
 const Login = () => {
     const { login } = useAuth();
+    const navigate = useNavigate();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
@@ -20,8 +21,8 @@ const Login = () => {
             });
             const data = await response.json();
             if (response.ok) {
-                login(data); // Update context with user data including token
-                window.location.href = '/dashboard';
+                login(data); // data contains { token, user }
+                navigate('/');
             } else {
                 setError(data.error);
             }
@@ -56,7 +57,7 @@ const Login = () => {
                 <button type="submit" className="btn">Login</button>
             </form>
             <p>
-                Don't have an account? <Link to="/signup">Sign Up</Link>
+               Please get credential from any current admin member.
             </p>
         </div>
     );

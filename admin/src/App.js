@@ -11,6 +11,7 @@ import Reports from './components/Reports/Reports';
 import Login from './components/Login/Login';
 import Signup from './components/Signup/Signup';
 import Settings from './components/settings/settings';
+import ProtectedRoute from './components/ProtectedRoute';
 import './App.css';
 
 function App() {
@@ -22,15 +23,13 @@ function App() {
           
           <div className="main-content">
             <Routes>
-            <Route path="/login" element={<Login />} />
-              <Route path="/" element={<Dashboard />} />
-              <Route path="/tour-monitoring" element={<TourMonitoring />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/" element={<ProtectedRoute>  <Dashboard />  </ProtectedRoute>} />
+              <Route path="/tour-monitoring" element={<ProtectedRoute>  <TourMonitoring /> </ProtectedRoute> } />
+              <Route path="/admin-support" element={<ProtectedRoute>  <AdminSupport /> </ProtectedRoute> } />
+              <Route path="/settings" element={<ProtectedRoute>  <Settings /> </ProtectedRoute> } />
               <Route path="/destination-search" element={<DestinationSearch />} />
-              <Route path="/admin-support" element={<AdminSupport />} />
               <Route path="/reports" element={<Reports />} />
-              <Route path="/settings" element={<Settings />}/> 
-              <Route path="/signup" element={<Signup />} />
-              <Route path="/boikalake" element={<h2>Welcome to the Admin Dashboard</h2>} />
             </Routes>
           </div>
         </div>

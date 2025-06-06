@@ -1,53 +1,73 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import './WeatherSuggestion.css';
+import fallbackImage from './pexels-pixabay-76969.jpg';
 
-function WeatherSuggestion() {
-const [city, setCity] = useState('');
-const [weather, setWeather] = useState(null);
-const [tours, setTours] = useState([]);
+const WeatherSuggestion = () => {
+  const [tourWeather, setTourWeather] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [tourSearch, setTourSearch] = useState("");
 
-const fetchWeather = async () => {
-try {
-const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/weather/${city}`);
-const data = await res.json();
-setWeather({ temp: data.temp, condition: data.weather });
-setTours(data.suggestions);
-} catch (err) {
-alert('Could not fetch weather.');
-}
-};
+  const fetchWeather = async () => {
+    setLoading(true);
+    try {
+      const res = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/weather/Dhaka`);
+      const suggestions = res.data.suggestions || [];
+      setTourWeather(suggestions);
+    } catch (err) {
+      console.error("Error fetching tour weather:", err);
+    }
+    setLoading(false);
+  };
 
-return (
-<div className="weather-container">
-<h2>🌤 Tour Suggestion by Weather</h2>
-<input
-type="text"
-placeholder="Enter city name"
-value={city}
-onChange={(e) => setCity(e.target.value)}
-/>
-<button onClick={fetchWeather}>Get Suggestions</button>
+  useEffect(() => {
+    fetchWeather();
+  }, []);
 
-php-template
-Copy
-Edit
-  {weather && (
-    <div className="weather-info">
-      <p><strong>Weather:</strong> {weather.condition}</p>
-      <p><strong>Temperature:</strong> {weather.temp}°C</p>
+  const filteredTours = tourWeather.filter(t =>
+    t.name?.toLowerCase().includes(tourSearch?.toLowerCase())
+  );
+
+  return (
+    <div className="weather-container">
+      <h2>🌄 Weather at Tour Places</h2>
+      <input
+        type="text"
+        placeholder="🔍 Search tour place..."
+        className="search-bar"
+        value={tourSearch}
+        onChange={(e) => setTourSearch(e.target.value)}
+      />
+
+      {loading ? (
+        <p className="loading">Loading tour weather...</p>
+      ) : (
+        <div className="city-grid">
+          {filteredTours.map((tour, index) => (
+            <div key={index} className="city-card">
+              <div className="image-container">
+                <img
+                  src={fallbackImage}
+                  alt={tour.name}
+                  className="tour-img"
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = fallbackImage;
+                  }}
+                />
+                <div className="overlay-text">
+                  <h3>{tour.name}</h3>
+                  <p><strong>Weather:</strong> {tour.weather ?? 'Unavailable'}</p>
+                  <p><strong>Temperature:</strong> {tour.temp ?? 'N/A'}°C</p>
+                  <p className="highlight">🌟 Tour Spot</p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
-  )}
-
-  <div className="tour-cards">
-    {tours.map((tour, index) => (
-      <div key={index} className="tour-card">
-        <img src={tour.image} alt={tour.name} />
-        <p>{tour.name}</p>
-      </div>
-    ))}
-  </div>
-</div>
-);
-}
+  );
+};
 
 export default WeatherSuggestion;

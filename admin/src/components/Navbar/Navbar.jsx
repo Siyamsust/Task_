@@ -1,9 +1,16 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import './Navbar.css';
 import { Icon } from '@iconify/react';
 
 const Navbar = () => {
+  const navigate = useNavigate();
+  const {logout} = useAuth();
+  const handleLogOut = ()=>{
+    logout();
+    navigate('/Login')
+  }
   return (
     <nav className="navbar">
       <div className="logo-container">
@@ -40,7 +47,7 @@ const Navbar = () => {
         <li className="user-profile">
           <Icon icon="mdi:account" height={30}/>
           <span>Admin User</span>
-          <Link to="/logout" className="logout-btn">
+          <Link className="logout-btn" onClick={handleLogOut}>
             <i className="fas fa-sign-out-alt"></i>
             <span>Logout</span>
           </Link>

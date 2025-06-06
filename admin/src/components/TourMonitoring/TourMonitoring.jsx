@@ -13,6 +13,7 @@ const TourMonitoring = () => {
   const [selectedTour, setSelectedTour] = useState(null);
   const [galleryActiveImage, setGalleryActiveImage] = useState(0);
   const [modalLoading, setModalLoading] = useState(false);
+  const [tourRevenues, setTourRevenues] = useState({});
 
   useEffect(() => {
     const fetchTours = async () => {
@@ -54,6 +55,24 @@ const TourMonitoring = () => {
       setSelectedTour(null);
     }
   }, [selectedTourId, tours]);
+
+  useEffect(() => {
+    // After fetching tours, fetch revenue for each tour
+    async function fetchRevenues() {
+      const revenues = {};
+      for (const tour of tours) {
+        try {
+          const res = await axios.get(`http://localhost:4000/api/bookings/tour/${tour._id}`);
+          const bookings = res.data.bookings || [];
+          revenues[tour._id] = bookings.reduce((sum, b) => sum + (b.totalAmount || 0), 0) * 0.1;
+        } catch (e) {
+          revenues[tour._id] = 0;
+        }
+      }
+      setTourRevenues(revenues);
+    }
+    if (tours.length > 0) fetchRevenues();
+  }, [tours]);
 
   const handleStatusChange = async (id, newStatus) => {
     try {
@@ -104,6 +123,10 @@ const TourMonitoring = () => {
     return 'Unknown Company';
   };
 
+  const now = new Date();
+  const upcomingTours = tours.filter(t => t.status === 'approved' && new Date(t.startDate) > now);
+  const finishedTours = tours.filter(t => t.status === 'approved' && new Date(t.endDate) < now);
+
   return (
     <div className="tour-monitoring">
       <div className="monitoring-header">
@@ -120,7 +143,7 @@ const TourMonitoring = () => {
       </div>
 
       <div className="monitoring-tabs">
-        {['all', 'approved', 'pending', 'rejected'].map(tab => (
+        {['all', 'approved', 'pending', 'rejected', 'upcoming', 'finished'].map(tab => (
           <button
             key={tab}
             className={activeTab === tab ? 'active' : ''}
@@ -138,136 +161,149 @@ const TourMonitoring = () => {
       <div className="tours-list">
         {loading ? (
           <p>Loading tours...</p>
-        ) : filteredTours.length > 0 ? (
-          filteredTours.map((tour) => (
-            <React.Fragment key={tour._id}>
-              <div className="tour-card">
-                <div className="tour-header">
-                  <h3>{tour.name}</h3>
-                  <div className={`tour-status ${getStatusClass(tour.status)}`}>
-                    {getStatusIcon(tour.status)}{' '}
-                    {tour.status.charAt(0).toUpperCase() + tour.status.slice(1)}
-                  </div>
-                </div>
+        ) : (
+          (() => {
+            let displayTours = filteredTours;
+            if (activeTab === 'upcoming') displayTours = upcomingTours;
+            if (activeTab === 'finished') displayTours = finishedTours;
+            return displayTours.length > 0 ? (
+              displayTours.map((tour) => (
+                <React.Fragment key={tour._id}>
+                  <div className="tour-card">
+                    <div className="tour-header">
+                      <h3>{tour.name}</h3>
+                      <div className={`tour-status ${getStatusClass(tour.status)}`}>
+                        {getStatusIcon(tour.status)}{' '}
+                        {tour.status.charAt(0).toUpperCase() + tour.status.slice(1)}
+                      </div>
+                    </div>
 
-                <div className="tour-details">
-                  <div className="detail-item">
-                    <i className="fas fa-calendar"></i>
-                    <span>
-                      {new Date(tour.startDate).toLocaleDateString()} to {new Date(tour.endDate).toLocaleDateString()}
-                    </span>
-                  </div>
-                  <div className="detail-item">
-                    <i className="fas fa-map-marker-alt"></i>
-                    <span>
-                      {tour.destinations.map((d) => d.name).join(', ')}
-                    </span>
-                  </div>
-                  <div className="detail-item">
-                    <i className="fas fa-users"></i>
-                    <span>{tour.maxGroupSize || 0} seats</span>
-                  </div>
-                  <div className="detail-item">
-                    <i className="fas fa-dollar-sign"></i>
-                    <span>Price: ${tour.price}</span>
-                  </div>
-                  <div className="detail-item">
-                    <i className="fas fa-car"></i>
-                    <span>{tour.transportation?.type}</span>
-                  </div>
-                </div>
+                    <div className="tour-details">
+                      <div className="detail-item">
+                        <i className="fas fa-calendar"></i>
+                        <span>
+                          {new Date(tour.startDate).toLocaleDateString()} to {new Date(tour.endDate).toLocaleDateString()}
+                        </span>
+                      </div>
+                      <div className="detail-item">
+                        <i className="fas fa-map-marker-alt"></i>
+                        <span>
+                          {tour.destinations.map((d) => d.name).join(', ')}
+                        </span>
+                      </div>
+                      <div className="detail-item">
+                        <i className="fas fa-users"></i>
+                        <span>{tour.maxGroupSize || 0} seats</span>
+                      </div>
+                      <div className="detail-item">
+                        <i className="fas fa-dollar-sign"></i>
+                        <span>Price: ${tour.price}</span>
+                      </div>
+                      <div className="detail-item">
+                        <i className="fas fa-car"></i>
+                        <span>{tour.transportation?.type}</span>
+                      </div>
+                    </div>
 
-                <div className="tour-actions">
-                  {tour.status === 'pending' && (
-                    <>
-                      <button
-                        className="action-btn approve-btn"
-                        onClick={() => handleStatusChange(tour._id, 'approved')}
-                      >
-                        <i className="fas fa-check"></i> Approve
-                      </button>
-                      <button
-                        className="action-btn reject-btn"
-                        onClick={() => handleStatusChange(tour._id, 'rejected')}
-                      >
-                        <i className="fas fa-times"></i> Reject
-                      </button>
-                      <button
-                        className="action-btn view-btn"
-                        onClick={() => setSelectedTourId(tour._id)}
-                      >
-                        <i className="fas fa-eye"></i> View Details
-                      </button>
+                    <div className="tour-actions">
+                      {tour.status === 'pending' && (
+                        <>
+                          <button
+                            className="action-btn approve-btn"
+                            onClick={() => handleStatusChange(tour._id, 'approved')}
+                          >
+                            <i className="fas fa-check"></i> Approve
+                          </button>
+                          <button
+                            className="action-btn reject-btn"
+                            onClick={() => handleStatusChange(tour._id, 'rejected')}
+                          >
+                            <i className="fas fa-times"></i> Reject
+                          </button>
+                          <button
+                            className="action-btn view-btn"
+                            onClick={() => setSelectedTourId(tour._id)}
+                          >
+                            <i className="fas fa-eye"></i> View Details
+                          </button>
 
-                    </>
-                  )}
+                        </>
+                      )}
 
-                  {tour.status === 'approved' && (
-                    <>
-                      <button
-                        className="action-btn view-btn"
-                        onClick={() => setSelectedTourId(tour._id)}
-                      >
-                        <i className="fas fa-eye"></i> View Details
-                      </button>
+                      {tour.status === 'approved' && (
+                        <>
+                          <button
+                            className="action-btn view-btn"
+                            onClick={() => setSelectedTourId(tour._id)}
+                          >
+                            <i className="fas fa-eye"></i> View Details
+                          </button>
 
-                    </>
-                  )}
+                        </>
+                      )}
 
-                  {(tour.status === 'rejected' || tour.status === 'draft') && (
-                    <>
-                      <button
-                        className="action-btn pending-btn"
-                        onClick={() => handleStatusChange(tour._id, 'pending')}
-                      >
-                        <i className="fas fa-undo"></i> Re-submit
-                      </button>
-                      <button
-                        className="action-btn view-btn"
-                        onClick={() => setSelectedTourId(tour._id)}
-                      >
-                        <i className="fas fa-eye"></i> View Details
-                      </button>
+                      {(tour.status === 'rejected' || tour.status === 'draft') && (
+                        <>
+                          <button
+                            className="action-btn pending-btn"
+                            onClick={() => handleStatusChange(tour._id, 'approved')}
+                          >
+                            <i className="fas fa-undo"></i> Approve
+                          </button>
+                          <button
+                            className="action-btn view-btn"
+                            onClick={() => setSelectedTourId(tour._id)}
+                          >
+                            <i className="fas fa-eye"></i> View Details
+                          </button>
 
-                    </>
-                  )}
-                </div>
-              </div>
-              {/* Inline modal after the selected tour card */}
-              {selectedTourId === tour._id && (
-                <div className="admin-inline-modal-outer">
-                  <div className="admin-inline-modal">
-                    <button className="admin-modal-close" onClick={() => setSelectedTourId(null)}>&times;</button>
-                    {modalLoading || !selectedTour ? (
-                      <div style={{ textAlign: 'center', padding: '2rem' }}>Loading...</div>
-                    ) : (
-                      <div className="admin-modal-flex">
-                        <div className="admin-modal-gallery">
-                          <PackageGallery
-                            images={selectedTour.images || []}
-                            activeImage={galleryActiveImage}
-                            setActiveImage={setGalleryActiveImage}
-                          />
-                        </div>
-                        <div className="admin-modal-details">
-                          {/* Company Name */}
-                          <div className="admin-company-name">
-                            <i className="fas fa-building"></i> {getCompanyName(selectedTour)}
-                          </div>
-                          <PackageInfo tour={selectedTour} companyId={selectedTour.companyId} />
-                        </div>
+                        </>
+                      )}
+                    </div>
+
+                    {activeTab === 'finished' && (
+                      <div className="tour-revenue">
+                        <i className="fas fa-dollar-sign"></i> Revenue Earned: ${tourRevenues[tour._id]?.toLocaleString() || 0}
                       </div>
                     )}
                   </div>
-                </div>
-              )}
-            </React.Fragment>
-          ))
-        ) : (
-          <div className="no-tours">
-            <i className="fas fa-search"></i>
-            <p>No tours found matching your criteria</p>
-          </div>
+                  {/* Inline modal after the selected tour card */}
+                  {selectedTourId === tour._id && (
+                    <div className="admin-inline-modal-outer">
+                      <div className="admin-inline-modal">
+                        <button className="admin-modal-close" onClick={() => setSelectedTourId(null)}>&times;</button>
+                        {modalLoading || !selectedTour ? (
+                          <div style={{ textAlign: 'center', padding: '2rem' }}>Loading...</div>
+                        ) : (
+                          <div className="admin-modal-flex">
+                            <div className="admin-modal-gallery">
+                              <PackageGallery
+                                images={selectedTour.images || []}
+                                activeImage={galleryActiveImage}
+                                setActiveImage={setGalleryActiveImage}
+                              />
+                            </div>
+                            <div className="admin-modal-details">
+                              {/* Company Name */}
+                              <div className="admin-company-name">
+                                <i className="fas fa-building"></i> {getCompanyName(selectedTour)}
+                              </div>
+                              <PackageInfo tour={selectedTour} companyId={selectedTour.companyId} />
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </React.Fragment>
+              ))
+            ) : (
+              <div className="no-tours">
+                <i className="fas fa-search"></i>
+                <p>No tours found matching your criteria</p>
+              </div>
+            );
+          })()
         )}
       </div>
     </div>

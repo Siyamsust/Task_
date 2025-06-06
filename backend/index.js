@@ -16,6 +16,8 @@ const toursRoutes = require('./routes/tours');
 const tourController = require('./controllers/tour');
 const companyRoutes = require('./routes/company');
 const reviewRoutes = require('./routes/reviewRoutes');
+const companyRoutes = require('./routes/companyRoutes');
+const adminAuth = require('./middleware/adminAuth');
 const weatherRoute = require('./routes/weatherRoutes'); 
 //Admin Section
 const adminAuthRoutes = require('./routes/adminauth');
@@ -71,7 +73,6 @@ app.use('/api/auth', authRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api/wishlist', wishlistRoutes);
 
-
 app.use('/api/bookings', bookingRoutes);
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
@@ -108,9 +109,10 @@ app.post('/api/tours', upload.array('images'), tourController.createTour);
 app.put('/api/tours/:id', upload.array('newImages'), tourController.updateTour);
 app.use('/api', toursRoutes);
 app.use('/api', require('./routes/weatherRoutes'));
-app.use('/api/bookings', bookingRoutes);
+
 // Admin Routes
 app.use('/api/admin', adminAuthRoutes);
+app.use('/api/admin', adminAuth, adminAuthRoutes);
 
 // Get all tours
 
@@ -179,8 +181,13 @@ app.patch('/api/tours/:id/release-seats', tourController.releaseSeats);
 app.use(errorHandler);
 // ✅ Make sure this matches your filename
 
-app.use(express.json());
 app.use('/api', weatherRoute); // ✅ using a valid router
+
+// Routes
+const placeRoutes = require('./routes/placeRoutes');
+app.use('/api', placeRoutes);
+
+
 app.get('/', (req, res) => {
   res.send('Backend is running!');
 });

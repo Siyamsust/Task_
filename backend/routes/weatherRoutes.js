@@ -1,15 +1,11 @@
 const express = require('express');
 const router = express.Router();
+const {
+  getWeatherAndTours,
+  getSingleCityWeather
+} = require('../controllers/weatherController');
 
-// Sample weather route
-router.get('/weather/:city', (req, res) => {
-  const city = req.params.city;
-  const data = {
-    temp: 28,
-    weather: 'clear',
-    suggestions: [`Visit the botanical garden in ${city}`, `Explore old town ${city}`],
-  };
-  res.json(data);
-});
+router.get('/weather/Dhaka', getWeatherAndTours); // Tour places
+router.get('/weather/:city', getSingleCityWeather); // Any district
 
 module.exports = router;
