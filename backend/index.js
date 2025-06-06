@@ -14,7 +14,7 @@ const bookingRoutes = require('./routes/bookingRoutes');
 const errorHandler = require('./middleware/errorHandler');
 const toursRoutes = require('./routes/tours');
 const tourController = require('./controllers/tour');
-const companyRoutes = require('./routes/company');
+
 const reviewRoutes = require('./routes/reviewRoutes');
 const companyRoutes = require('./routes/companyRoutes');
 const adminAuth = require('./middleware/adminAuth');

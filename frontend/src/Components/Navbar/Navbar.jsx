@@ -62,6 +62,9 @@ Task
   <button className="nav-item" onClick={() => navigate('/explore')}>
     <i className="fas fa-compass"></i> Explore
   </button>
+  {user&&<button className="nav-item" onClick={() => navigate('/chat')}>
+    <i className="fas fa-comments"></i> Chat
+  </button>}
   <button className="nav-item" onClick={() => navigate('/review')}>
     <i className="fas fa-envelope"></i> Review
   </button>

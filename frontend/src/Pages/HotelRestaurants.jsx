@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import tourPlaces from '../data/tourPlaces';
+import tourPlaces from '../data/tourplaces';
 import './HotelRestaurants.css'; // optional CSS file for styling
 
 const HotelRestaurants = () => {
