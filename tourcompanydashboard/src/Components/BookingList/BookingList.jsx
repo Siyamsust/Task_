@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import './BookingList.css';
-
+import socket from '../../socket';
 const BookingList = () => {
   const { tourId } = useParams(); // Get tourId from URL parameters
   const navigate = useNavigate();

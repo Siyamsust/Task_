@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const Booking = require('../models/Booking');
 const authMiddleware = require('../middleware/authMiddleware');
 const router = express.Router();
+const socketIO = require('../socket');
 
 // Get all bookings for a specific tour (for tour companies)
 router.get('/tour/:tourId', authMiddleware, async (req, res) => {
@@ -138,6 +139,18 @@ router.post('/add', authMiddleware, async (req, res) => {
 
     const booking = new Booking(bookingData);
     await booking.save();
+
+    // Get the socket instance and emit the event
+    const io = socketIO.getIO();
+    if (io) {
+      io.emit('book', {
+        action: 'krlam',
+        booking: {
+          ...booking.toObject(),
+          bookingReference: booking.bookingReference
+        }
+      });
+    }
 
     res.status(201).json({ 
       success: true, 

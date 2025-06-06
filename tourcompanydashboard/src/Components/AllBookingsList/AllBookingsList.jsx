@@ -1,13 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import './AllBookingsList.css';
-
+import socket from '../../socket';
 const AllBookingsList = () => {
   const [tours, setTours] = useState([]);
   const [allBookings, setAllBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [view, setView] = useState('tours'); // 'tours' or 'all'
-
+  useEffect(() => {
+    if(socket)
+    {
+      
+      socket.on('book',data=>{
+        console.log('connected to  socket on booking');
+        if(data.action==='krlam')
+        {
+          fetchAllBookings();
+          fetchToursWithBookings();
+        }
+      })
+    }
+   
+  }, [socket]);
   useEffect(() => {
     fetchToursWithBookings();
   }, []);
