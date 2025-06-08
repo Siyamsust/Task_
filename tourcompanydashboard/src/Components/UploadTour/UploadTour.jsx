@@ -1,6 +1,7 @@
 import React, { useState ,useEffect} from 'react';
 import './UploadTour.css';  // Import the CSS file for styling
 import { useAuth } from '../../Context/AuthContext';
+
 const UploadTour = () => {
   const {company}=useAuth();
   useEffect(() => {
@@ -46,7 +47,12 @@ const companyId=company.company._id;
     includes: [''], // Additional included services
     excludes: [''], // What's not included
     specialNote: '',
-    cancellationPolicy: ''
+    cancellationPolicy: '',
+    weather: {
+      city: '',
+      condition: '',
+      temp: ''
+    }
   });
 
   const packageCategories = [
@@ -65,6 +71,19 @@ const companyId=company.company._id;
     'Car',
     'Premium Car',
     'Other'
+  ];
+
+  const weatherConditions = [
+    'Sunny',
+    'Partly Cloudy',
+    'Cloudy',
+    'Rainy',
+    'Stormy',
+    'Snowy',
+    'Foggy',
+    'Hot',
+    'Cold',
+    'Mild'
   ];
 
   const handleChange = (e) => {
@@ -105,6 +124,17 @@ const companyId=company.company._id;
       ...tourDetails,
       transportation: {
         ...tourDetails.transportation,
+        [name]: value
+      }
+    });
+  };
+
+  const handleWeatherChange = (e) => {
+    const { name, value } = e.target;
+    setTourDetails({
+      ...tourDetails,
+      weather: {
+        ...tourDetails.weather,
         [name]: value
       }
     });
@@ -204,6 +234,7 @@ const companyId=company.company._id;
     formData.append('excludes', JSON.stringify(tourDetails.excludes));
     formData.append('specialNote', tourDetails.specialNote);
     formData.append('cancellationPolicy', tourDetails.cancellationPolicy);
+    formData.append('weather', JSON.stringify(tourDetails.weather));
     formData.append('companyId',companyId);
     
     tourDetails.images.forEach((image) => {
@@ -357,6 +388,37 @@ const companyId=company.company._id;
         </div>
 
         <div className="form-section">
+          <h2>Weather Information</h2>
+          <div className="weather-section">
+            <input
+              type="text"
+              name="city"
+              placeholder="Weather City/Location"
+              value={tourDetails.weather.city}
+              onChange={handleWeatherChange}
+            />
+            <select
+              name="condition"
+              value={tourDetails.weather.condition}
+              onChange={handleWeatherChange}
+            >
+              <option value="">Select Weather Condition</option>
+              {weatherConditions.map((condition) => (
+                <option key={condition} value={condition}>{condition}</option>
+              ))}
+            </select>
+            <input
+              type="number"
+              name="temp"
+              placeholder="Average Temperature (°C)"
+              value={tourDetails.weather.temp}
+              onChange={handleWeatherChange}
+              step="0.1"
+            />
+          </div>
+        </div>
+
+        <div className="form-section">
           <h2>Services & Amenities</h2>
           <div className="meals-section">
             <h3>Meals Included</h3>
@@ -506,7 +568,7 @@ const companyId=company.company._id;
               accept="image/*"
             />
             <div className="image-preview">
-              {tourDetails.images.map((image, index) => (
+                            {tourDetails.images.map((image, index) => (
                 <div key={index} className="image-preview-item">
                   <img
                     src={URL.createObjectURL(image)}

@@ -23,7 +23,7 @@ const LoginSignup = () => {
     e.preventDefault();
     
     try {
-      const endpoint = isLogin ? '/user/auth/login' : '/user/auth/register';
+      const endpoint = isLogin ? '/api/auth/login' : '/api/auth/register';
       const response = await fetch(`http://localhost:4000${endpoint}`, {
         method: 'POST',
         headers: {
