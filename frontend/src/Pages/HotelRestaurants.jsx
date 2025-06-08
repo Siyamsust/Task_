@@ -1,84 +1,100 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import tourPlaces from '../data/tourplaces';
-import './HotelRestaurants.css'; // optional CSS file for styling
+import './HotelRestaurants.css';
 
 const HotelRestaurants = () => {
   const [hotels, setHotels] = useState([]);
   const [restaurants, setRestaurants] = useState([]);
-  const [location, setLocation] = useState('');
   const [loading, setLoading] = useState(true);
-
-  const fetchData = async () => {
-    try {
-      setLoading(true);
-      const [hotelRes, restaurantRes] = await Promise.all([
-        axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/hotels`, {
-          params: { location }
-        }),
-        axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/restaurants`, {
-          params: { location }
-        })
-      ]);
-      setHotels(hotelRes.data || []);
-      setRestaurants(restaurantRes.data || []);
-    } catch (err) {
-      console.error('❌ Error fetching places:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const [hotelQuery, setHotelQuery] = useState('');
+  const [restaurantQuery, setRestaurantQuery] = useState('');
 
   useEffect(() => {
-    fetchData();
-  }, [location]);
+    const fetchPlaces = async () => {
+      try {
+        setLoading(true);
+        const [hotelRes, restaurantRes] = await Promise.all([
+          axios.get('http://localhost:4000/api/hotels'),
+          axios.get('http://localhost:4000/api/restaurants'),
+        ]);
+        setHotels(hotelRes.data || []);
+        setRestaurants(restaurantRes.data || []);
+      } catch (error) {
+        console.error('API fetch failed:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPlaces();
+  }, []);
+
+  const renderCard = (place, type) => (
+    <div className="place-card" key={place._id}>
+      <div className="card-image-wrapper">
+        <img
+          src={type === 'hotel' ? '/a.jpg' : '/b.jpg'}
+          alt={place.name || 'No Name'}
+          className="card-image"
+        />
+      </div>
+      <div className="card-info">
+        <h3>{place.name || 'Unnamed Place'}</h3>
+        <p><i className="fas fa-map-marker-alt"></i> {place.exactLocation || place.location || 'Unknown'}</p>
+        <p><i className="fas fa-phone-alt"></i> {place.contact || 'N/A'}</p>
+        <p><i className="fas fa-star"></i> {place.rating || 'N/A'}</p>
+        <p className="card-description">{place.description || 'No description available.'}</p>
+      </div>
+    </div>
+  );
+
+  const filteredHotels = hotels.filter(h =>
+    h.name?.toLowerCase().includes(hotelQuery.toLowerCase()) ||
+    h.location?.toLowerCase().includes(hotelQuery.toLowerCase())
+  );
+
+  const filteredRestaurants = restaurants.filter(r =>
+    r.name?.toLowerCase().includes(restaurantQuery.toLowerCase()) ||
+    r.location?.toLowerCase().includes(restaurantQuery.toLowerCase())
+  );
 
   return (
-    <div className="places-container">
-      <h2>🏨 Nearby Hotels</h2>
-
-      <div className="filters">
-        <label htmlFor="location">Filter by Location:</label>
-        <select
-          id="location"
-          value={location}
-          onChange={(e) => setLocation(e.target.value)}
-        >
-          <option value="">All</option>
-          {tourPlaces.map((place, index) => (
-            <option key={index} value={place}>{place}</option>
-          ))}
-        </select>
-      </div>
-
-      {loading ? (
-        <p>Loading data...</p>
-      ) : (
-        <>
-          <div className="card-grid">
-            {hotels.map((hotel, i) => (
-              <div key={i} className="place-card">
-                <img src={hotel.image} alt={hotel.name} />
-                <h3>{hotel.name}</h3>
-                <p>📍 {hotel.location}</p>
-                <p>⭐ {hotel.rating || 'N/A'}</p>
-              </div>
-            ))}
+    <div className="hotel-restaurant-page">
+      <section>
+        <h1 className="section-heading">🏨 Hotels</h1>
+        <input
+          type="text"
+          className="search-input"
+          placeholder="Search hotels by name or location..."
+          value={hotelQuery}
+          onChange={(e) => setHotelQuery(e.target.value)}
+        />
+        {loading ? <p className="loading">Loading hotels...</p> : (
+          <div className="cards-container">
+            {filteredHotels.length > 0
+              ? filteredHotels.map(hotel => renderCard(hotel, 'hotel'))
+              : <p className="empty">No hotels found.</p>}
           </div>
+        )}
+      </section>
 
-          <h2 style={{ marginTop: '40px' }}>🍽️ Nearby Restaurants</h2>
-          <div className="card-grid">
-            {restaurants.map((restaurant, i) => (
-              <div key={i} className="place-card">
-                <img src={restaurant.image} alt={restaurant.name} />
-                <h3>{restaurant.name}</h3>
-                <p>📍 {restaurant.location}</p>
-                <p>⭐ {restaurant.rating || 'N/A'}</p>
-              </div>
-            ))}
+      <section>
+        <h1 className="section-heading">🍽️ Restaurants</h1>
+        <input
+          type="text"
+          className="search-input"
+          placeholder="Search restaurants by name or location..."
+          value={restaurantQuery}
+          onChange={(e) => setRestaurantQuery(e.target.value)}
+        />
+        {loading ? <p className="loading">Loading restaurants...</p> : (
+          <div className="cards-container">
+            {filteredRestaurants.length > 0
+              ? filteredRestaurants.map(restaurant => renderCard(restaurant, 'restaurant'))
+              : <p className="empty">No restaurants found.</p>}
           </div>
-        </>
-      )}
+        )}
+      </section>
     </div>
   );
 };
