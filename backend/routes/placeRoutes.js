@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const { getRestaurants } = require('../controllers/placeController');
+const { getHotels, getRestaurants } = require('../controllers/placeController');
 
-router.get('/restaurants', getRestaurants); // ✅ This is your /api/restaurants
+router.get('/hotels', getHotels);
+router.get('/restaurants', getRestaurants);
 
 module.exports = router;
