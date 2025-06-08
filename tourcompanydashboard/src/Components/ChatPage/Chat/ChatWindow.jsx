@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect ,useRef} from 'react';
 import './ChatWindow.css';
 import avatar from '../../Assets/chat_avatar.png';
 import { useAuth } from '../../../Context/AuthContext';
@@ -7,9 +7,35 @@ const ChatWindow = ({ selectedChat, companyId,chatType,username ,socket}) => {
   const [newMessage, setNewMessage] = useState('');
   const [messages, setMessages] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-
+  const messagesEndRef = useRef(null);
+  const messagesContainerRef = useRef(null); // Ref for the scrollable container
+  const chatMainRef = useRef(null); // Ref for the main chat container
+  const [showScrollButton, setShowScrollButton] = useState(false);
+  const chatHeaderRef = useRef(null);
+  const messageInputRef = useRef(null);
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
   console.log(selectedChat);
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages?.length]);
+  useEffect(() => {
+    const container = messagesContainerRef.current;
+    if (!container) return;
 
+    const handleScroll = () => {
+      // Show button if scrolled up more than 100px from bottom
+      const isAtBottom = container.scrollHeight - container.scrollTop <= container.clientHeight + 100;
+      setShowScrollButton(!isAtBottom);
+    };
+
+    container.addEventListener('scroll', handleScroll);
+
+    return () => {
+      container.removeEventListener('scroll', handleScroll);
+    };
+  }, [messagesContainerRef.current]); 
 console.log(selectedChat.chatType);
 useEffect(() => {
   if (socket) {
@@ -77,8 +103,8 @@ useEffect(() => {
     }
   };
   return (
-    <div className="chat-window">
-      <div className="chat-header">
+    <div className="chat-window" ref={chatMainRef}>
+      <div className="chat-header" ref={chatHeaderRef}>
         <div className="chat-recipient">
           <img src={selectedChat?.logo || avatar} alt={selectedChat?.name} />
           <div>
@@ -90,7 +116,7 @@ useEffect(() => {
         </div>
       </div>
 
-      <div className="messages-container">
+      <div className="messages-container"ref={messagesContainerRef}  >
         {isLoading ? (
           <div className="loading">Loading messages...</div>
         ) : messages.length > 0 ? (

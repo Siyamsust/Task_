@@ -32,7 +32,6 @@ const PackageDetails = () => {
 [user]);
 console.log(tour);
 const use=user.user;
-companyId=
 console.log(use);
 const userId=use._id;
 const chatType='comuse';
