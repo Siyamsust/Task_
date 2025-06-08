@@ -1,79 +1,90 @@
 const Tour = require('../models/tours');
 
 const fs = require('fs');
-exports.createTour=async (req, res) => {
-    try {
-      // Process the uploaded data
-      let tourData = {
-        ...req.body,
-        destinations: JSON.parse(req.body.destinations),
-        meals: JSON.parse(req.body.meals),
-        transportation: JSON.parse(req.body.transportation),
-        includes: JSON.parse(req.body.includes),
-        excludes: JSON.parse(req.body.excludes),
-        comapnyId: req.body.companyId, 
-        comapnyName:req.body.comapnyName,
-      };
-  
-      // Process packageCategories
-      if (req.body.packageCategories) {
-        // If it's a string, parse it
-        if (typeof req.body.packageCategories === 'string') {
-          try {
-            tourData.packageCategories = JSON.parse(req.body.packageCategories);
-          } catch (e) {
-            // If it's a comma-separated string, split it
-            tourData.packageCategories = req.body.packageCategories
-              .split(',')
-              .map(cat => cat.trim().toLowerCase()); // Normalize categories
-          }
-        }
-        // Ensure it's an array
-        if (!Array.isArray(tourData.packageCategories)) {
-          tourData.packageCategories = [tourData.packageCategories];
+
+
+exports.createTour = async (req, res) => {
+  try {
+    // Process the uploaded data
+    let tourData = {
+      ...req.body,
+      destinations: JSON.parse(req.body.destinations),
+      meals: JSON.parse(req.body.meals),
+      transportation: JSON.parse(req.body.transportation),
+      includes: JSON.parse(req.body.includes),
+      excludes: JSON.parse(req.body.excludes),
+      // ✅ Add weather parsing
+      weather: JSON.parse(req.body.weather || '{}'),
+      companyId: req.body.companyId,
+      companyName:req.body.companyName  // Fixed typo: was 'comapnyId'
+    };
+
+    // Process packageCategories
+    if (req.body.packageCategories) {
+      if (typeof req.body.packageCategories === 'string') {
+        try {
+          tourData.packageCategories = JSON.parse(req.body.packageCategories);
+        } catch (e) {
+          tourData.packageCategories = req.body.packageCategories
+            .split(',')
+            .map(cat => cat.trim().toLowerCase());
+
         }
       }
-  
-      // Add image paths to the tour data
-      if (req.files) {
-        tourData.images = req.files.map(file => file.path);
+      if (!Array.isArray(tourData.packageCategories)) {
+        tourData.packageCategories = [tourData.packageCategories];
       }
-  
-      // Parse duration values properly
-      const duration = JSON.parse(req.body.duration);
-      tourData.duration = {
-        days: parseInt(duration.days) || 0,
-        nights: parseInt(duration.nights) || 0
-      };
-  
-      // Convert other string numbers to actual numbers
-      tourData.price = Number(tourData.price) || 0;
-      if (tourData.maxGroupSize) tourData.maxGroupSize = parseInt(tourData.maxGroupSize) || 0;
-      if (tourData.availableSeats) tourData.availableSeats = parseInt(tourData.availableSeats) || 0;
-  
-      // Parse tourType if it exists
-      if (req.body.tourType) {
-        tourData.tourType = JSON.parse(req.body.tourType);
-      }
-  
-      // Create new tour
-      const newTour = new Tour(tourData);
-      await newTour.validate(); // Validate before saving
-      const savedTour = await newTour.save();
-  
-      res.status(201).json({
-        success: true,
-        message: 'Tour created successfully',
-        tour: savedTour
-      });
-      } catch (error) {
-          console.error('Error creating tour:', error);
-      res.status(400).json({
-        success: false,
-        error: error.message || 'Failed to create tour'
-      });
-      }
-  };
+    }
+
+    // Add image paths to the tour data
+    if (req.files) {
+      tourData.images = req.files.map(file => file.path);
+    }
+
+    // Parse duration values properly
+    const duration = JSON.parse(req.body.duration);
+    tourData.duration = {
+      days: parseInt(duration.days) || 0,
+      nights: parseInt(duration.nights) || 0
+    };
+
+    // Convert other string numbers to actual numbers
+    tourData.price = Number(tourData.price) || 0;
+    if (tourData.maxGroupSize) tourData.maxGroupSize = parseInt(tourData.maxGroupSize) || 0;
+    if (tourData.availableSeats) tourData.availableSeats = parseInt(tourData.availableSeats) || 0;
+
+    // ✅ Parse and validate weather temperature
+    if (tourData.weather && tourData.weather.temp) {
+      tourData.weather.temp = Number(tourData.weather.temp) || null;
+    }
+
+    // Parse tourType if it exists
+    if (req.body.tourType) {
+      tourData.tourType = JSON.parse(req.body.tourType);
+    }
+
+    // ✅ Debug log to check weather data
+    console.log('Weather data being saved:', tourData.weather);
+
+    // Create new tour
+    const newTour = new Tour(tourData);
+    await newTour.validate();
+    const savedTour = await newTour.save();
+
+    res.status(201).json({
+      success: true,
+      message: 'Tour created successfully',
+      tour: savedTour
+    });
+    
+  } catch (error) {
+    console.error('Error creating tour:', error);
+    res.status(400).json({
+      success: false,
+      error: error.message || 'Failed to create tour'
+    });
+  }
+};
   exports.getCompanyTours = async (req, res) => {
     try {
       const { companyId } = req.params;
@@ -242,70 +253,77 @@ exports.createTour=async (req, res) => {
     }
   };
   exports.updateTour = async (req, res) => {
-    try {
-      const tourId = req.params.id;
-      const tourData = { ...req.body };
+  try {
+    const tourId = req.params.id;
+    const tourData = { ...req.body };
 
-      // Parse duration properly
-      if (typeof req.body.duration === 'string') {
-        tourData.duration = JSON.parse(req.body.duration);
-      }
-      
-      // Ensure duration values are numbers
-      tourData.duration = {
-        days: Number(tourData.duration.days) || 0,
-        nights: Number(tourData.duration.nights) || 0
-      };
+    // Parse duration properly
+    if (typeof req.body.duration === 'string') {
+      tourData.duration = JSON.parse(req.body.duration);
+    }
+    
+    tourData.duration = {
+      days: Number(tourData.duration.days) || 0,
+      nights: Number(tourData.duration.nights) || 0
+    };
 
-      // Handle existing and new images
-      const existingImages = JSON.parse(req.body.existingImages || '[]');
-      const newImagePaths = req.files ? req.files.map(file => file.path) : [];
-      tourData.images = [...existingImages, ...newImagePaths];
-  
-      // Parse JSON strings back to objects
-      tourData.destinations = JSON.parse(req.body.destinations);
-      tourData.meals = JSON.parse(req.body.meals);
-      tourData.transportation = JSON.parse(req.body.transportation);
-      tourData.includes = JSON.parse(req.body.includes);
-      tourData.excludes = JSON.parse(req.body.excludes);
-      tourData.status = 'draft';
-  
-      // Safely convert numeric fields with fallback to default values
-      tourData.price = parseFloat(tourData.price) || 0;
-      tourData.maxGroupSize = parseInt(tourData.maxGroupSize) || 0;
-      tourData.availableSeats = parseInt(tourData.availableSeats) || 0;
-  
-      // Remove fields that shouldn't be updated directly
-      delete tourData.existingImages;
-      delete tourData.newImages;
-  
-      const updatedTour = await Tour.findByIdAndUpdate(
-        tourId,
-        tourData,
-        { new: true, runValidators: true }
-      );
-  
-      if (!updatedTour) {
-        return res.status(404).json({
-          success: false,
-          error: 'Tour not found'
-        });
-        
+    // Handle existing and new images
+    const existingImages = JSON.parse(req.body.existingImages || '[]');
+    const newImagePaths = req.files ? req.files.map(file => file.path) : [];
+    tourData.images = [...existingImages, ...newImagePaths];
+
+    // Parse JSON strings back to objects
+    tourData.destinations = JSON.parse(req.body.destinations);
+    tourData.meals = JSON.parse(req.body.meals);
+    tourData.transportation = JSON.parse(req.body.transportation);
+    tourData.includes = JSON.parse(req.body.includes);
+    tourData.excludes = JSON.parse(req.body.excludes);
+    
+    // ✅ Add weather parsing for updates
+    if (req.body.weather) {
+      tourData.weather = JSON.parse(req.body.weather);
+      if (tourData.weather.temp) {
+        tourData.weather.temp = Number(tourData.weather.temp) || null;
       }
-  
-      res.json({
-        success: true,
-        message: 'Tour updated successfully',
-        tour: updatedTour
-      });
-    } catch (error) {
-      console.error('Error updating tour:', error);
-      res.status(400).json({
+    }
+    
+    tourData.status = 'draft';
+
+    // Safely convert numeric fields
+    tourData.price = parseFloat(tourData.price) || 0;
+    tourData.maxGroupSize = parseInt(tourData.maxGroupSize) || 0;
+    tourData.availableSeats = parseInt(tourData.availableSeats) || 0;
+
+    // Remove fields that shouldn't be updated directly
+    delete tourData.existingImages;
+    delete tourData.newImages;
+
+    const updatedTour = await Tour.findByIdAndUpdate(
+      tourId,
+      tourData,
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedTour) {
+      return res.status(404).json({
         success: false,
-        error: error.message || 'Failed to update tour'
+        error: 'Tour not found'
       });
     }
-  };
+
+    res.json({
+      success: true,
+      message: 'Tour updated successfully',
+      tour: updatedTour
+    });
+  } catch (error) {
+    console.error('Error updating tour:', error);
+    res.status(400).json({
+      success: false,
+      error: error.message || 'Failed to update tour'
+    });
+  }
+};
   exports.getTours = async (req, res) => {
     try {
         const tours = await Tour.find();

@@ -91,8 +91,8 @@ const PopularTours = () => {
 
   if (loading) {
     return (
-      <div className="loading-container">
-        <div className="loading-spinner"></div>
+      <div className="popular-tours-loading-container">
+        <div className="popular-tours-loading-spinner"></div>
         <p>Loading popular tours...</p>
       </div>
     );
@@ -100,7 +100,7 @@ const PopularTours = () => {
 
   if (error) {
     return (
-      <div className="error-container">
+      <div className="popular-tours-error-container">
         <i className="fas fa-exclamation-circle"></i>
         <p>Error loading popular tours. Please try again later.</p>
       </div>
@@ -110,15 +110,15 @@ const PopularTours = () => {
   const toursToDisplay = sortedTours.length > 0 ? sortedTours : tours || [];
 
   return (
-    <div className="popular-tours">
-      <div className="popular-tours-header">
+    <div className="popular-tours-section">
+      <div className="popular-tours-section-header">
         <h2>Popular Tour Packages</h2>
-        <button onClick={handleViewAll} className="view-all-btn">
+        <button onClick={handleViewAll} className="popular-tours-view-all-btn">
           View All <i className="fas fa-arrow-right"></i>
         </button>
       </div>
-      <div className="tour-scroll-container">
-        <div className="tour-row">
+      <div className="popular-tours-scroll-container">
+        <div className="popular-tours-row">
           {toursToDisplay.slice(0, 4).map(tour => {
             if (!tour || !tour._id) return null;
 
@@ -132,8 +132,8 @@ const PopularTours = () => {
             const isCompleted = isTourCompleted(tour.startDate);
 
             return (
-              <div key={tour._id} className="tour-card">
-                <div className="tour-image">
+              <div key={tour._id} className="popular-tours-card">
+                <div className="popular-tours-card-image">
                   <img
                     src={tourImage}
                     alt={tourName}
@@ -141,11 +141,11 @@ const PopularTours = () => {
                       e.target.src = 'https://picsum.photos/300/200';
                     }}
                   />
-                  {isCompleted && <span className="completed-tag">Completed</span>}
+                  {isCompleted && <span className="popular-tours-completed-tag">Completed</span>}
                 </div>
-                <div className="tour-info">
+                <div className="popular-tours-card-info">
                   <h3>{tourName}</h3>
-                  <div className="tour-details">
+                  <div className="popular-tours-card-details">
                     <span>
                       Price: <strong>${tourPrice}</strong>
                     </span>
@@ -157,18 +157,16 @@ const PopularTours = () => {
                       {averageRating ? `${averageRating.toFixed(1)} / 5` : 'No Rating'}
                     </span>
                   </div>
-                  <div className="tour-actions">
+                  <div className="popular-tours-card-actions">
                     <button
                       onClick={() => handleExploreNow(tour._id)}
-                      className="view-details-btn"
+                      className="popular-tours-explore-btn"
                     >
                       Explore Now
                       {isTourCompleted(tour.startDate) && ' (Tour Ended)'}{' '}
                       {!isTourCompleted(tour.startDate) && <i className="fas fa-arrow-right"></i>}
                     </button>
                   </div>
-
-
                 </div>
               </div>
             );

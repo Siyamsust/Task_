@@ -30,9 +30,7 @@ const Homepage = () => {
           <h2>Explore by Categories</h2>
           <Categories />
         </section>
-        <section className="weather-section">
-          <WeatherRecommended />
-        </section>
+       
       </div>
       <Footer />
     </>
