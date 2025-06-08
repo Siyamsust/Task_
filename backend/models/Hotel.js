@@ -1,10 +1,13 @@
 const mongoose = require('mongoose');
-
 const hotelSchema = new mongoose.Schema({
   name: String,
-  location: String, // e.g., "Cox's Bazar"
+  location: String,
+  exactLocation: String,
+  image: String,
   rating: Number,
-  image: String
+  contact: String,
+  description: String
 });
 
 module.exports = mongoose.model('Hotel', hotelSchema);
+
