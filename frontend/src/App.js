@@ -20,7 +20,6 @@ import { ThemeProvider } from './Context/ThemeContext';
 import WeatherSuggestion from './Pages/weatherSuggestion/WeatherSuggestion';
 import Places from './Pages/Places'; // adjust path if needed
 import HotelRestaurants from './Pages/HotelRestaurants';
-
 function App() {
   return (
     <AuthProvider>
@@ -37,8 +36,7 @@ function App() {
                 <Route path="/populartours" element={<PopularTours />} />
                 <Route path="/weather" element={<WeatherSuggestion />} />
                 <Route path="/places" element={<Places />} />
-                <Route path="/places" element={<HotelRestaurants />} />
-
+                <Route path="/hotels-and-restaurants" element={<HotelRestaurants />} />
                 <Route 
                   path="/profile" 
                   element={
