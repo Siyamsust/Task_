@@ -1,55 +1,98 @@
-.places-container {
-  padding: 30px;
-  background: linear-gradient(to right, #f0f4f8, #fce3ec);
+.hotel-restaurant-page {
+  padding: 2rem;
+  background: linear-gradient(to right, #eef2f3, #dfe9f3);
   min-height: 100vh;
+  font-family: 'Segoe UI', sans-serif;
 }
 
-h2 {
-  font-size: 1.8rem;
-  color: #333;
-  margin-bottom: 20px;
+.section-heading {
+  font-size: 2.2rem;
+  margin: 3rem 0 1.5rem;
+  text-align: center;
+  color: #1e293b;
+  letter-spacing: 1px;
 }
 
-.filters {
-  margin-bottom: 30px;
+.search-input {
+  display: block;
+  width: 100%;
+  max-width: 450px;
+  margin: 0 auto 2rem;
+  padding: 12px 20px;
+  border: 1px solid #ccc;
+  border-radius: 30px;
+  font-size: 16px;
+  background-color: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
-.filters select {
-  padding: 6px 12px;
-  border-radius: 5px;
-  margin-left: 10px;
-  font-size: 1rem;
-}
-
-.card-grid {
+.cards-container {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 25px;
+  padding: 0 1rem;
 }
 
 .place-card {
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  padding: 15px;
-  text-align: center;
-  transition: all 0.3s ease;
+  background: #ffffff;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .place-card:hover {
   transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
 }
 
-.place-card img {
+.card-image-wrapper {
+  height: 200px;
+  overflow: hidden;
+  background: #f0f0f0;
+}
+
+.card-image {
   width: 100%;
-  height: 160px;
+  height: 100%;
   object-fit: cover;
-  border-radius: 8px;
-  margin-bottom: 10px;
 }
 
-.place-card h3 {
-  margin: 5px 0;
-  font-size: 1.1rem;
-  color: #222;
+.card-info {
+  padding: 16px 20px;
+}
+
+.card-info h3 {
+  margin: 0 0 8px;
+  font-size: 20px;
+  color: #111827;
+}
+
+.card-info p {
+  margin: 4px 0;
+  font-size: 14px;
+  color: #475569;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.card-info i {
+  color: #2563eb;
+  min-width: 18px;
+}
+
+.card-description {
+  margin-top: 10px;
+  font-style: italic;
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.loading,
+.empty {
+  text-align: center;
+  font-size: 16px;
+  color: #64748b;
+  margin-top: 2rem;
 }
