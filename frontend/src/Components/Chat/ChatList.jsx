@@ -141,7 +141,7 @@ const ChatList = ({ chatType, selectedChat, setSelectedChat, userId, username, s
   };
 
   return (
-    <div className="chat-list">
+    <div className="chat-sidebar">
       <div className="chat-list-header">
         <h2>{chatType === 'comuse' ? 'Tour Companies' : 'Admin Support'}</h2>
         {chatType === 'comuse' && (

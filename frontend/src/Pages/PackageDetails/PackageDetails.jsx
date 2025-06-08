@@ -4,13 +4,16 @@ import { ToursContext } from '../../Context/ToursContext';
 import PackageGallery from '../../Components/PackageDetails/PackageGallery';
 import PackageInfo from '../../Components/PackageDetails/PackageInfo';
 import BookingCard from '../../Components/PackageDetails/BookingCard';
+import { useAuth } from '../../Context/AuthContext';
 import './PackageDetails.css';
 import axios from 'axios';
 
 const PackageDetails = () => {
   const { id } = useParams();
-  
+  const {selectedChat,setSelectedChat}=useState(null);
   const { tours, loading, error, fetchTourById } = useContext(ToursContext);
+  const [isloading, setIsloading] = useState(false);
+  const [chats, setChats] = useState([]);
   const [tour, setTour] = useState(null);
   const [localLoading, setLocalLoading] = useState(true);
   const [localError, setLocalError] = useState(null);
@@ -18,7 +21,62 @@ const PackageDetails = () => {
   const [reviews, setReviews] = useState([]);
   const [loadingReviews, setLoadingReviews] = useState(false);
   const [errorReviews, setErrorReviews] = useState(null);
+ const {user}=useAuth();
+ useEffect(()=>{
+   if(user){
+    console.log(user);
 
+   }
+
+ },
+[user]);
+console.log(tour);
+const use=user.user;
+companyId=
+console.log(use);
+const userId=use._id;
+const chatType='comuse';
+
+const fetchChats = async () => {
+  setIsloading(true);
+  try {
+    const authtoken = localStorage.getItem('token');
+    if (!authtoken) {
+      throw new Error('No token found');
+    }
+    
+    const response = await fetch(`http://localhost:4000/api/chat/get-user-chat/${userId}?query=${chatType}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${authtoken}`
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch chats');
+    }
+
+    const responseData = await response.json();
+    setChats(responseData || []);
+  } catch (error) {
+    console.error('Error fetching chats:', error);
+    setChats([]);
+  } finally {
+    setIsloading(false);
+  }
+};
+useEffect(()=>{
+  if(userId)
+  fetchChats();
+},[userId,chatType]);
+useEffect(() => {
+  if (userId) {
+    console.log('its happening');
+    console.log(userId);
+    fetchChats();
+  }
+}, [userId, chatType]);
   const fetchReviews = async (tourId) => {
     try {
       setLoadingReviews(true);
@@ -108,7 +166,7 @@ const PackageDetails = () => {
 
     return stars;
   };
-
+console.log(tour);
   const ReviewsSection = () => (
     <div className="reviews-section">
       <h3>Customer Reviews</h3>
@@ -171,7 +229,7 @@ const PackageDetails = () => {
 
       {/* Main Content Section */}
       <div className="main-content-section">
-        <PackageInfo tour={tour} companyId={1} />
+        <PackageInfo tour={tour} companyId={tour.companyId} user={use} chatType={chatType} compnayName={tour.compnayName} chats={chats}/>
       </div>
 
       {/* Conditional Rendering: Booking Card or Reviews */}

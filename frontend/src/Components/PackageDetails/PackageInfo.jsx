@@ -1,16 +1,46 @@
 import React from "react";
+import { useEffect,useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./PackageInfo.css";
 
-const PackageInfo = ({ tour, companyId }) => {
+const PackageInfo = ({ tour,user,chats}) => {
   const navigate = useNavigate();
-
+  console.log(user);
+  const userId=user._id;
+  const companyName = tour.companyName;
+  const username = user.username;
+  const avatar = user.avatar;
+  const companyId=tour.companyId;
+ console.log(tour.companyName);
+  
   const handleChatClick = () => {
-    navigate(`/chat`, {
-      state: {
-        chatType: "companies",
+    const selectedData = chats.find(chat => chat.companyName === companyName);
+    console.log(selectedData);
+    let tempchat=selectedData;
+    
+    if (tempchat===null) {
+      tempchat = {
+        _id: `temp_${companyId}`,
+        companyName: companyName,
+        userName: username,
+        logo:  avatar,
+        messages: [],
+        lastMessage: '',
+        lastMessageTime: new Date(),
+        chatType: 'comuse',
+        unreadCount: 0,
+        online: false,
         companyId: companyId,
-      },
+        isTemporary: true
+      };
+    }
+    console.log(tempchat);
+    navigate('/chat', { 
+      state: { 
+        Chat: tempchat,
+        directChat: true,
+        chatType: 'comuse'
+      } 
     });
   };
 
@@ -76,9 +106,9 @@ const PackageInfo = ({ tour, companyId }) => {
               </div>
               <div>
                 <h3>{tour.companyName || "Tour Company"}</h3>
-                <button onClick={handleChatClick}>
+                {user&&<button onClick={handleChatClick}>
                   <i className="fas fa-comments"></i> Chat with Company
-                </button>
+                </button>}
               </div>
             </div>
           </div>

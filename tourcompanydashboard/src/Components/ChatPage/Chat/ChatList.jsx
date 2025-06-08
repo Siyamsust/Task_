@@ -85,7 +85,7 @@ const fetchChats=async()=>{
     setIsSearching(true);
     try {
       const authtoken = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:4000/api/auth/search?query=${encodeURIComponent(query)}`, {
+      const response = await fetch(`http://localhost:4000/user/auth/search?query=${encodeURIComponent(query)}`, {
         headers: {
           'Authorization': `Bearer ${authtoken}`
         }
