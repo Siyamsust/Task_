@@ -42,34 +42,7 @@ const Settings = () => {
     }
   };
 
-  const handlePasswordSubmit = async (e) => {
-    e.preventDefault();
-    setMessage({ type: '', text: '' });
-
-    if (formData.newPassword !== formData.confirmPassword) {
-      setMessage({ type: 'error', text: 'New passwords do not match!' });
-      return;
-    }
-
-    try {
-      await updateUser({
-        currentPassword: formData.currentPassword,
-        newPassword: formData.newPassword
-      });
-      
-      // Clear password fields
-      setFormData(prev => ({
-        ...prev,
-        currentPassword: '',
-        newPassword: '',
-        confirmPassword: ''
-      }));
-      
-      setMessage({ type: 'success', text: 'Password updated successfully!' });
-    } catch (error) {
-      setMessage({ type: 'error', text: 'Failed to update password.' });
-    }
-  };
+  
 
   return (
     <div className="settings">
@@ -99,38 +72,7 @@ const Settings = () => {
         </form>
       </div>
 
-      <div className="settings-section">
-        <h3>Change Password</h3>
-        <form onSubmit={handlePasswordSubmit}>
-          <div className="form-group">
-            <label>Current Password</label>
-            <input
-              type="password"
-              value={formData.currentPassword}
-              onChange={(e) => setFormData({...formData, currentPassword: e.target.value})}
-            />
-          </div>
-          <div className="form-group">
-            <label>New Password</label>
-            <input
-              type="password"
-              value={formData.newPassword}
-              onChange={(e) => setFormData({...formData, newPassword: e.target.value})}
-            />
-          </div>
-          <div className="form-group">
-            <label>Confirm New Password</label>
-            <input
-              type="password"
-              value={formData.confirmPassword}
-              onChange={(e) => setFormData({...formData, confirmPassword: e.target.value})}
-            />
-          </div>
-          <button type="submit" className="save-btn" disabled={loading}>
-            {loading ? 'Updating...' : 'Update Password'}
-          </button>
-        </form>
-      </div>
+      
       <div className="settings-section">
         <h3>Preferences</h3>
         <div className="preferences">

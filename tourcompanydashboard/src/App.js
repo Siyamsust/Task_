@@ -12,6 +12,8 @@ import EditTour from './Components/EditTour/EditTour';
 import ChatPage from './Components/ChatPage/ChatPage';
 import BookingList from './Components/BookingList/BookingList';
 import AllBookingsList from './Components/AllBookingsList/AllBookingsList'; // Import the AllBookingsList component
+import ResetPassword from './Components/ResetPassword/ResetPassword';
+import NewPassword from './Components/NewPassword/NewPassword';
 // Import the Navbar component
 
 const AppContent = () => {
@@ -27,6 +29,8 @@ const AppContent = () => {
             <Routes>
               <Route path="/" element={<Navigate to="/dashboard" />} />
               <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
+              <Route path="/reset-password/:token" element={<NewPassword />} />
               <Route path="/upload-tour" element={<UploadTour />} />
               <Route path="/chat" element={<ChatPage/>}/>
               <Route path="/manage-tours" element={<ManageTours />} />
@@ -39,7 +43,11 @@ const AppContent = () => {
         </div>
       ) : (
         <div className="app">
-          <LoginSignup />
+          <Routes>
+          <Route path="/" element={<LoginSignup />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/reset-password/:token" element={<NewPassword />} />
+          </Routes>
         </div>
       )}
     </ToursProvider>

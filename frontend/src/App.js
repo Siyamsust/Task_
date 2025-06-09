@@ -20,6 +20,9 @@ import { ThemeProvider } from './Context/ThemeContext';
 import WeatherSuggestion from './Pages/weatherSuggestion/WeatherSuggestion';
 import Places from './Pages/Places'; // adjust path if needed
 import HotelRestaurants from './Pages/HotelRestaurants';
+import ResetPassword from './Pages/ResetPassword/ResetPassword';
+import NewPassword from './Pages/NewPassword/NewPassword';
+
 function App() {
   return (
     <AuthProvider>
@@ -32,6 +35,8 @@ function App() {
                 <Route path="/" element={<Homepage />} />
                 <Route path="/package/:id" element={<PackageDetails />} />
                 <Route path="/login" element={<LoginSignup />} />
+                <Route path="/reset-password" element={<ResetPassword />} />
+                <Route path="/reset-password/:token" element={<NewPassword />} />
                 <Route path="/chat" element={<ChatPage />} />
                 <Route path="/populartours" element={<PopularTours />} />
                 <Route path="/weather" element={<WeatherSuggestion />} />

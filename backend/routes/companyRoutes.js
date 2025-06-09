@@ -4,7 +4,19 @@ const Company = require('../models/company');
 const authMiddleware = require('../middleware/authMiddleware');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
+const sibApiV3Sdk = require('sib-api-v3-sdk');
+const defaultClient = sibApiV3Sdk.ApiClient.instance;
+const apiKey = defaultClient.authentications['api-key'];
+// Make sure this matches your .env file variable name
+apiKey.apiKey = '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'; // Changed from SENDINBLUE_API_KEY to API_KEY
+const transEmail = new sibApiV3Sdk.TransactionalEmailsApi();
 
+// Register User
+const sender = {
+  name: 'Siyam',
+  email: 'ahamedsiyam43@gmail.com' // This must be a verified sender in Sendinblue
+};
 // Register a new company
 // Register User
 router.post('/register', async (req, res) => {
@@ -161,4 +173,111 @@ router.post('/register', async (req, res) => {
       res.status(500).json({ success: false, message: 'Failed to fetch companies', error: error.message });
     }
   });
+  router.post('/reset', async (req, res) => {
+    try {
+      const { email, resetUrl } = req.body;
+      
+      // Generate reset token
+      const buffer = await crypto.randomBytes(32);
+      const token = buffer.toString('hex');
+  
+      // Find user and update reset token
+      const user = await Company.findOne({ email });
+      if (!user) {
+        return res.status(404).json({ 
+          success: false, 
+          message: 'No account with that email found' 
+        });
+      }
+  
+      // Update user with reset token
+      user.resetToken = token;
+      user.resetTokenExpiration = Date.now() + 3600000; // 1 hour
+      await user.save();
+     console.log(user);
+      // Send reset email
+      const receiver = [{ email: email }];
+      await transEmail.sendTransacEmail({
+        sender,
+        to: receiver,
+        subject: 'Task - Password Reset Request',
+        textContent: 'You requested a password reset for your Task account.',
+        htmlContent: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f8fafc;">
+            <div style="text-align: center; margin-bottom: 30px;">
+              <i class="fas fa-globe-americas" style="font-size: 48px; color: #4299e1;"></i>
+              <h1 style="color:rgb(18, 99, 239); margin: 10px 0;">Task</h1>
+            </div>
+            
+            <div style="background-color: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
+              <h2 style="color: #2d3748; margin-bottom: 20px;">Password Reset Request</h2>
+              
+              <p style="color: #4a5568; line-height: 1.6; margin-bottom: 20px;">
+                We received a request to reset your password for your Task account. Click the button below to set a new password:
+              </p>
+              
+              <div style="text-align: center; margin: 30px 0;">
+                <a href="${resetUrl}/${token}" 
+                   style="background-color: #4299e1; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: 500; display: inline-block;">
+                  Reset Password
+                </a>
+              </div>
+              
+              <p style="color: #718096; font-size: 14px; margin-bottom: 20px;">
+                This link will expire in 1 hour for security reasons.
+              </p>
+              
+              <p style="color: #718096; font-size: 14px; margin-bottom: 0;">
+                If you didn't request this password reset, you can safely ignore this email.
+              </p>
+            </div>
+            
+            <div style="text-align: center; margin-top: 30px; color: #718096; font-size: 12px;">
+              <p>© 2024 Task. All rights reserved.</p>
+            </div>
+          </div>
+        `
+      });
+  
+      res.status(200).json({ 
+        success: true, 
+        message: 'Password reset email sent successfully' 
+      });
+  
+    } catch (error) {
+      console.error('Reset password error:', error);
+      res.status(500).json({ 
+        success: false, 
+        message: 'Error sending reset password email',
+        error: error.message 
+      });
+    }
+  });
+  router.post('/reset-password',async(req,res)=>{
+  const newPassword=req.body.password;
+  const passwordToken=req.body.token;
+  console.log(newPassword+" "+passwordToken);
+  let resetUser;
+  try{
+  const user= await Company.findOne({resetToken:passwordToken,
+  }
+    )
+    console.log(user);
+    resetUser=user;
+    const hashedPassword=await bcrypt.hash(newPassword,12);
+     resetUser.password=hashedPassword,
+     resetUser.resetToken=undefined;
+     resetUser.resetTokenExpiration=undefined;
+     await resetUser.save();
+     res.status(200).json({succes:true});
+  }
+  catch(error)
+  {
+    res.status(500).json({ 
+      success: false, 
+      message: 'password reset fail',
+      error: error.message 
+    });
+  }
+  })
   module.exports = router; 

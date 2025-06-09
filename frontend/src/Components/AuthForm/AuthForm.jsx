@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import './AuthForm.css';
 
 const AuthForm = ({ isLogin, formData, setFormData, handleSubmit }) => {
@@ -50,7 +51,7 @@ const AuthForm = ({ isLogin, formData, setFormData, handleSubmit }) => {
 
       {isLogin && (
         <div className="forgot-password">
-          <a href="#">Forgot Password?</a>
+          <Link to="/reset-password">Forgot Password?</Link>
         </div>
       )}
 

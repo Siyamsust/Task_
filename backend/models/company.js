@@ -47,7 +47,8 @@ const companySchema = new mongoose.Schema({
         type: Date,
         default: Date.now,
      },
-    
+   resetToken:String,
+  resetTokenExpiration :Date,
     
 })
 const Company = mongoose.model('Company', companySchema);

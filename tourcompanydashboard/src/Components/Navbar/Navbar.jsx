@@ -32,7 +32,7 @@ const Navbar = () => {
   console.log("company", companyDetails)
   const handleLogout = () => {
     logout();
-    navigate('/login');
+    navigate('/');
   }
   useEffect(() => {
     const handleClickOutside = (event) => {
