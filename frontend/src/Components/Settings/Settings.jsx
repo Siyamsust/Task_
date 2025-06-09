@@ -20,7 +20,6 @@ const Settings = () => {
       setFormData(prevState => ({
         ...prevState,
         name: user.name || '',
-        email: user.email || '',
         phone: user.phone || ''
       }));
     }
@@ -33,7 +32,6 @@ const Settings = () => {
     try {
       const updatedData = {
         name: formData.name,
-        email: formData.email,
         phone: formData.phone
       };
 
@@ -86,14 +84,7 @@ const Settings = () => {
               onChange={(e) => setFormData({...formData, name: e.target.value})}
             />
           </div>
-          <div className="form-group">
-            <label>Email</label>
-            <input
-              type="email"
-              value={formData.email}
-              onChange={(e) => setFormData({...formData, email: e.target.value})}
-            />
-          </div>
+          
           <div className="form-group">
             <label>Phone Number</label>
             <input

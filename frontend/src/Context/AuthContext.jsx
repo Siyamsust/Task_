@@ -1,4 +1,5 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
+import axios from 'axios';
 
 const AuthContext = createContext(null);
 
@@ -8,6 +9,38 @@ export const AuthProvider = ({ children }) => {
     return savedUser ? JSON.parse(savedUser) : null;
   });
   const [loading, setLoading] = useState(false);
+
+  // Function to refresh user data from server
+  const refreshUserData = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+
+    try {
+      const response = await axios.get('http://localhost:4000/user/auth/me', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      
+      if (response.data.success) {
+        const updatedUserData = { ...user, user: response.data.user };
+        localStorage.setItem('user', JSON.stringify(updatedUserData));
+        setUser(updatedUserData);
+      }
+    } catch (error) {
+      console.error('Error refreshing user data:', error);
+      // If token is invalid, logout
+      if (error.response?.status === 401) {
+        logout();
+      }
+    }
+  };
+
+  // Load fresh user data on app start
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token && user) {
+      refreshUserData();
+    }
+  }, []); // Only run once on mount
 
   const login = async (userData) => {
     try {
@@ -59,6 +92,16 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // Function to update user data locally (for avatar updates)
+  const updateUserLocal = (updatedUserData) => {
+    const newUserData = {
+      ...user,
+      user: { ...user.user, ...updatedUserData }
+    };
+    localStorage.setItem('user', JSON.stringify(newUserData));
+    setUser(newUserData);
+  };
+
   const logout = () => {
     localStorage.removeItem('user');
     localStorage.removeItem('token');
@@ -70,7 +113,9 @@ export const AuthProvider = ({ children }) => {
     loading,
     login,
     logout,
-    updateUser
+    updateUser,
+    updateUserLocal,
+    refreshUserData
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

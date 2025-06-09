@@ -179,8 +179,8 @@
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  background-color: var(--overlay-light);
-  color: var(--text-primary);
+  background-color:white;
+  color: black;
   border: none;
   border-radius: 50%;
   width: 40px;
@@ -192,10 +192,6 @@
   backdrop-filter: blur(10px);
 }
 
-.nav-button:hover {
-  opacity: 1;
-  background-color: var(--overlay-medium);
-}
 
 .prev {
   left: 15px;
@@ -380,10 +376,7 @@
   color: white;
 }
 
-.add-wishlist:hover {
-  background-color: var(--bg-tertiary);
-  color: var(--text-primary);
-}
+
 
 .booking-actions button i {
   font-size: 1rem;
@@ -553,8 +546,8 @@
   display: inline-block;
   padding: 0.3rem 0.7rem;
   font-size: 0.8rem;
-  background-color: rgba(52, 152, 219, 0.1);
-  color: var(--accent-primary);
+  background-color: rgba(254, 7, 7, 0.9);
+  color: white;
   border-radius: 20px;
   font-weight: 500;
   transition: all 0.3s ease;

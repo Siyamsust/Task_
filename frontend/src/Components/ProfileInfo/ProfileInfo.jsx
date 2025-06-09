@@ -1,16 +1,33 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import axios from 'axios';
 import './ProfileInfo.css';
 import { useAuth } from '../../Context/AuthContext';
 
 const ProfileInfo = () => {
-  const { user } = useAuth();
+  const { user, updateUserLocal, refreshUserData } = useAuth();
   const userData = user?.user || user;
   
   const [wishlistCount, setWishlistCount] = useState(0);
   const [tripsCount, setTripsCount] = useState(0);
   const [error, setError] = useState('');
   const [uploadLoading, setUploadLoading] = useState(false);
+  const [imageError, setImageError] = useState(false);
+
+  // Memoize the avatar URL to prevent unnecessary re-renders
+  const getAvatarUrl = useCallback(() => {
+    if (userData?.avatar && userData.avatar !== 'default-avatar.png') {
+      return `http://localhost:4000/${userData.avatar}`;
+    }
+    return '/default-avatar.png';
+  }, [userData?.avatar]);
+
+  const [avatarPreview, setAvatarPreview] = useState(getAvatarUrl());
+
+  // Update avatar preview when userData changes
+  useEffect(() => {
+    setAvatarPreview(getAvatarUrl());
+    setImageError(false);
+  }, [getAvatarUrl]);
 
   useEffect(() => {
     const fetchCounts = async () => {
@@ -45,11 +62,18 @@ const ProfileInfo = () => {
     };
 
     fetchCounts();
-  }, [userData]);
+  }, [userData?.email]);
 
-  const [avatarPreview, setAvatarPreview] = useState(
-    user?.avatar ? `http://localhost:4000/${user.avatar}` : 'default-avatar.png'
-  );
+  const handleImageError = useCallback(() => {
+    if (!imageError) {
+      setImageError(true);
+      setAvatarPreview('/default-avatar.png');
+    }
+  }, [imageError]);
+
+  const handleImageLoad = useCallback(() => {
+    setImageError(false);
+  }, []);
 
   const handleAvatarChange = async (e) => {
     const file = e.target.files[0];
@@ -70,40 +94,64 @@ const ProfileInfo = () => {
     setUploadLoading(true);
     setError('');
 
+    // Store original avatar for fallback
+    const originalAvatar = avatarPreview;
+
+    // Show preview immediately
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      setAvatarPreview(e.target.result);
+      setImageError(false);
+    };
+    reader.readAsDataURL(file);
+
     const formData = new FormData();
     formData.append('avatar', file);
     formData.append('email', userData.email);
 
     try {
-      console.log('Uploading avatar for:', userData.email); // Debug log
+      console.log('Uploading avatar for:', userData.email);
       
-      const response = await axios.post('http://localhost:4000/api/auth/avatar', formData, {
+      const response = await axios.post('http://localhost:4000/user/auth/avatar', formData, {
         headers: { 
           'Content-Type': 'multipart/form-data',
         },
       });
 
-      console.log('Upload response:', response.data); // Debug log
+      console.log('Upload response:', response.data);
 
       if (response.data.success) {
-        setAvatarPreview(`http://localhost:4000/${response.data.user.avatar}`);
-        setError(''); // Clear any previous errors
+        // Update the avatar URL with cache busting
+        const newAvatarUrl = `http://localhost:4000/${response.data.user.avatar}?t=${Date.now()}`;
+        setAvatarPreview(newAvatarUrl);
+        setImageError(false);
+        setError('');
+
+        // Update the user context with new avatar data
+        updateUserLocal({ avatar: response.data.user.avatar });
+
+        // Optionally refresh all user data from server
+        setTimeout(() => {
+          refreshUserData();
+        }, 1000);
+        
       } else {
         setError(response.data.message || 'Upload failed');
+        setAvatarPreview(originalAvatar);
       }
     } catch (err) {
       console.error('Upload failed:', err);
       
+      // Revert to original avatar on error
+      setAvatarPreview(originalAvatar);
+      
       if (err.response) {
-        // Server responded with error status
         console.error('Error response:', err.response.data);
         setError(err.response.data.message || `Server error: ${err.response.status}`);
       } else if (err.request) {
-        // Request was made but no response received
         console.error('No response received:', err.request);
         setError('No response from server. Check your connection.');
       } else {
-        // Something else happened
         console.error('Request setup error:', err.message);
         setError('Error setting up the request.');
       }
@@ -116,7 +164,16 @@ const ProfileInfo = () => {
     <div className="profile-info">
       <div className="profile-header">
         <div className="profile-avatar">
-          <img src={avatarPreview} alt="Profile" />
+          <img 
+            src={avatarPreview} 
+            alt="Profile" 
+            onError={handleImageError}
+            onLoad={handleImageLoad}
+            style={{ 
+              opacity: uploadLoading ? 0.7 : 1,
+              transition: 'opacity 0.3s ease'
+            }}
+          />
           <label htmlFor="avatar-upload" className="edit-avatar">
             {uploadLoading ? (
               <i className="fas fa-spinner fa-spin"></i>
@@ -134,11 +191,7 @@ const ProfileInfo = () => {
           />
         </div>
         <h2>{userData?.name || 'User Name'}</h2>
-        <p>{userData?.email || 'email@example.com'}</p>
-
-        <p>{userData?.phone || '0123456789'}</p>
-        <p>{userData?.phone || 'Phone not provided'}</p>
-
+        <p>{userData?.phone || 'No phone number'}</p>
       </div>
 
       {error && <p className="error-message" style={{ color: 'red', marginTop: '10px' }}>{error}</p>}

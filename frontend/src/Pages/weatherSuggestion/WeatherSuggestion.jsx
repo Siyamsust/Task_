@@ -311,9 +311,7 @@ const WeatherSuggestion = () => {
             <div className="weather-details">
               <div className="temperature">{currentWeather.temp}°C</div>
               <div className="condition">{currentWeather.condition}</div>
-              {currentWeather.description && (
-                <div className="description">{currentWeather.description}</div>
-              )}
+              
               <div className="additional-info">
                 {currentWeather.humidity && (
                   <span>💧 Humidity: {currentWeather.humidity}%</span>

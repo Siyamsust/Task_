@@ -98,7 +98,7 @@ const UpcomingTours = () => {
 
               const tourName = tour.name || 'Untitled Tour';
               const tourPrice = tour.price || 'N/A';
-              const tourLocation = tour.location || 'Location TBD';
+              const tourLocation = tour.weather || 'Location TBD';
               const tourImage = tour.images && tour.images.length > 0
                 ? `http://localhost:4000/${tour.images[0]}`
                 : 'https://picsum.photos/300/200';
@@ -126,9 +126,7 @@ const UpcomingTours = () => {
                       <span>
                         Price: <strong>${tourPrice}</strong>
                       </span>
-                      <span>
-                        <i className="fas fa-map-marker-alt"></i> {tourLocation}
-                      </span>
+                      
                       <span>
                         <i className="fas fa-calendar"></i> {startDate}
                       </span>

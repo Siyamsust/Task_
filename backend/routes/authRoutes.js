@@ -152,26 +152,94 @@ router.put('/update', authMiddleware, async (req, res) => {
 });
 router.post('/avatar', upload.single('avatar'), async (req, res) => {
   try {
+    console.log('Avatar upload request received');
+    console.log('File:', req.file);
+    console.log('Body:', req.body);
+
+    if (!req.file) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'No file uploaded.' 
+      });
+    }
+
     const { email } = req.body;
-    const avatarPath = req.file.path.replace(/\\/g, '/'); // for Windows compatibility
+    if (!email) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Email is required.' 
+      });
+    }
+
+    // Store the file path (relative to uploads directory)
+    const avatarPath = req.file.path.replace(/\\/g, '/');
+
+    console.log('Updating user with email:', email);
+    console.log('Avatar path:', avatarPath);
 
     const user = await User.findOneAndUpdate(
-      { email },
+      { email: email },
       { avatar: avatarPath },
       { new: true }
-    );
+    ).select('-password');
 
     if (!user) {
-      return res.status(404).json({ success: false, message: 'User not found.' });
+      return res.status(404).json({ 
+        success: false, 
+        message: 'User not found.' 
+      });
+    }
+
+    console.log('User updated successfully:', user);
+
+    res.json({
+      success: true,
+      message: 'Avatar updated successfully',
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        avatar: user.avatar,
+        phone: user.phone
+      }
+    });
+  } catch (error) {
+    console.error('Error uploading avatar:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Avatar upload failed.',
+      error: error.message 
+    });
+  }
+});
+// Add this route to authRoutes.js
+router.get('/me', authMiddleware, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.userId).select('-password');
+    
+    if (!user) {
+      return res.status(404).json({ 
+        success: false, 
+        message: 'User not found' 
+      });
     }
 
     res.json({
       success: true,
-      user
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        avatar: user.avatar,
+        phone: user.phone
+      }
     });
   } catch (error) {
-    console.error('Error uploading avatar:', error);
-    res.status(500).json({ success: false, message: 'Avatar upload failed.' });
+    console.error('Error fetching user data:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Server error' 
+    });
   }
 });
-module.exports = router; 
+module.exports = router;

@@ -2,11 +2,23 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './Wishlist.css';
 import { useAuth } from '../../Context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 const Wishlist = () => {
   const [wishlistItems, setWishlistItems] = useState([]);
   const [error, setError] = useState('');
   const { user } = useAuth(); // Get the user from context
+  const navigate = useNavigate();
+
+  const handleViewDetails = async (tourId) => {
+    try {
+      await axios.patch(`http://localhost:4000/api/tours/${tourId}/increment-view`);
+      navigate(`/package/${tourId}`);
+    } catch (error) {
+      console.error('Failed to increment view count:', error);
+      navigate(`/package/${tourId}`); // Navigate anyway
+    }
+  };
 
   // Fetch wishlist items from the backend
   useEffect(() => {
@@ -44,7 +56,6 @@ const Wishlist = () => {
 
     fetchWishlist();
   }, [user]);
-
 
   const handleRemoveFromWishlist = async (tourId) => {
     const token = localStorage.getItem('token');
@@ -96,10 +107,8 @@ const Wishlist = () => {
                 <i className="fas fa-trash"></i>
               </button>
             )}
-
           </div>
           <div className="wishlist-content">
-            {/* <h4>{item.name}</h4> */}
             <div className="wishlist-info">
               <span>
                 <i className="fas fa-map-marker-alt"></i>
@@ -118,13 +127,17 @@ const Wishlist = () => {
                   <i className="fas fa-star"></i> {/* Adjust this if you have a rating */}
                 </span>
               </div>
-              <button className="book-now">Book Now</button>
+              <button 
+                className="view-details"
+                onClick={() => handleViewDetails(item.tourId._id)}
+              >
+                View Details
+              </button>
             </div>
           </div>
         </div>
       ))}
     </div>
-
   );
 };
 
