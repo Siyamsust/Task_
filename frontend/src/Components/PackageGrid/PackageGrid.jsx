@@ -1,13 +1,10 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import './PackageGrid.css';
-import { ToursContext } from '../../Context/ToursContext';
 
 const PackageGrid = ({ packages }) => {
   const navigate = useNavigate();
-  const { tours, loading, error } = useContext(ToursContext);
   const [averageRatings, setAverageRatings] = useState({});
-  const [sortedTours, setSortedTours] = useState([]);
 
   // Helper function to check if tour is completed
   const isTourCompleted = (startDate) => {
@@ -30,7 +27,7 @@ const PackageGrid = ({ packages }) => {
   };
 
   useEffect(() => {
-    const computePopularityAndSort = async () => {
+    const fetchAverageRatings = async () => {
       try {
         const res = await fetch('http://localhost:4000/reviews');
         const reviews = await res.json();
@@ -54,36 +51,16 @@ const PackageGrid = ({ packages }) => {
         }
 
         setAverageRatings(averages);
-
-        const scored = [...tours].map(tour => {
-          const {
-            bookings = 0,
-            views = 0,
-            wishlistCount = 0,
-            rating = {}
-          } = tour.popularity || {};
-
-          const averageRating = rating.average ?? averages[tour._id] ?? 0;
-          const popularityScore =
-            (bookings * 0.5) +
-            (averageRating * 10 * 0.2) +
-            (views * 0.2) +
-            (wishlistCount * 0.1);
-
-          return { ...tour, popularityScore };
-        });
-
-        const sorted = scored.sort((a, b) => b.popularityScore - a.popularityScore);
-        setSortedTours(sorted);
       } catch (err) {
-        console.error("Error computing popularity scores:", err);
+        console.error("Error fetching average ratings:", err);
       }
     };
 
-    if (tours.length > 0) {
-      computePopularityAndSort();
+    // Only fetch ratings if we have packages to display
+    if (packages.length > 0) {
+      fetchAverageRatings();
     }
-  }, [tours]);
+  }, [packages]);
 
   if (packages.length === 0) {
     return (
@@ -97,8 +74,8 @@ const PackageGrid = ({ packages }) => {
 
   return (
     <div className="package-grid">
-      {sortedTours.map(tour => {
-        const averageRating = averageRatings[tour._id];
+      {packages.map(tour => {
+        const averageRating = averageRatings[tour._id] || tour.popularity?.rating?.average;
         const isCompleted = isTourCompleted(tour.startDate);
         
         return (

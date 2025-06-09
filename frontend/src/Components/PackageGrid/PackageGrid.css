@@ -2,9 +2,9 @@
 
 /* Package Grid Container */
 .package-grid-container {
+  width: 100%;
   display: flex;
   flex-wrap: wrap;
-  gap: 20px;
   justify-content: center;
 }
 
@@ -13,7 +13,6 @@
   flex-wrap: wrap;
   gap: 20px;
   justify-content: center;
-  padding: 20px;
 }
 
 /* Package Card - Renamed from tour-card to avoid conflicts */
@@ -145,11 +144,7 @@
   border: none;
 }
 
-.package-view-btn:hover {
-  background: #059669;
-  text-decoration: none;
-  color: white;
-}
+
 
 .package-view-btn i {
   transition: transform 0.3s ease;

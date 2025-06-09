@@ -24,7 +24,7 @@
   --popular-text-secondary: #cccccc;
   --popular-border-color: #4a5568;
   --popular-shadow-color: rgba(0, 0, 0, 0.3);
-  --popular-accent-color: #38a169; /* darker green for dark mode */
+  --popular-accent-color: #38a169;
   --popular-accent-text: white;
   --popular-primary-color: #4299e1;
   --popular-header-gradient: linear-gradient(#121212, #38a169);
@@ -67,9 +67,11 @@
 
 /* Search and Filter Controls */
 .popular-packages-controls {
-  max-width: 100%;
-  margin: -30px auto 30px;
+  max-width: 1200px;
+  margin: -30px auto 20px;
   padding: 0 20px;
+  position: relative;
+  z-index: 2;
 }
 
 .popular-search-bar {
@@ -80,9 +82,9 @@
   display: flex;
   align-items: center;
   gap: 15px;
-  margin-bottom: 20px;
   transition: all 0.3s ease;
   border: 1px solid var(--popular-border-color, #dddddd);
+  position: relative;
 }
 
 .popular-search-bar:focus-within {
@@ -110,57 +112,32 @@
   font-size: 1.1rem;
 }
 
-.popular-filter-tabs {
-  display: flex;
-  gap: 15px;
-  overflow-x: auto;
-  padding: 10px 0;
-  scrollbar-width: thin;
-  scrollbar-color: var(--popular-accent-color, green) transparent;
-}
-
-.popular-filter-tabs::-webkit-scrollbar {
-  height: 4px;
-}
-
-.popular-filter-tabs::-webkit-scrollbar-thumb {
-  background: var(--popular-accent-color, green);
-  border-radius: 2px;
-}
-
-.popular-filter-tab {
-  padding: 10px 20px;
+/* Clear Search Button */
+.clear-search-btn {
+  background: none;
   border: none;
-  border-radius: 8px;
-  background: var(--popular-card-bg, white);
   color: var(--popular-text-secondary, #666);
   cursor: pointer;
+  padding: 5px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   transition: all 0.3s ease;
-  white-space: nowrap;
-  border: 1px solid var(--popular-border-color, #dddddd);
-  font-size: 0.95rem;
-  font-weight: 500;
+  width: 24px;
+  height: 24px;
 }
 
-.popular-filter-tab:hover {
+.clear-search-btn:hover {
   background: var(--popular-background-secondary, #f8f9fa);
   color: var(--popular-text-primary, #333);
 }
 
-.popular-filter-tab.active {
-  background: var(--popular-accent-color, green);
-  color: var(--popular-accent-text, white);
-  border-color: var(--popular-accent-color, green);
-}
-
-/* Results Summary */
+/* Results Summary - Fixed Layout */
 .popular-results-summary {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 20px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto 30px;
+  padding: 0 20px;
 }
 
 .popular-results-summary p {
@@ -169,36 +146,7 @@
   font-size: 1rem;
   margin: 0;
   font-weight: 500;
-}
-
-.popular-view-options {
-  display: flex;
-  gap: 10px;
-}
-
-.popular-view-option {
-  padding: 8px 15px;
-  border: 1px solid var(--popular-border-color, #ddd);
-  border-radius: 6px;
-  background: var(--popular-card-bg, white);
-  color: var(--popular-text-secondary, #666);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  transition: all 0.3s ease;
-  font-size: 0.9rem;
-}
-
-.popular-view-option:hover {
-  background: var(--popular-background-secondary, #f8f9fa);
-  color: var(--popular-text-primary, #333);
-}
-
-.popular-view-option.active {
-  background: var(--popular-background-secondary, #f8f9fa);
-  border-color: var(--popular-accent-color, green);
-  color: var(--popular-primary-color, #3498db);
+  text-align: left;
 }
 
 /* Loading Spinner */
@@ -228,27 +176,71 @@
   100% { transform: rotate(360deg); }
 }
 
-/* Packages Grid */
+/* Packages Grid - Fixed Layout */
 .popular-packages-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-  justify-content: center;
-  padding: 20px;
-  max-width: 1400px;
+  max-width: 1200px;
   margin: 0 auto;
-  box-sizing: border-box;
+  padding: 0 20px 40px;
 }
+
+/* No Search Results */
+.no-search-results {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  text-align: center;
+  color: var(--popular-text-secondary, #666);
+  background: var(--popular-card-bg, white);
+  border-radius: 16px;
+  padding: 2rem;
+  margin: 2rem 0;
+  border: 1px solid var(--popular-border-color, #ddd);
+}
+
+.no-search-results i {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  color: var(--popular-accent-color, green);
+  opacity: 0.7;
+}
+
+.no-search-results p {
+  font-size: 1rem;
+  margin: 0.5rem 0;
+  line-height: 1.6;
+}
+
+.clear-search-button {
+  background: var(--popular-accent-color, green);
+  color: var(--popular-accent-text, white);
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 1rem;
+}
+
+
 
 /* Responsive Design */
 @media (max-width: 1200px) {
-  .popular-packages-container {
+  .popular-packages-controls {
+    max-width: 100%;
+    padding: 0 15px;
+  }
+  
+  .popular-results-summary {
+    max-width: 100%;
     padding: 0 15px;
   }
   
   .popular-packages-grid {
-    gap: 15px;
-    padding: 15px;
+    max-width: 100%;
+    padding: 0 15px 40px;
   }
 }
 
@@ -274,25 +266,13 @@
     padding: 12px 20px;
   }
 
-  .popular-filter-tabs {
-    gap: 10px;
-  }
-
-  .popular-filter-tab {
-    padding: 8px 15px;
-    font-size: 0.9rem;
-  }
-
   .popular-results-summary {
-    flex-direction: column;
-    gap: 15px;
-    align-items: flex-start;
-    padding: 15px;
+    padding: 0 15px;
+    margin-bottom: 20px;
   }
 
   .popular-packages-grid {
-    gap: 15px;
-    padding: 10px;
+    padding: 0 15px 30px;
   }
 }
 
@@ -313,32 +293,12 @@
     padding: 10px 15px;
   }
 
-  .popular-filter-tabs {
-    gap: 8px;
-  }
-
-  .popular-filter-tab {
-    padding: 6px 12px;
-    font-size: 0.85rem;
-  }
-
   .popular-results-summary {
-    padding: 10px;
-  }
-
-  .popular-view-options {
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-
-  .popular-view-option {
-    padding: 6px 12px;
-    font-size: 0.85rem;
+    padding: 0 10px;
   }
 
   .popular-packages-grid {
-    gap: 10px;
-    padding: 10px 5px;
+    padding: 0 10px 20px;
   }
 }
 
@@ -347,11 +307,11 @@
   border-color: var(--popular-border-color, #4a5568);
 }
 
-[data-theme='dark'] .popular-filter-tab {
-  border-color: var(--popular-border-color, #4a5568);
+[data-theme='dark'] .clear-search-btn:hover {
+  background: #4a5568;
 }
 
-[data-theme='dark'] .popular-view-option {
+[data-theme='dark'] .no-search-results {
   border-color: var(--popular-border-color, #4a5568);
 }
 
@@ -378,15 +338,4 @@
 
 .popular-search-bar:focus-within i {
   color: var(--popular-accent-color, green);
-}
-
-/* Filter tab enhancements */
-.popular-filter-tab:active {
-  transform: translateY(1px);
-}
-
-/* Loading spinner enhancements */
-.popular-loading-spinner {
-  flex-direction: column;
-  gap: 15px;
 }
