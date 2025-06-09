@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { FaUsers, FaSuitcase, FaMoneyBillWave, FaStar, FaChartLine, FaCalendarCheck } from 'react-icons/fa';
 import { Pie, Bar } from 'react-chartjs-2';
 import {
@@ -24,37 +24,44 @@ ChartJS.register(
 );
 
 const Dashboard = () => {
-  // Dummy data for demonstration
-  const stats = {
-    activePackages: 24,
-    totalIncome: 45800,
-    newBookings: 18,
-    customerRating: 4.8,
-    totalCustomers: 156,
-    completedTours: 12
-  };
+  const [stats, setStats] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const popularPackages = [
-    { id: 1, name: 'Sundarban Adventure', bookings: 45, rating: 4.9, revenue: 12500 },
-    { id: 2, name: 'Cox\'s Bazar Deluxe', bookings: 38, rating: 4.7, revenue: 9800 },
-    { id: 3, name: 'Bandarban Trek', bookings: 32, rating: 4.8, revenue: 8600 }
-  ];
-
-  const recentFeedback = [
-    { id: 1, user: 'John Doe', package: 'Sundarban Adventure', rating: 5, comment: 'Amazing experience! The guide was very knowledgeable.' },
-    { id: 2, user: 'Sarah Smith', package: 'Cox\'s Bazar Deluxe', rating: 4, comment: 'Great service but the hotel could be better.' },
-    { id: 3, user: 'Mike Johnson', package: 'Bandarban Trek', rating: 5, comment: 'Unforgettable journey! Will definitely come back.' }
-  ];
+  useEffect(() => {
+    const fetchStats = async () => {
+      setLoading(true);
+      try {
+        const res = await fetch(`http://localhost:4000/api/dashboard/stats`);
+        const data = await res.json();
+        if (data.success) {
+          setStats(data.stats);
+        } else {
+          setError(data.message || 'Failed to fetch stats');
+        }
+      } catch (err) {
+        setError('Failed to fetch stats');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchStats();
+  }, []);
 
   const renderStars = (rating) => {
-    return '⭐'.repeat(rating);
+    return '⭐'.repeat(Math.round(rating));
   };
 
+  if (loading) return <div className="dashboard"><h2>Loading dashboard...</h2></div>;
+  if (error) return <div className="dashboard"><h2>Error: {error}</h2></div>;
+  if (!stats) return null;
+
+  // Prepare chart data
   const monthlyRevenue = {
-    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+    labels: stats.monthlyRevenue.labels,
     datasets: [{
       label: 'Monthly Revenue',
-      data: [12000, 19000, 15000, 25000, 22000, 30000, 35000, 28000, 32000, 45800, 38000, 42000],
+      data: stats.monthlyRevenue.data,
       backgroundColor: '#3498db',
       borderColor: '#2980b9',
       borderWidth: 1
@@ -62,9 +69,9 @@ const Dashboard = () => {
   };
 
   const packageRevenue = {
-    labels: popularPackages.map(pkg => pkg.name),
+    labels: stats.popularPackages.map(pkg => pkg.name),
     datasets: [{
-      data: popularPackages.map(pkg => pkg.revenue),
+      data: stats.popularPackages.map(pkg => pkg.price * pkg.popularity.bookings),
       backgroundColor: ['#2ecc71', '#e74c3c', '#f1c40f'],
       borderColor: ['#27ae60', '#c0392b', '#f39c12'],
       borderWidth: 1
@@ -100,7 +107,6 @@ const Dashboard = () => {
   return (
     <div className="dashboard">
       <h1>Dashboard Overview</h1>
-      
       <div className="stats-grid">
         <div className="stat-card">
           <div className="stat-icon">
@@ -111,17 +117,15 @@ const Dashboard = () => {
             <p>{stats.activePackages}</p>
           </div>
         </div>
-
         <div className="stat-card">
           <div className="stat-icon money">
             <FaMoneyBillWave />
           </div>
           <div className="stat-details">
             <h3>Monthly Revenue</h3>
-            <p>${stats.totalIncome.toLocaleString()}</p>
+            <p>${stats.monthlyRevenue.data.reduce((a, b) => a + b, 0).toLocaleString()}</p>
           </div>
         </div>
-
         <div className="stat-card">
           <div className="stat-icon bookings">
             <FaCalendarCheck />
@@ -131,7 +135,6 @@ const Dashboard = () => {
             <p>{stats.newBookings}</p>
           </div>
         </div>
-
         <div className="stat-card">
           <div className="stat-icon rating">
             <FaStar />
@@ -141,7 +144,6 @@ const Dashboard = () => {
             <p>{stats.customerRating}/5.0</p>
           </div>
         </div>
-
         <div className="stat-card">
           <div className="stat-icon customers">
             <FaUsers />
@@ -151,7 +153,6 @@ const Dashboard = () => {
             <p>{stats.totalCustomers}</p>
           </div>
         </div>
-
         <div className="stat-card">
           <div className="stat-icon completed">
             <FaChartLine />
@@ -162,7 +163,6 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
-
       <div className="charts-grid">
         <div className="dashboard-card">
           <Bar data={monthlyRevenue} options={barOptions} />
@@ -171,40 +171,38 @@ const Dashboard = () => {
           <Pie data={packageRevenue} options={pieOptions} />
         </div>
       </div>
-
       <div className="dashboard-grid">
         <div className="dashboard-card popular-packages">
           <h2>Popular Packages</h2>
           <div className="package-list">
-            {popularPackages.map(pkg => (
-              <div key={pkg.id} className="package-item">
+            {stats.popularPackages.map(pkg => (
+              <div key={pkg._id} className="package-item">
                 <div className="package-info">
                   <h3>{pkg.name}</h3>
-                  <p>Bookings: {pkg.bookings}</p>
-                  <p>Rating: {pkg.rating}/5.0</p>
-                  <p>Revenue: ${pkg.revenue.toLocaleString()}</p>
+                  <p>Bookings: {pkg.popularity.bookings}</p>
+                  <p>Rating: {pkg.popularity.rating.average}/5.0</p>
+                  <p>Revenue: ${(pkg.price * pkg.popularity.bookings).toLocaleString()}</p>
                 </div>
                 <div className="package-chart">
-                  <div className="chart-bar" style={{ height: `${(pkg.bookings/45)*100}%` }}></div>
+                  <div className="chart-bar" style={{ height: `${(pkg.popularity.bookings / stats.popularPackages[0].popularity.bookings) * 100}%` }}></div>
                 </div>
               </div>
             ))}
           </div>
         </div>
-
         <div className="dashboard-card recent-feedback">
           <h2>Recent Feedback</h2>
           <div className="feedback-list">
-            {recentFeedback.map(feedback => (
-              <div key={feedback.id} className="feedback-item">
+            {stats.recentFeedback.map((feedback, idx) => (
+              <div key={feedback._id || idx} className="feedback-item">
                 <div className="feedback-header">
-                  <h3>{feedback.user}</h3>
+                  <h3>{feedback.name}</h3>
                   <div className="feedback-rating">
-                    {renderStars(feedback.rating)}
+                    {renderStars(feedback.popularity?.rating?.average || 0)}
                   </div>
                 </div>
-                <p className="feedback-package">{feedback.package}</p>
-                <p className="feedback-comment">{feedback.comment}</p>
+                <p className="feedback-package">Ratings: {feedback.popularity?.rating?.count || 0}</p>
+                <p className="feedback-comment">Average: {feedback.popularity?.rating?.average || 0}/5.0</p>
               </div>
             ))}
           </div>

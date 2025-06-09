@@ -23,7 +23,7 @@ const weatherRoute = require('./routes/weatherRoutes');
 const adminAuthRoutes = require('./routes/adminauth');
 // <-- register route
 
-
+const dashboardRoutes = require('./routes/dashboardRoutes');
 
 require('dotenv').config();
 
@@ -187,6 +187,7 @@ app.use('/api', weatherRoute); // ✅ using a valid router
 const placeRoutes = require('./routes/placeRoutes');
 app.use('/api', placeRoutes);
 
+app.use('/api', dashboardRoutes);
 
 app.get('/', (req, res) => {
   res.send('Backend is running!');
