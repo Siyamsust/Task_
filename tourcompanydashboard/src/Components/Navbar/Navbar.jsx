@@ -69,9 +69,6 @@ const Navbar = () => {
         <Link to="/upload-tour" className={location.pathname === '/upload-tour' ? 'active' : ''}>
           <FaUpload /> <span>Upload Tour</span>
         </Link>
-        <Link to="/analytics" className={location.pathname === '/analytics' ? 'active' : ''}>
-          <FaChartBar /> <span>Analytics</span>
-        </Link>
         <Link to="/chat" className={location.pathname === '/chat' ? 'active' : ''}>
           <FaEnvelope /> <span>Messages</span>
         </Link>
