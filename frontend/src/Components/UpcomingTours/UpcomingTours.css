@@ -35,7 +35,6 @@
 .upcoming-tours-container {
   max-width: 1400px;
   margin: 0 auto;
-  background-color: var(--upcoming-background-primary, white);
   transition: background-color 0.3s ease;
   padding: 10px;
 }
