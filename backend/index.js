@@ -23,7 +23,7 @@ const weatherRoute = require('./routes/weatherRoutes');
 const adminAuthRoutes = require('./routes/adminauth');
 // <-- register route
 
-const dashboardRoutes = require('./routes/dashboardRoutes');
+
 
 require('dotenv').config();
 
@@ -187,7 +187,18 @@ app.use('/api', weatherRoute); // ✅ using a valid router
 const placeRoutes = require('./routes/placeRoutes');
 app.use('/api', placeRoutes);
 
-app.use('/api', dashboardRoutes);
+const tourRoutes = require('./routes/tours');
+app.use('/api/tours', tourRoutes);
+
+const { recommendTours } = require('./utils/tourRecommender');
+
+// Example: selected destinations by user
+const selected = ['Cox’s Bazar', 'Saint Martin'];
+
+recommendTours(selected, (recommended) => {
+  console.log('📌 Recommended Tours:', recommended);
+});
+
 
 app.get('/', (req, res) => {
   res.send('Backend is running!');
