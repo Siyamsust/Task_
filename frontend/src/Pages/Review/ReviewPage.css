@@ -1,31 +1,4 @@
-/* Main layout */
-:root {
-  /* Light theme colors */
-  --text-primary: #333333;
-  --text-secondary: #666666;
-  --text-muted: #888888;
-  --background-primary: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
-  --background-secondary: #f8f9fa;
-  --input-bg: #ffffff;
-  --card-bg: #ffffff;
-  --border-color: #e2e8f0;
-  --label-color:#232a2a;
-  --bg-light:#f2f4f6;
-}
 
-[data-theme='dark'] {
-  /* Dark theme colors */
-  --text-primary: #f0f0f0;
-  --text-secondary: #cccccc;
-  --input-bg: #2d3748;
-  --text-muted: #a0aec0;
-  --background-primary: #1a1a1a;
-  --background-secondary: #2d3748;
-  --card-bg: #2d3748;
-  --border-color: #4a5568;
-   --label-color:#dbe8e8;
-   --bg-light: #546573;
-}
 .review-page {
   width: 1200px;
   margin: 0 auto;

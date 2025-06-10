@@ -53,9 +53,9 @@ const SearchFilter = () => {
 
   // Status options
   const statusOptions = [
-    { id: 'upcoming', label: 'Upcoming', color: '#22c55e' },
-    { id: 'ongoing', label: 'Ongoing', color: '#f59e0b' },
-    { id: 'completed', label: 'Completed', color: '#6b7280' }
+    { id: 'upcoming', label: 'Upcoming' },
+    { id: 'ongoing', label: 'Ongoing' },
+    { id: 'completed', label: 'Completed' }
   ];
   // Add this useEffect after your existing useEffects
   useEffect(() => {
@@ -454,10 +454,7 @@ const SearchFilter = () => {
                 <label
                   key={option.id}
                   className="tour-search-filter-option"
-                  style={{
-                    color: selectedStatuses.includes(option.id) ? option.color : '#374151',
-                    fontWeight: selectedStatuses.includes(option.id) ? '600' : '400'
-                  }}
+                 
                 >
                   <input
                     type="checkbox"
@@ -478,10 +475,7 @@ const SearchFilter = () => {
                 <label
                   key={option.id}
                   className="tour-search-filter-option"
-                  style={{
-                    color: selectedTourTypes.includes(option.id) ? option.color : '#374151',
-                    fontWeight: selectedTourTypes.includes(option.id) ? '600' : '400'
-                  }}
+                  
                 >
                   <input
                     type="checkbox"

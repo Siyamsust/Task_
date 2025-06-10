@@ -1,22 +1,4 @@
-/* PopularTours.css - Updated with unique class names */
 
-:root {
-  /* Light theme */
-  --danger-color: #f92d2d;
-  --danger-hover: #e63434;
-  --border-light: #f3f3f3;
-  --scrollbar-track: #f1f1f1;
-  --bg-secondary: #ffffff;
-}
-
-[data-theme='dark'] {
-  /* Dark theme */
-  --danger-color: #f56565;
-  --danger-hover: #e53e3e;
-  --border-light: #aec8f6;
-  --scrollbar-track: #2d3748;
-  --bg-secondary: #1a1a1a;
-}
 
 .popular-tours-section {
   width: 100%;
