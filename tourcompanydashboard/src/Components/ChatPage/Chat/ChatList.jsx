@@ -18,7 +18,7 @@ const fetchChats=async()=>{
   setIsloading(true);
   try {
     console.log("useEffect triggered. Token:", token, "Company ID:", companyId);
-    const authtoken=localStorage.getItem('token');
+    const authtoken=localStorage.getItem('company-token');
     console.log("token",authtoken);
     if(!token){
       throw new Error('No token found');
@@ -84,7 +84,7 @@ const fetchChats=async()=>{
     
     setIsSearching(true);
     try {
-      const authtoken = localStorage.getItem('token');
+      const authtoken = localStorage.getItem('company-token');
       const response = await fetch(`http://localhost:4000/user/auth/search?query=${encodeURIComponent(query)}`, {
         headers: {
           'Authorization': `Bearer ${authtoken}`

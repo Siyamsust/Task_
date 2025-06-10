@@ -37,7 +37,7 @@ const LoginSignup = () => {
       });
 
       const data = await response.json();
-      console.log(data.token)
+      // console.log(data.company-token) 
       if (!response.ok) {
         throw new Error(data.message || 'Authentication failed');
       }

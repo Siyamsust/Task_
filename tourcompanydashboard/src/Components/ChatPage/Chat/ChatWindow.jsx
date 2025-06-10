@@ -78,7 +78,7 @@ useEffect(() => {
     if (!newMessage.trim() || !selectedChat) return;
 
     try {
-      const authtoken = localStorage.getItem('token');
+      const authtoken = localStorage.getItem('company-token');
       const response = await fetch('http://localhost:4000/api/chat/send-message', {
         method: 'POST',
         headers: {
