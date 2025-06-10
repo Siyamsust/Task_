@@ -1,5 +1,5 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
-
+ 
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
@@ -13,7 +13,7 @@ export const AuthProvider = ({ children }) => {
     try {
       setLoading(true);
       localStorage.setItem('company', JSON.stringify(companyData));
-      localStorage.setItem('token', companyData.token);
+      localStorage.setItem('company-token', companyData.token);
       setCompany(companyData);
     } catch (error) {
       console.error('Login error:', error);
@@ -27,7 +27,7 @@ export const AuthProvider = ({ children }) => {
     try {
       setLoading(true);
       // Get the current token
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('company-token');
       
       // Make API call to update user data
       const response = await fetch('http://localhost:4000/company/auth/update', {
@@ -61,7 +61,7 @@ export const AuthProvider = ({ children }) => {
 
   const logout = () => {
     localStorage.removeItem('company');
-    localStorage.removeItem('token');
+    localStorage.removeItem('company-token');
     setCompany(null);
   };
 

@@ -52,9 +52,9 @@ const Navbar = () => {
         </Link>
 
         <div className={`nav-menu ${isMenuOpen ? 'active' : ''}`}>
-          <Link to="/" className="nav-item">
+          <button className="nav-item" onClick={() => navigate('/')}>
             <i className="fas fa-home"></i> Home
-          </Link>
+          </button>
           <button className="nav-item" onClick={() => navigate('/populartours')}>
             <i className="fas fa-fire"></i> Popular
           </button>
@@ -69,12 +69,12 @@ const Navbar = () => {
           <button className="nav-item" onClick={() => navigate('/review')}>
             <i className="fas fa-envelope"></i> Review
           </button>
-          <Link to="/weather" className="nav-item">
+          <button className="nav-item" onClick={() => navigate('/weather')}>
             <i className="fas fa-cloud-sun"></i> Weather
-          </Link>
-          <Link to="/hotels-and-restaurants" className="nav-item">
+          </button>
+          <button className="nav-item" onClick={() => navigate('/hotels-and-restaurants')}>
             <i className="fas fa-utensils"></i> Hotel & Restaurants
-          </Link>
+          </button>
         </div>
 
         <div className="nav-auth">
@@ -92,20 +92,20 @@ const Navbar = () => {
 
           {user ? (
             <>
-              <Link to="/profile" className="profile-btn">
+              <button className="profile-btn" onClick={() => navigate('/profile')}>
                 <i className="fas fa-user"></i>
                 <span>{getSurname(user.user?.name) || 'Profile'}</span>
-              </Link>
+              </button>
               <button onClick={handleLogout} className="logout-btn">
                 <i className="fas fa-sign-out-alt"></i>
                 <span>Logout</span>
               </button>
             </>
           ) : (
-            <Link to="/login" className="login-btn">
+            <button className="login-btn" onClick={() => navigate('/login')}>
               <i className="fas fa-sign-in-alt"></i>
               <span>Login</span>
-            </Link>
+            </button>
           )}
 
           <button

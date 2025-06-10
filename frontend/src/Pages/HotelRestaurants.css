@@ -1,6 +1,6 @@
-.hotel-restaurant-page {
+.hotel-restaurant-page { 
   padding: 2rem;
-  background: linear-gradient(to right, #eef2f3, #dfe9f3);
+  background: linear-gradient(to right, var(--bg-gradient-start), var(--bg-gradient-end));
   min-height: 100vh;
   font-family: 'Segoe UI', sans-serif;
 }
@@ -9,7 +9,7 @@
   font-size: 2.2rem;
   margin: 3rem 0 1.5rem;
   text-align: center;
-  color: #1e293b;
+  color: var(--text-primary);
   letter-spacing: 1px;
 }
 
@@ -19,11 +19,12 @@
   max-width: 450px;
   margin: 0 auto 2rem;
   padding: 12px 20px;
-  border: 1px solid #ccc;
+  border: 1px solid var(--border-color);
   border-radius: 30px;
   font-size: 16px;
-  background-color: #fff;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  background-color: var(--form-bg);
+  box-shadow: 0 2px 8px var(--shadow-color);
+  color: var(--text-primary);
 }
 
 .cards-container {
@@ -34,22 +35,19 @@
 }
 
 .place-card {
-  background: #ffffff;
+  background: var(--card-bg);
   border-radius: 15px;
   overflow: hidden;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 6px 18px var(--shadow-color);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.place-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-}
+
 
 .card-image-wrapper {
   height: 200px;
   overflow: hidden;
-  background: #f0f0f0;
+  background: var(--background-tertiary);
 }
 
 .card-image {
@@ -65,20 +63,20 @@
 .card-info h3 {
   margin: 0 0 8px;
   font-size: 20px;
-  color: #111827;
+  color: var(--text-primary);
 }
 
 .card-info p {
   margin: 4px 0;
   font-size: 14px;
-  color: #475569;
+  color: var(--text-secondary);
   display: flex;
   align-items: center;
   gap: 6px;
 }
 
 .card-info i {
-  color: #2563eb;
+  color: var(--primary-color);
   min-width: 18px;
 }
 
@@ -86,13 +84,13 @@
   margin-top: 10px;
   font-style: italic;
   font-size: 13px;
-  color: #6b7280;
+  color: var(--text-muted);
 }
 
 .loading,
 .empty {
   text-align: center;
   font-size: 16px;
-  color: #64748b;
+  color: var(--text-muted);
   margin-top: 2rem;
 }

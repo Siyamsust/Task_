@@ -29,7 +29,7 @@ const ChatPage = () => {
 
       try {
         console.log("useEffect triggered. Token:", company.token, "Company ID:", companyId);
-        const authtoken=localStorage.getItem('token');
+        const authtoken=localStorage.getItem('company-token');
         console.log("token",authtoken);
         if(!authtoken){
           throw new Error('No token found');

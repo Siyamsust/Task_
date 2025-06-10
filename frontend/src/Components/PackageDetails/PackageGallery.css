@@ -1,73 +1,4 @@
-/* CSS Variables for Light and Dark Themes */
-:root {
-  /* Light theme colors */
-  --bg-primary: #ffffff;
-  --bg-secondary: #f8f9fa;
-  --bg-tertiary: #f5f5f5;
-  --text-primary: #333333;
-  --text-secondary: #666666;
-  --text-tertiary: #777777;
-  --border-color: #dddddd;
-  --border-color-light: #eeeeee;
-  --shadow-light: rgba(0, 0, 0, 0.08);
-  --shadow-medium: rgba(0, 0, 0, 0.1);
-  --shadow-heavy: rgba(0, 0, 0, 0.15);
-  --accent-primary: #3498db;
-  --accent-secondary: #2980b9;
-  --accent-warning: #e67e22;
-  --accent-error: #e74c3c;
-  --overlay-light: rgba(255, 255, 255, 0.7);
-  --overlay-medium: rgba(255, 255, 255, 0.9);
-  --scrollbar-thumb: #cccccc;
-}
-
-/* Dark theme colors */
-[data-theme="dark"] {
-  --bg-primary: #1a1a1a;
-  --bg-secondary: #2d2d2d;
-  --bg-tertiary: #363636;
-  --text-primary: #ffffff;
-  --text-secondary: #cccccc;
-  --text-tertiary: #aaaaaa;
-  --border-color: #404040;
-  --border-color-light: #4a4a4a;
-  --shadow-light: rgba(0, 0, 0, 0.3);
-  --shadow-medium: rgba(0, 0, 0, 0.4);
-  --shadow-heavy: rgba(0, 0, 0, 0.6);
-  --accent-primary: #5dade2;
-  --accent-secondary: #3498db;
-  --accent-warning: #f39c12;
-  --accent-error: #e74c3c;
-  --overlay-light: rgba(0, 0, 0, 0.7);
-  --overlay-medium: rgba(0, 0, 0, 0.9);
-  --scrollbar-thumb: #555555;
-}
-
-/* Auto dark theme based on system preference */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg-primary: #1a1a1a;
-    --bg-secondary: #2d2d2d;
-    --bg-tertiary: #363636;
-    --text-primary: #ffffff;
-    --text-secondary: #cccccc;
-    --text-tertiary: #aaaaaa;
-    --border-color: #404040;
-    --border-color-light: #4a4a4a;
-    --shadow-light: rgba(0, 0, 0, 0.3);
-    --shadow-medium: rgba(0, 0, 0, 0.4);
-    --shadow-heavy: rgba(0, 0, 0, 0.6);
-    --accent-primary: #5dade2;
-    --accent-secondary: #3498db;
-    --accent-warning: #f39c12;
-    --accent-error: #e74c3c;
-    --overlay-light: rgba(0, 0, 0, 0.7);
-    --overlay-medium: rgba(0, 0, 0, 0.9);
-    --scrollbar-thumb: #555555;
-  }
-}
-
-/* PackageDetails.css - Updated with dark theme */
+/* PackageDetails.css - Updated with global theme */
 .package-details-container {
   max-width: 1200px;
   margin: 0 auto;
@@ -75,7 +6,7 @@
   display: grid;
   grid-template-columns: 1fr;
   gap: 2rem;
-  background-color: var(--bg-primary);
+  background-color: var(--card-bg);
   color: var(--text-primary);
   transition: background-color 0.3s ease, color 0.3s ease;
 }
@@ -94,7 +25,7 @@
   height: 50px;
   border: 4px solid var(--border-color);
   border-radius: 50%;
-  border-top: 4px solid var(--accent-primary);
+  border-top: 4px solid var(--primary-color);
   animation: spin 1s linear infinite;
   margin-bottom: 1rem;
 }
@@ -110,7 +41,7 @@
   align-items: center;
   justify-content: center;
   height: 50vh;
-  color: var(--accent-error);
+  color: var(--error-color);
   text-align: center;
 }
 
@@ -121,10 +52,10 @@
 
 .gallery-section {
   grid-column: 1 / -1;
-  box-shadow: 0 4px 12px var(--shadow-light);
+  box-shadow: 0 4px 12px var(--shadow-color);
   border-radius: 12px;
   overflow: hidden;
-  background-color: var(--bg-primary);
+  background-color: var(--card-bg);
 }
 
 .main-content-section {
@@ -153,13 +84,13 @@
   }
 }
 
-/* PackageGallery.css - Updated with dark theme */
+/* PackageGallery.css - Updated with global theme */
 .image-gallery {
   display: flex;
   flex-direction: column;
   gap: 1rem;
   width: 100%;
-  background-color: var(--bg-primary);
+  background-color: var(--card-bg);
 }
 
 .main-image-container {
@@ -168,7 +99,7 @@
   height: 450px;
   overflow: hidden;
   border-radius: 8px;
-  background-color: var(--bg-tertiary);
+  background-color: var(--background-tertiary);
 }
 
 .main-image {
@@ -195,12 +126,12 @@
   opacity: 0.7;
   transition: opacity 0.3s ease, background-color 0.3s ease;
   z-index: 2;
-  backdrop-filter: blur(10px);
+  backdrop-filter: var(--backdrop-blur);
 }
 
 .nav-button:hover {
   opacity: 1;
-  background-color: var(--overlay-medium);
+  background-color: var(--border-hover);
 }
 
 .prev {
@@ -218,7 +149,7 @@
   overflow-x: auto;
   padding-bottom: 10px;
   scrollbar-width: thin;
-  scrollbar-color: var(--scrollbar-thumb) transparent;
+  scrollbar-color: var(--border-color) transparent;
 }
 
 .image-thumbnails::-webkit-scrollbar {
@@ -226,12 +157,12 @@
 }
 
 .image-thumbnails::-webkit-scrollbar-thumb {
-  background-color: var(--scrollbar-thumb);
+  background-color: var(--border-color);
   border-radius: 6px;
 }
 
 .image-thumbnails::-webkit-scrollbar-track {
-  background-color: var(--bg-secondary);
+  background-color: var(--background-secondary);
 }
 
 .thumbnail {
@@ -253,7 +184,7 @@
 
 .thumbnail.active {
   opacity: 1;
-  border-color: var(--accent-primary);
+  border-color: var(--primary-color);
 }
 
 /* For smaller screens */
@@ -268,11 +199,11 @@
   }
 }
 
-/* BookingCard.css - Updated with dark theme */
+/* BookingCard.css - Updated with global theme */
 .booking-card {
-  background-color: var(--bg-primary);
+  background-color: var(--card-bg);
   border-radius: 12px;
-  box-shadow: 0 4px 16px var(--shadow-medium);
+  box-shadow: 0 4px 16px var(--shadow-hover);
   padding: 1.5rem;
   position: sticky;
   top: 2rem;
@@ -297,12 +228,12 @@
   align-items: center;
   gap: 8px;
   font-size: 0.95rem;
-  color: var(--accent-warning);
+  color: var(--warning-color);
   font-weight: 500;
 }
 
 .availability i {
-  color: var(--accent-warning);
+  color: var(--warning-color);
 }
 
 .date-info {
@@ -311,9 +242,9 @@
   gap: 12px;
   margin-bottom: 1.5rem;
   padding: 15px;
-  background-color: var(--bg-secondary);
+  background-color: var(--background-secondary);
   border-radius: 8px;
-  border: 1px solid var(--border-color-light);
+  border: 1px solid var(--border-color);
   transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
@@ -325,7 +256,7 @@
 
 .date-item i {
   font-size: 1.2rem;
-  color: var(--accent-primary);
+  color: var(--primary-color);
 }
 
 .date-item div {
@@ -335,7 +266,7 @@
 
 .date-item span {
   font-size: 0.8rem;
-  color: var(--text-tertiary);
+  color: var(--text-muted);
 }
 
 .date-item p {
@@ -365,24 +296,24 @@
 }
 
 .book-now {
-  background-color: var(--accent-primary);
-  color: white;
+  background-color: var(--primary-color);
+  color: var(--text-white);
 }
 
 .book-now:hover {
-  background-color: var(--accent-secondary);
-  box-shadow: 0 2px 8px rgba(52, 152, 219, 0.3);
+  background-color: var(--secondary-color);
+  box-shadow: 0 2px 8px var(--border-hover);
 }
 
 .add-wishlist {
-  background-color: #e11010;
+  background-color: var(--error-color);
   border: 1px solid var(--border-color) !important;
-  color: var(--text-secondary);
+  color: var(--text-white);
 }
 
 .add-wishlist:hover {
-  background-color: var(--bg-secondary);
-  border-color: var(--border-color-light) !important;
+  background-color: var(--background-secondary);
+  border-color: var(--border-color) !important;
   color: var(--text-primary);
 }
 
@@ -395,7 +326,7 @@
   position: fixed;
   top: 20px;
   right: 20px;
-  background-color: var(--bg-secondary);
+  background-color: var(--background-secondary);
   color: var(--text-primary);
   border: 1px solid var(--border-color);
   border-radius: 50%;
@@ -408,10 +339,10 @@
   font-size: 1.2rem;
   transition: all 0.3s ease;
   z-index: 1000;
-  box-shadow: 0 2px 8px var(--shadow-light);
+  box-shadow: 0 2px 8px var(--shadow-color);
 }
 
 .theme-toggle:hover {
-  background-color: var(--bg-tertiary);
+  background-color: var(--background-tertiary);
   transform: scale(1.1);
 }

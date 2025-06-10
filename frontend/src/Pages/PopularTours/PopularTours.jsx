@@ -139,11 +139,7 @@ const PopularTours = () => {
 
       {/* Results Summary */}
       <div className="popular-results-summary">
-        <p>
-          Showing {sortedAndFilteredTours.length} 
-          {sortedAndFilteredTours.length === 1 ? ' package' : ' packages'}
-          {searchQuery && ` for "${searchQuery}"`}
-        </p>
+        
       </div>
 
       {/* Packages Grid */}

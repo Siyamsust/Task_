@@ -28,7 +28,6 @@
 
 .place-card:hover {
   transform: scale(1.03);
-  background: #ffffff;
 }
 
 .place-card h3 {

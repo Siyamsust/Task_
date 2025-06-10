@@ -25,7 +25,7 @@ const BookingList = () => {
 
   const fetchTourInfo = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('company-token');
       const response = await fetch(`http://localhost:4000/api/tours/${tourId}`, {
         headers: {
           'Authorization': `Bearer ${token}`
@@ -46,7 +46,7 @@ const BookingList = () => {
       setLoading(true);
       setError(null);
       
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('company-token');
       const response = await fetch(
         `http://localhost:4000/api/bookings/tour/${tourId}?page=${currentPage}&limit=10`,
         {

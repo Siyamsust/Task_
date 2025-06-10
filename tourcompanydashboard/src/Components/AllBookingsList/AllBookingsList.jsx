@@ -1,88 +1,32 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import './AllBookingsList.css';
 import socket from '../../socket';
-const AllBookingsList = () => {
-  const [tours, setTours] = useState([]);
-  const [allBookings, setAllBookings] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [view, setView] = useState('tours'); // 'tours' or 'all'
-  useEffect(() => {
-    if(socket)
-    {
-      
-      socket.on('book',data=>{
-        console.log('connected to  socket on booking');
-        if(data.action==='krlam')
-        {
-          fetchAllBookings();
-          fetchToursWithBookings();
-        }
-      })
-    }
-   
-  }, [socket]);
-  useEffect(() => {
-    fetchToursWithBookings();
-  }, []);
+import { useTours } from '../../Context/ToursContext';
 
-  const fetchToursWithBookings = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      
-      // Fetch all tours for this company
-      const toursResponse = await fetch('http://localhost:4000/api/tours', {
-        headers: {
-          'Authorization': `Bearer ${token}`
+const AllBookingsList = () => {
+  const { tours, loading, error } = useTours();
+  const [allBookings, setAllBookings] = useState([]);
+  const [view, setView] = useState('tours'); // 'tours' or 'all'
+
+  useEffect(() => {
+    if(socket) {
+      socket.on('book', data => {
+        if(data.action==='krlam') {
+          fetchAllBookings();
         }
       });
-      const toursData = await toursResponse.json();
-      
-      if (toursData.success) {
-        // Fetch booking count for each tour
-        const toursWithBookings = await Promise.all(
-          toursData.tours.map(async (tour) => {
-            try {
-              const bookingsResponse = await fetch(
-                `http://localhost:4000/api/bookings/tour/${tour._id}?limit=1`,
-                {
-                  headers: {
-                    'Authorization': `Bearer ${token}`
-                  }
-                }
-              );
-              const bookingsData = await bookingsResponse.json();
-              
-              return {
-                ...tour,
-                bookingCount: bookingsData.total || 0,
-                totalRevenue: bookingsData.bookings?.reduce((sum, booking) => 
-                  sum + (booking.totalAmount || 0), 0) || 0
-              };
-            } catch (error) {
-              return { ...tour, bookingCount: 0, totalRevenue: 0 };
-            }
-          })
-        );
-        
-        setTours(toursWithBookings);
-      }
-    } catch (error) {
-      console.error('Error fetching tours with bookings:', error);
-    } finally {
-      setLoading(false);
     }
-  };
+  }, [socket]);
 
   const fetchAllBookings = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('company-token');
       const response = await fetch('http://localhost:4000/api/bookings/admin/all', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
       });
-      
       const data = await response.json();
       if (data.success) {
         setAllBookings(data.bookings);
@@ -98,8 +42,23 @@ const AllBookingsList = () => {
     }
   }, [view]);
 
+  // Compute bookingCount and totalRevenue for each tour from bookings array if available
+  const toursWithStats = useMemo(() => {
+    if (!tours) return [];
+    return tours.map(tour => {
+      const bookingCount = Array.isArray(tour.bookings) ? tour.bookings.length : 0;
+      const totalRevenue = Array.isArray(tour.bookings)
+        ? tour.bookings.reduce((sum, b) => sum + (b.totalAmount || 0), 0)
+        : 0;
+      return { ...tour, bookingCount, totalRevenue };
+    });
+  }, [tours]);
+
   if (loading) {
     return <div className="loading">Loading...</div>;
+  }
+  if (error) {
+    return <div className="error">Error: {error}</div>;
   }
 
   return (
@@ -127,33 +86,33 @@ const AllBookingsList = () => {
           <div className="summary-cards">
             <div className="summary-card">
               <h3>Total Tours</h3>
-              <p className="number">{tours.length}</p>
+              <p className="number">{toursWithStats.length}</p>
             </div>
             <div className="summary-card">
               <h3>Total Bookings</h3>
-              <p className="number">{tours.reduce((sum, tour) => sum + tour.bookingCount, 0)}</p>
+              <p className="number">{toursWithStats.reduce((sum, tour) => sum + tour.bookingCount, 0)}</p>
             </div>
             <div className="summary-card">
               <h3>Total Revenue</h3>
-              <p className="number">${tours.reduce((sum, tour) => sum + tour.totalRevenue, 0)}</p>
+              <p className="number">${toursWithStats.reduce((sum, tour) => sum + tour.totalRevenue, 0)}</p>
             </div>
           </div>
 
           <div className="tours-grid">
-            {tours.map((tour) => (
+            {toursWithStats.map((tour) => (
               <div key={tour._id} className="tour-card">
                 <div className="tour-image">
                   {tour.images && tour.images.length > 0 ? (
                     <img 
                       src={`http://localhost:4000/${tour.images[0]}`} 
-                      alt={tour.title}
+                      alt={tour.title || tour.name}
                     />
                   ) : (
                     <div className="no-image">No Image</div>
                   )}
                 </div>
                 <div className="tour-info">
-                  <h3>{tour.title}</h3>
+                  <h3>{tour.title || tour.name}</h3>
                   <p className="location">{tour.location}</p>
                   <div className="stats">
                     <span className="bookings">
@@ -196,7 +155,7 @@ const AllBookingsList = () => {
                 {allBookings.map((booking) => (
                   <tr key={booking._id}>
                     <td>{booking.bookingReference}</td>
-                    <td>{booking.tour?.title || 'N/A'}</td>
+                    <td>{booking.tour?.title || booking.tour?.name || 'N/A'}</td>
                     <td>
                       <div>
                         <strong>{booking.customerName}</strong>

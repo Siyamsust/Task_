@@ -1,28 +1,5 @@
-
-/* Dark mode variables */
-:root {
-  --light-gray: #f5f5f5;
-  --primary-color: #007bff;
-  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
-  --bg-primary: #ffffff;
-  --text-primary: #333333;
-  --text-secondary: #666666;
-  --border-color: #e0e0e0;
-}
-
-[data-theme="dark"] {
-  --light-gray: #1a1a1a;
-  --primary-color: #4dabf7;
-  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.3);
-  --bg-primary: #2d2d2d;
-  --text-primary: #ffffff;
-  --text-secondary: #b0b0b0;
-  --border-color: #404040;
-}
-
-/* Profile page styles */
 .profile-page {
-  background: var(--light-gray);
+  background: var(--background-secondary);
   min-height: calc(100vh - 70px);
   padding: 40px 20px;
   transition: background-color 0.3s ease;
@@ -37,9 +14,9 @@
 }
 
 .profile-content {
-  background: var(--bg-primary);
+  background: var(--card-bg);
   border-radius: 15px;
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 2px 10px var(--shadow-color);
   overflow: hidden;
   transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }

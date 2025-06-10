@@ -1,43 +1,15 @@
-/* Main layout */
-:root {
-  /* Light theme colors */
-  --text-primary: #333333;
-  --text-secondary: #666666;
-  --text-muted: #888888;
-  --background-primary: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
-  --background-secondary: #f8f9fa;
-  --input-bg: #ffffff;
-  --card-bg: #ffffff;
-  --border-color: #e2e8f0;
-  --label-color:#232a2a;
-  --bg-light:#f2f4f6;
-}
-
-[data-theme='dark'] {
-  /* Dark theme colors */
-  --text-primary: #f0f0f0;
-  --text-secondary: #cccccc;
-  --input-bg: #2d3748;
-  --text-muted: #a0aec0;
-  --background-primary: #1a1a1a;
-  --background-secondary: #2d3748;
-  --card-bg: #2d3748;
-  --border-color: #4a5568;
-   --label-color:#dbe8e8;
-   --bg-light: #546573;
-}
 .review-page {
   width: 1200px;
   margin: 0 auto;
   padding: 2rem 1rem;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  color: var(--text-primary, #333);
+  color: var(--text-primary);
   transition: color 0.3s ease;
 }
 
 .review-page h1 {
   text-align: center;
-  color: var(--text-color, #2c3e50);
+  color: var(--text-primary);
   margin-bottom: 2rem;
   font-size: 2.2rem;
   transition: color 0.3s ease;
@@ -66,9 +38,9 @@
 
 /* Form section */
 .review-form-section {
-  background-color: var(--card-bg, #fff);
+  background-color: var(--card-bg);
   border-radius: 8px;
-  box-shadow: 0 2px 10px var(--shadow-color, rgba(0, 0, 0, 0.1));
+  box-shadow: 0 2px 10px var(--shadow-color);
   padding: 1.5rem;
   height: 100%;
   min-height: 600px; /* Ensure minimum height */
@@ -76,10 +48,10 @@
 }
 
 .review-form-section h2 {
-  color: var(--text-color, #354c63);
+  color: var(--text-primary);
   margin-bottom: 1.5rem;
   font-size: 1.5rem;
-  border-bottom: 2px solid var(--border-light, #f0f0f0);
+  border-bottom: 2px solid var(--border-color);
   padding-bottom: 0.8rem;
   transition: color 0.3s ease, border-color 0.3s ease;
 }
@@ -99,38 +71,38 @@
 .form-group label {
   font-weight: 600;
   font-size: 0.95rem;
-  color: var(--label-color, #41526a);
+  color: var(--text-secondary);
   transition: color 0.3s ease;
 }
-.tour-select{
-  background-color: var(--input-bg, #f8f9fa);
-  color: var(--text-primary, #333);
 
+.tour-select{
+  background-color: var(--form-bg);
+  color: var(--text-primary);
 }
 
 select, textarea, input {
   padding: 0.75rem;
-  border: 1px solid var(--input-border, #ddd);
+  border: 1px solid var(--border-color);
   border-radius: 4px;
   font-family: inherit;
   font-size: 1rem;
   transition: border-color 0.3s, background-color 0.3s, color 0.3s;
-  background-color: var(--input-bg, #544242);
-  color: var(--text-primary, #333);
+  background-color: var(--form-bg);
+  color: var(--text-primary);
 }
 
 select:focus, textarea:focus, input:focus {
-  border-color: var(--primary-color, #3498db);
+  border-color: var(--primary-color);
   outline: none;
-  box-shadow: 0 0 0 2px var(--focus-ring, rgba(52, 152, 219, 0.2));
+  box-shadow: 0 0 0 2px var(--border-hover);
 }
 
 select.error, textarea.error, input.error {
-  border-color: var(--error-color, #e74c3c);
+  border-color: var(--error-color);
 }
 
 .error-message {
-  color: var(--error-color, #e74c3c);
+  color: var(--error-color);
   font-size: 0.85rem;
   margin-top: 0.25rem;
 }
@@ -153,27 +125,27 @@ select.error, textarea.error, input.error {
 /* Character count */
 .character-count {
   font-size: 0.8rem;
-  color: var(--text-muted, #718096);
+  color: var(--text-muted);
   text-align: right;
   margin-top: 0.25rem;
   transition: color 0.3s ease;
 }
 
 .approaching-limit {
-  color: var(--warning-color, #e67e22);
+  color: var(--warning-color);
 }
 
 .over-limit {
-  color: var(--error-color, #e74c3c);
+  color: var(--error-color);
   font-weight: 600;
 }
 
 /* Photo upload */
 .photo-upload-section {
-  border: 1px dashed var(--border-color, #cbd5e0);
+  border: 1px dashed var(--border-color);
   padding: 1rem;
   border-radius: 6px;
-  background-color: var(--bg-light, #aeb8c3);
+  background-color: var(--background-secondary);
   transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
@@ -193,8 +165,8 @@ select.error, textarea.error, input.error {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  background-color: var(--primary-color, #3498db);
-  color: var(--button-text, white);
+  background-color: var(--primary-color);
+  color: var(--text-white);
   padding: 0.6rem 1.2rem;
   border-radius: 4px;
   cursor: pointer;
@@ -203,12 +175,12 @@ select.error, textarea.error, input.error {
 }
 
 .upload-button:hover {
-  background-color: var(--primary-hover, #2980b9);
+  background-color: var(--primary-hover);
 }
 
 .upload-help {
   font-size: 0.8rem;
-  color: var(--text-muted, #718096);
+  color: var(--text-muted);
   transition: color 0.3s ease;
 }
 
@@ -224,8 +196,8 @@ select.error, textarea.error, input.error {
   position: relative;
   border-radius: 4px;
   overflow: hidden;
-  border: 1px solid var(--border-color, #e2e8f0);
-  background-color: var(--bg-light, #f7fafc);
+  border: 1px solid var(--border-color);
+  background-color: var(--background-secondary);
   transition: border-color 0.3s ease, background-color 0.3s ease;
 }
 
@@ -240,7 +212,7 @@ select.error, textarea.error, input.error {
   position: absolute;
   top: 5px;
   right: 5px;
-  background-color: var(--overlay-light, rgba(255, 255, 255, 0.8));
+  background-color: var(--overlay-light);
   border: none;
   border-radius: 50%;
   width: 24px;
@@ -253,7 +225,7 @@ select.error, textarea.error, input.error {
 }
 
 .remove-photo:hover {
-  background-color: var(--bg-white, #fff);
+  background-color: var(--background-primary);
 }
 
 .photo-name {
@@ -262,15 +234,15 @@ select.error, textarea.error, input.error {
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
-  background-color: var(--bg-light, #f8f9fa);
-  color: var(--text-secondary, #4a5568);
+  background-color: var(--background-secondary);
+  color: var(--text-secondary);
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* Submit button */
 .submit-button {
-  background-color:linear-gradient( #4f46e5, #7c3aed);
-  color: var(--button-text, white);
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  color: var(--text-white);
   border: none;
   border-radius: 4px;
   padding: 0.8rem 1.2rem;
@@ -283,13 +255,13 @@ select.error, textarea.error, input.error {
 }
 
 .submit-button:hover {
-  background-color: var(--success-hover, #27ae60);
+  background: linear-gradient(135deg, var(--primary-hover), var(--secondary-hover));
 }
 
 /* Success message */
 .success-message {
-  background-color: var(--success-bg, #0b0b0b);
-  color: var(--success-text, #f7fcf8);
+  background-color: var(--background-tertiary);
+  color: var(--success-color);
   padding: 1rem;
   border-radius: 4px;
   margin-bottom: 1.5rem;
@@ -297,6 +269,7 @@ select.error, textarea.error, input.error {
   align-items: center;
   gap: 0.5rem;
   animation: fadeIn 0.3s ease-out;
+  border: 1px solid var(--success-color);
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
@@ -307,9 +280,9 @@ select.error, textarea.error, input.error {
 
 /* Reviews section */
 .reviews-section {
-  background-color: var(--card-bg, #fff);
+  background-color: var(--card-bg);
   border-radius: 8px;
-  box-shadow: 0 2px 10px var(--shadow-color, rgba(0, 0, 0, 0.1));
+  box-shadow: 0 2px 10px var(--shadow-color);
   padding: 1.5rem;
   height: 100%;
   min-height: 600px; /* Ensure minimum height */
@@ -319,10 +292,10 @@ select.error, textarea.error, input.error {
 }
 
 .reviews-section h2 {
-  color: var(--text-color, #2c3e50);
+  color: var(--text-primary);
   margin-bottom: 1.5rem;
   font-size: 1.5rem;
-  border-bottom: 2px solid var(--border-light, #f0f0f0);
+  border-bottom: 2px solid var(--border-color);
   padding-bottom: 0.8rem;
   transition: color 0.3s ease, border-color 0.3s ease;
 }
@@ -343,40 +316,40 @@ select.error, textarea.error, input.error {
 }
 
 .reviews-list::-webkit-scrollbar-track {
-  background: var(--scrollbar-track, #f1f1f1);
+  background: var(--background-secondary);
   border-radius: 10px;
 }
 
 .reviews-list::-webkit-scrollbar-thumb {
-  background: var(--scrollbar-thumb, #c1c1c1);
+  background: var(--border-color);
   border-radius: 10px;
 }
 
 .reviews-list::-webkit-scrollbar-thumb:hover {
-  background: var(--scrollbar-thumb-hover, #a0a0a0);
+  background: var(--text-muted);
 }
 
 /* Review card */
 .review-card {
-  border: 1px solid var(--border-color, #e2e8f0);
+  border: 1px solid var(--border-color);
   border-radius: 6px;
   overflow: hidden;
-  background-color: var(--card-bg, #fff);
+  background-color: var(--card-bg);
   transition: transform 0.2s, box-shadow 0.2s, background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .review-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px var(--shadow-hover, rgba(0, 0, 0, 0.05));
+  box-shadow: 0 4px 12px var(--shadow-hover);
 }
 
 .review-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: var(--bg-light, #f8f9fa);
+  background-color: var(--background-secondary);
   padding: 1rem;
-  border-bottom: 1px solid var(--border-color, #e2e8f0);
+  border-bottom: 1px solid var(--border-color);
   transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
@@ -387,13 +360,13 @@ select.error, textarea.error, input.error {
 
 .reviewer-name {
   font-weight: 600;
-  color: var(--text-primary, #2d3748);
+  color: var(--text-primary);
   transition: color 0.3s ease;
 }
 
 .review-date {
   font-size: 0.8rem;
-  color: var(--text-muted, #718096);
+  color: var(--text-muted);
   margin-top: 0.2rem;
   transition: color 0.3s ease;
 }
@@ -402,7 +375,7 @@ select.error, textarea.error, input.error {
   padding: 1rem;
   line-height: 1.5;
   min-height: 60px; /* Ensure minimum height */
-  color: var(--text-primary, #333);
+  color: var(--text-primary);
   transition: color 0.3s ease;
 }
 
@@ -439,13 +412,13 @@ select.error, textarea.error, input.error {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  color: var(--text-muted, #718096);
+  color: var(--text-muted);
   font-style: italic;
   padding: 2rem 0;
   justify-content: center;
-  background-color: var(--bg-light, #f9fafb);
+  background-color: var(--background-secondary);
   border-radius: 6px;
-  border: 1px dashed var(--border-color, #cbd5e0);
+  border: 1px dashed var(--border-color);
   height: 100%;
   min-height: 300px; /* Ensure minimum height */
   margin-top: auto;
@@ -459,7 +432,7 @@ select.error, textarea.error, input.error {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--text-muted, #718096);
+  color: var(--text-muted);
   height: 300px;
   width: 100%;
   font-style: italic;
@@ -469,9 +442,9 @@ select.error, textarea.error, input.error {
 /* Review tour info */
 .review-tour {
   padding: 0.5rem 1rem;
-  border-top: 1px solid var(--border-color, #e2e8f0);
-  background-color: var(--bg-light, #f8f9fa);
+  border-top: 1px solid var(--border-color);
+  background-color: var(--background-secondary);
   font-size: 0.8rem;
-  color: var(--text-muted, #718096);
+  color: var(--text-muted);
   transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
