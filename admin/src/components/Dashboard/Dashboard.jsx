@@ -13,6 +13,7 @@ import {
   Legend,
   ArcElement
 } from 'chart.js';
+import { useNavigate } from 'react-router-dom';
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement);
 
 const DUMMY_COMPANIES = [
@@ -47,6 +48,8 @@ const Dashboard = () => {
    const [upcomingTrips, setUpcomingTrips] = useState(0);
    const [finishedTrips, setFinishedTrips] = useState(0);
    const [barLabels, setBarLabels] = useState(["Jan"]);
+   const [pendingCompanies, setPendingCompanies] = useState([]);
+   const navigate = useNavigate();
 
    useEffect(() => {
      async function fetchDashboardData() {
@@ -153,6 +156,15 @@ const Dashboard = () => {
      fetchChartData();
    }, []);
 
+   useEffect(() => {
+     async function fetchPendingCompanies() {
+       const res = await fetch('http://localhost:4000/company/auth/companies');
+       const data = await res.json();
+       // Only companies with verificationStatus 'pending'
+       setPendingCompanies((data.companies || []).filter(c => c.verificationStatus === 'pending'));
+     }
+     fetchPendingCompanies();
+   }, []);
 
   return (
     <div className="dashboard">
@@ -222,11 +234,11 @@ const Dashboard = () => {
         <div className="dashboard-section">
           <div className="section-header">
             <h3><i className="fas fa-building"></i> New Companies</h3>
-            <button className="view-all-btn">View All</button>
+            {/* <button className="view-all-btn">View All</button> */}
           </div>
           <div className="modern-card-list">
-            {DUMMY_COMPANIES.map(company => (
-              <div key={company.id} className="modern-card company-modern-card">
+            {pendingCompanies.map(company => (
+              <div key={company._id} className="modern-card company-modern-card">
                 <div className="modern-card-avatar">
                   <img src={`https://api.dicebear.com/7.x/identicon/svg?seed=${company.name}`} alt={company.name} />
                 </div>
@@ -237,12 +249,11 @@ const Dashboard = () => {
                   <p className="modern-card-address">{company.address}</p>
                 </div>
                 <div className="modern-card-actions">
-                  <button className="modern-btn view">View Details</button>
-                  <button className="modern-btn approve">Approve</button>
-                  <button className="modern-btn reject">Reject</button>
+                  <button className="modern-btn view" onClick={() => navigate(`/admin/registration-request/${company._id}`)}>View Details</button>
                 </div>
               </div>
             ))}
+            {pendingCompanies.length === 0 && <div style={{padding: '1rem', color: '#888'}}>No pending registration requests.</div>}
           </div>
         </div>
         {/* Revenue Bar Chart Section */}

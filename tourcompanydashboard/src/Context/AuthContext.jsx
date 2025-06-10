@@ -30,8 +30,8 @@ export const AuthProvider = ({ children }) => {
       const token = localStorage.getItem('company-token');
       
       // Make API call to update user data
-      const response = await fetch('http://localhost:4000/company/auth/update', {
-        method: 'PUT',
+      const response = await fetch('http://localhost:4000/company/auth/update-info', {
+        method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
@@ -42,14 +42,11 @@ export const AuthProvider = ({ children }) => {
       if (!response.ok) {
         throw new Error('Failed to update user');
       }
-
       const updatedUser = await response.json();
-      
-      // Update local storage and state
-      const newUserData = { ...company, ...updatedUser };
+      // Merge updated company info into local state
+      const newUserData = { ...company, company: { ...company.company, ...updatedUser.company } };
       localStorage.setItem('company', JSON.stringify(newUserData));
       setCompany(newUserData);
-      
       return updatedUser;
     } catch (error) {
       console.error('Update error:', error);

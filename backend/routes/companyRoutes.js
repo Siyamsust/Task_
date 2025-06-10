@@ -280,4 +280,56 @@ router.post('/register', async (req, res) => {
     });
   }
   })
+  // PATCH: Update company profile info (all fields except status/verification fields)
+  router.patch('/update-info', authMiddleware, async (req, res) => {
+    try {
+      const companyId = req.user.companyId;
+      // List of fields that should not be updated
+      const forbiddenFields = ['_id', 'verificationStatus', 'isVerified', 'createdAt', 'resetToken', 'resetTokenExpiration', '__v'];
+      // Get all allowed fields from schema
+      const allowedFields = Object.keys(Company.schema.paths).filter(f => !forbiddenFields.includes(f));
+      const updateData = {};
+      // Only update fields that are present in the request and not undefined/null
+      allowedFields.forEach(field => {
+        if (Object.prototype.hasOwnProperty.call(req.body, field) && req.body[field] !== undefined && req.body[field] !== null) {
+          updateData[field] = req.body[field];
+        }
+      });
+      // Handle nested fields (socialLinks, documents, etc.)
+      if (Object.prototype.hasOwnProperty.call(req.body, 'socialLinks') && req.body.socialLinks) {
+        updateData.socialLinks = req.body.socialLinks;
+      }
+      if (Object.prototype.hasOwnProperty.call(req.body, 'documents') && req.body.documents) {
+        updateData.documents = req.body.documents;
+      }
+      // If no fields to update, return early
+      if (Object.keys(updateData).length === 0) {
+        return res.status(400).json({ success: false, message: 'No valid fields provided for update.' });
+      }
+      // Update the company
+      const company = await Company.findByIdAndUpdate(companyId, updateData, { new: true });
+      if (!company) return res.status(404).json({ message: 'Company not found' });
+      res.json({ success: true, company });
+    } catch (error) {
+      res.status(500).json({ success: false, message: 'Failed to update company info', error: error.message });
+    }
+  });
+
+  // PATCH: Update verification status and isVerified only
+  router.patch('/update-status', /* authMiddleware, */ async (req, res) => {
+    try {
+      const companyId = req.user?.companyId || req.body.companyId; // fallback to body for unauthenticated
+      const { verificationStatus, isVerified } = req.body;
+      const updateData = {};
+      if (verificationStatus !== undefined) updateData.verificationStatus = verificationStatus;
+      if (isVerified !== undefined) updateData.isVerified = isVerified;
+      // If no companyId, return error
+      if (!companyId) return res.status(400).json({ message: 'No companyId provided' });
+      const company = await Company.findByIdAndUpdate(companyId, updateData, { new: true });
+      if (!company) return res.status(404).json({ message: 'Company not found' });
+      res.json({ success: true, company });
+    } catch (error) {
+      res.status(500).json({ success: false, message: 'Failed to update status', error: error.message });
+    }
+  });
   module.exports = router; 

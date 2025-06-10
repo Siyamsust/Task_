@@ -78,7 +78,7 @@ const Navbar = () => {
       </div>
 
       <div className="navbar-actions">
-        <div ref={notificationRef} className="notification-bell" onClick={() => setShowNotifications(!showNotifications)}>
+        {/* <div ref={notificationRef} className="notification-bell" onClick={() => setShowNotifications(!showNotifications)}>
           <FaBell />
           <span className="notification-badge">3</span>
           {showNotifications && (
@@ -92,7 +92,7 @@ const Navbar = () => {
               ))}
             </div>
           )}
-        </div>
+        </div> */}
 
         <div ref={profileRef} className="profile-menu" onClick={() => setShowProfile(!showProfile)}>
           <FaUserCircle />

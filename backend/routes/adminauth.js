@@ -3,6 +3,8 @@ const express = require('express');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const Admin = require('../models/Admin'); // Adjust the path as necessary
+const adminAuth = require('../middleware/adminAuth');
+const Company = require('../models/company');
 
 const router = express.Router();
 
@@ -30,6 +32,22 @@ router.post('/login', async (req, res) => {
         res.json({ token, user: { id: admin._id, email: admin.email, isAdmin: true } });
     } else {
         res.status(401).json({ error: 'Invalid credentials' });
+    }
+});
+
+// Admin: Update company status
+router.patch('/company/:id/update-status', adminAuth, async (req, res) => {
+    try {
+        const companyId = req.params.id;
+        const { verificationStatus, isVerified } = req.body;
+        const updateData = {};
+        if (verificationStatus !== undefined) updateData.verificationStatus = verificationStatus;
+        if (isVerified !== undefined) updateData.isVerified = isVerified;
+        const company = await Company.findByIdAndUpdate(companyId, updateData, { new: true });
+        if (!company) return res.status(404).json({ message: 'Company not found' });
+        res.json({ success: true, company });
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Failed to update status', error: error.message });
     }
 });
 

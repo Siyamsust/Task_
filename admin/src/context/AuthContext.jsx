@@ -8,7 +8,8 @@ export const AuthProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem('admin-token');
+        console.log("Current user's token: ", token);
         if (token) {
             try {
                 const userData = JSON.parse(atob(token.split('.')[1])); // Decode the token to get user data
@@ -16,7 +17,7 @@ export const AuthProvider = ({ children }) => {
                 console.log(`Yes, logged in: ${userData}`);
             } catch (error) {
                 console.error('Failed to decode token:', error);
-                localStorage.removeItem('token'); // Clear invalid token
+                localStorage.removeItem('admin-token'); // Clear invalid token
             }
         }
         setLoading(false); // <-- Set loading to false after check
@@ -25,21 +26,21 @@ export const AuthProvider = ({ children }) => {
     const login = (data) => {
         const token = data.token;
         if (token) {
-            localStorage.setItem('token', token);
+            localStorage.setItem('admin-token', token);
             try {
                 const userData = JSON.parse(atob(token.split('.')[1]));
                 setUser(userData);
                 console.log(`Saved user data: ${userData}`);
             } catch (error) {
                 setUser(null);
-                localStorage.removeItem('token');
+                localStorage.removeItem('admin-token');
             }
         }
     };
 
     const logout = () => {
         setUser(null);
-        localStorage.removeItem('token'); // Remove token from localStorage
+        localStorage.removeItem('admin-token'); // Remove token from localStorage
     };
 
     return (

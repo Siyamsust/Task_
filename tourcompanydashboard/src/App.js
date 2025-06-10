@@ -14,6 +14,7 @@ import BookingList from './Components/BookingList/BookingList';
 import AllBookingsList from './Components/AllBookingsList/AllBookingsList'; // Import the AllBookingsList component
 import ResetPassword from './Components/ResetPassword/ResetPassword';
 import NewPassword from './Components/NewPassword/NewPassword';
+import License from './Components/License/License';
 // Import the Navbar component
 
 const AppContent = () => {
@@ -38,6 +39,7 @@ const AppContent = () => {
               <Route path="/login" element={<LoginSignup />} />
                <Route path="/bookings" element={<AllBookingsList />} />
               <Route path="/bookings/:tourId" element={<BookingList />} />
+              <Route path="/license" element={<License />} />
             </Routes>
           </div>
         </div>

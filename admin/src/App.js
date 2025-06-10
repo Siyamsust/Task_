@@ -12,6 +12,7 @@ import Login from './components/Login/Login';
 import Signup from './components/Signup/Signup';
 import Settings from './components/settings/settings';
 import ProtectedRoute from './components/ProtectedRoute';
+import RegistrationRequest from './components/RegistrationRequests/RegistrationRequest';
 import './App.css';
 
 function App() {
@@ -30,6 +31,7 @@ function App() {
               <Route path="/settings" element={<ProtectedRoute>  <Settings /> </ProtectedRoute> } />
               <Route path="/destination-search" element={<DestinationSearch />} />
               <Route path="/reports" element={<Reports />} />
+              <Route path="/admin/registration-request/:id" element={<ProtectedRoute><RegistrationRequest /></ProtectedRoute>} />
             </Routes>
           </div>
         </div>

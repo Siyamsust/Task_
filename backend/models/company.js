@@ -2,17 +2,14 @@ const mongoose = require('mongoose');
 const companySchema = new mongoose.Schema({
     name: { 
         type: String,
-        required: true,
         unique: true,
     },
     email: {
      type: String,
-     required: true,
      unique: true,
     },
     password: {
         type: String,
-        required: true,
     },
     phone: {
         type: String,
@@ -49,7 +46,42 @@ const companySchema = new mongoose.Schema({
      },
    resetToken:String,
   resetTokenExpiration :Date,
-    
+    ownerName: {
+        type: String,
+    },
+    ownerEmail: {
+        type: String,
+    },
+    ownerPhone: {
+        type: String,
+    },
+    ownerAddress: {
+        type: String,
+    },
+    ownerNationalId: {
+        type: String,
+    },
+    ownerDob: {
+        type: Date,
+    },
+    ownerNationality: {
+        type: String,
+    },
+    ownerPhoto: {
+        type: String, // URL or path to photo
+    },
+    registrationNumber: {
+        type: String,
+    },
+    taxId: {
+        type: String,
+    },
+    licenseNumber: {
+        type: String,
+    },
+    licenseExpiry: {
+        type: Date,
+    },
 })
 const Company = mongoose.model('Company', companySchema);
 module.exports = Company;
