@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useAuth } from '../../Context/AuthContext';
 import { useNavigate } from 'react-router-dom'; // Corrected import
@@ -7,6 +7,15 @@ const BookingCard = ({ price, availableSeats, startDate, endDate, tourId }) => {
   const [message, setMessage] = useState('');
   const { user } = useAuth(); 
   const navigate = useNavigate(); // Corrected hook
+
+  useEffect(() => {
+    if (message) {
+      const timer = setTimeout(() => {
+        setMessage('');
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [message]);
 
   console.log("User in BookingCard:", user?.user?.email);
 
@@ -36,6 +45,10 @@ const BookingCard = ({ price, availableSeats, startDate, endDate, tourId }) => {
   };
 
   const handleBookNow = () => {
+    if (!user) {
+      setMessage('Please log in to Book the tour');
+      return;
+    }
     navigate(`/checkout/${tourId}`); // Navigate to checkout page with tourId
   };
 
@@ -60,7 +73,7 @@ const BookingCard = ({ price, availableSeats, startDate, endDate, tourId }) => {
           <i className="far fa-heart"></i>
           Add to Wishlist
         </button>
-        <p>{message}</p>
+        {message&&<p className='error-message'>{message}</p>}
       </div>
     </div>
   );

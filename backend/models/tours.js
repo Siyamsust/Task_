@@ -120,6 +120,10 @@ const tourSchema = new mongoose.Schema({
     enum: ['draft', 'pending', 'approved', 'rejected'],
     default: 'draft'
   },
+  review: {
+    type: String,
+    default: null
+  },
   companyId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'company'

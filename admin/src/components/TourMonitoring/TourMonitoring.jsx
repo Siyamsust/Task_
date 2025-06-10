@@ -14,6 +14,9 @@ const TourMonitoring = () => {
   const [galleryActiveImage, setGalleryActiveImage] = useState(0);
   const [modalLoading, setModalLoading] = useState(false);
   const [tourRevenues, setTourRevenues] = useState({});
+  const [showReviewModal, setShowReviewModal] = useState(false);
+  const [reviewText, setReviewText] = useState('');
+  const [tourToReject, setTourToReject] = useState(null);
 
   useEffect(() => {
     const fetchTours = async () => {
@@ -74,14 +77,29 @@ const TourMonitoring = () => {
     if (tours.length > 0) fetchRevenues();
   }, [tours]);
 
-  const handleStatusChange = async (id, newStatus) => {
+  const handleStatusChange = async (id, newStatus, review) => {
     try {
-      await axios.patch(`http://localhost:4000/api/tours/${id}/status`, { status: newStatus });
+      await axios.patch(`http://localhost:4000/api/tours/${id}/status`, { status: newStatus, review: review });
+      console.log(review);
       setTours(tours.map((tour) =>
-        tour._id === id ? { ...tour, status: newStatus } : tour
+        tour._id === id ? { ...tour, status: newStatus, review: review } : tour
       ));
+      setShowReviewModal(false);
+      setReviewText('');
+      setTourToReject(null);
     } catch (error) {
       console.error('Error updating status:', error);
+    }
+  };
+
+  const handleRejectClick = (tour) => {
+    setTourToReject(tour);
+    setShowReviewModal(true);
+  };
+
+  const handleReviewSubmit = () => {
+    if (tourToReject && reviewText.trim()) {
+      handleStatusChange(tourToReject._id, 'rejected', reviewText);
     }
   };
 
@@ -216,7 +234,7 @@ const TourMonitoring = () => {
                           </button>
                           <button
                             className="action-btn reject-btn"
-                            onClick={() => handleStatusChange(tour._id, 'rejected')}
+                            onClick={() => handleRejectClick(tour)}
                           >
                             <i className="fas fa-times"></i> Reject
                           </button>
@@ -226,7 +244,6 @@ const TourMonitoring = () => {
                           >
                             <i className="fas fa-eye"></i> View Details
                           </button>
-
                         </>
                       )}
 
@@ -238,7 +255,6 @@ const TourMonitoring = () => {
                           >
                             <i className="fas fa-eye"></i> View Details
                           </button>
-
                         </>
                       )}
 
@@ -256,7 +272,6 @@ const TourMonitoring = () => {
                           >
                             <i className="fas fa-eye"></i> View Details
                           </button>
-
                         </>
                       )}
                     </div>
@@ -264,6 +279,13 @@ const TourMonitoring = () => {
                     {activeTab === 'finished' && (
                       <div className="tour-revenue">
                         <i className="fas fa-dollar-sign"></i> Revenue Earned: ${tourRevenues[tour._id]?.toLocaleString() || 0}
+                      </div>
+                    )}
+
+                    {tour.status === 'rejected' && tour.review && (
+                      <div className="tour-review">
+                        <i className="fas fa-comment"></i>
+                        <span>Review: {tour.review}</span>
                       </div>
                     )}
                   </div>
@@ -306,6 +328,47 @@ const TourMonitoring = () => {
           })()
         )}
       </div>
+
+      {/* Review Modal */}
+      {showReviewModal && (
+        <div className="admin-inline-modal-outer">
+          <div className="admin-inline-modal review-modal">
+            <button className="admin-modal-close" onClick={() => {
+              setShowReviewModal(false);
+              setReviewText('');
+              setTourToReject(null);
+            }}>&times;</button>
+            <h3>Reject Tour</h3>
+            <div className="review-form">
+              <textarea
+                value={reviewText}
+                onChange={(e) => setReviewText(e.target.value)}
+                placeholder="Please provide a reason for rejection..."
+                rows="4"
+              />
+              <div className="review-actions">
+                <button
+                  className="action-btn cancel-btn"
+                  onClick={() => {
+                    setShowReviewModal(false);
+                    setReviewText('');
+                    setTourToReject(null);
+                  }}
+                >
+                  Cancel
+                </button>
+                <button
+                  className="action-btn reject-btn"
+                  onClick={handleReviewSubmit}
+                  disabled={!reviewText.trim()}
+                >
+                  Submit Rejection
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

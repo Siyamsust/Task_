@@ -85,174 +85,194 @@ exports.createTour = async (req, res) => {
     });
   }
 };
-  exports.getCompanyTours = async (req, res) => {
-    try {
-      const { companyId } = req.params;
-      console.log("Fetching tours for company:", companyId);
-      
-      if (!companyId) {
-        return res.status(400).json({
-          success: false,
-          error: 'Company ID is required'
-        });
-      }
 
-      const tours = await Tour.find({ companyId });
-      
-      res.json({
-        success: true,
-        tours
-      });
-    } catch (error) {
-      console.error('Error fetching company tours:', error);
-      res.status(500).json({
+exports.getCompanyTours = async (req, res) => {
+  try {
+    const { companyId } = req.params;
+    console.log("Fetching tours for company:", companyId);
+    
+    if (!companyId) {
+      return res.status(400).json({
         success: false,
-        error: 'Failed to fetch company tours'
+        error: 'Company ID is required'
       });
     }
-  };
-  // Get all tours
-  exports.getTours = async (req, res) => {
+
+    const tours = await Tour.find({ companyId });
+    
+    res.json({
+      success: true,
+      tours
+    });
+  } catch (error) {
+    console.error('Error fetching company tours:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to fetch company tours'
+    });
+  }
+};
+
+// Get all tours
+exports.getTours = async (req, res) => {
+  try {
+    const tours = await Tour.find();
+    res.json({
+      success: true,
+      tours
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: 'Failed to fetch tours'
+    });
+  }
+};
+
+exports.getApprovedTours = async (req, res) => {
+  try {
+    console.log('Fetching approved tours...'); // Debug log
+    
+    const tours = await Tour.find({ status: 'approved' });
+    console.log('Found tours:', tours.length); // Debug log
+    
+    if (!tours || tours.length === 0) {
+      return res.status(200).json({
+        success: true,
+        message: 'No approved tours found',
+        tours: []
+      });
+    }
+
+    res.json({
+      success: true,
+      count: tours.length,
+      tours
+    });
+  } catch (error) {
+    console.error('Error fetching approved tours:', error); // Debug log
+    res.status(500).json({
+      success: false,
+      error: 'Failed to fetch approved tours',
+      message: error.message
+    });
+  }
+};
+
+// Get single tour
+exports.getTourById = async (req, res) => {
+  try {
+    const tour = await Tour.findById(req.params.id);
+    if (!tour) {
+      return res.status(404).json({
+        success: false,
+        error: 'Tour not found'
+      });
+    }
+    res.json({
+      success: true,
+      tour
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: 'Failed to fetch tour'
+    });
+  }
+};
+
+// Delete tour
+exports.deleteTour = async (req, res) => {
+  try {
+    const tour = await Tour.findById(req.params.id);
+    if (!tour) {
+      return res.status(404).json({
+        success: false,
+        error: 'Tour not found'
+      });
+    }
+
+    // Delete associated images
+    tour.images.forEach(imagePath => {
       try {
-          const tours = await Tour.find();
-      res.json({
-        success: true,
-        tours
-      });
-    } catch (error) {
-      res.status(500).json({
+        fs.unlinkSync(imagePath);
+      } catch (err) {
+        console.error('Error deleting image:', err);
+      }
+    });
+
+    await Tour.findByIdAndDelete(req.params.id);
+    res.json({
+      success: true,
+      message: 'Tour deleted successfully'
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: 'Failed to delete tour'
+    });
+  }
+};
+
+// Update tour status
+exports.updateTourStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status, review } = req.body;
+
+    console.log('Received data:', { status, review }); // Debug log
+
+    // Validate status
+    if (!['approved', 'rejected', 'pending'].includes(status)) {
+      return res.status(400).json({
         success: false,
-        error: 'Failed to fetch tours'
+        error: 'Invalid status value'
       });
     }
-  };
-  exports.getApprovedTours = async (req, res) => {
-    try {
-      console.log('Fetching approved tours...'); // Debug log
-      
-      const tours = await Tour.find({ status: 'approved' });
-      console.log('Found tours:', tours.length); // Debug log
-      
-      if (!tours || tours.length === 0) {
-        return res.status(200).json({
-          success: true,
-          message: 'No approved tours found',
-          tours: []
-        });
-      }
 
-      res.json({
-        success: true,
-        count: tours.length,
-        tours
-      });
-    } catch (error) {
-      console.error('Error fetching approved tours:', error); // Debug log
-      res.status(500).json({
+    // Create update object
+    const updateData = { 
+      status: status
+    };
+
+    // Add review if status is rejected
+    if (status === 'rejected') {
+      updateData.review = review || 'No review provided';
+    }
+
+    console.log('Update data:', updateData); // Debug log
+
+    const tour = await Tour.findByIdAndUpdate(
+      id,
+      { $set: updateData },
+      { new: true, runValidators: true }
+    );
+
+    console.log('Updated tour:', tour); // Debug log
+
+    if (!tour) {
+      return res.status(404).json({
         success: false,
-        error: 'Failed to fetch approved tours',
-        message: error.message
+        error: 'Tour not found'
       });
     }
-  };
-  
-  // Get single tour
-  exports.getTourById = async (req, res) => {
-    try {
-      const tour = await Tour.findById(req.params.id);
-      if (!tour) {
-        return res.status(404).json({
-          success: false,
-          error: 'Tour not found'
-        });
-      }
-      res.json({
-        success: true,
-        tour
-      });
-    } catch (error) {
-      res.status(500).json({
-        success: false,
-        error: 'Failed to fetch tour'
-      });
-    }
-  };
-  
-  // Delete tour
-  exports.deleteTour = async (req, res) => {
-    try {
-      const tour = await Tour.findById(req.params.id);
-      if (!tour) {
-        return res.status(404).json({
-          success: false,
-          error: 'Tour not found'
-        });
-      }
-  
-      // Delete associated images
-      tour.images.forEach(imagePath => {
-        try {
-          fs.unlinkSync(imagePath);
-        } catch (err) {
-          console.error('Error deleting image:', err);
-        }
-      });
-  
-      await Tour.findByIdAndDelete(req.params.id);
-      res.json({
-        success: true,
-        message: 'Tour deleted successfully'
-      });
-    } catch (error) {
-      res.status(500).json({
-        success: false,
-        error: 'Failed to delete tour'
-      });
-    }
-  };
-  
-  // Update tour status
-  exports.updateTourStatus = async (req, res) => {
-    try {
-      const { id } = req.params;
-      const { status } = req.body;
 
-      // Validate status
-      if (!['approved', 'rejected', 'pending'].includes(status)) {
-        return res.status(400).json({
-          success: false,
-          error: 'Invalid status value'
-        });
-      }
+    res.json({
+      success: true,
+      message: `Tour status updated to ${status}`,
+      tour
+    });
 
-      const tour = await Tour.findByIdAndUpdate(
-        id,
-        { status },
-        { new: true, runValidators: true }
-      );
+  } catch (error) {
+    console.error('Error updating tour status:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to update tour status'
+    });
+  }
+};
 
-      if (!tour) {
-        return res.status(404).json({
-          success: false,
-          error: 'Tour not found'
-        });
-      }
-
-      res.json({
-        success: true,
-        message: `Tour status updated to ${status}`,
-        tour
-      });
-
-    } catch (error) {
-      console.error('Error updating tour status:', error);
-      res.status(500).json({
-        success: false,
-        error: 'Failed to update tour status'
-      });
-    }
-  };
-  exports.updateTour = async (req, res) => {
+exports.updateTour = async (req, res) => {
   try {
     const tourId = req.params.id;
     const tourData = { ...req.body };
@@ -324,9 +344,44 @@ exports.createTour = async (req, res) => {
     });
   }
 };
-  exports.getTours = async (req, res) => {
-    try {
-        const tours = await Tour.find();
+
+exports.filterTours = async (req, res) => {
+  try {
+    const { category, tourType } = req.query;
+    console.log('Received filter request:', { category, tourType });
+
+    let query = {};
+
+    if (category && category !== 'all') {
+      if (category === 'custom') {
+        query.customCategory = { $exists: true, $ne: '' };
+      } else {
+        query.packageCategories = category;
+      }
+    }
+
+    if (tourType && tourType !== 'all') {
+      query[`tourType.${tourType}`] = true;
+    }
+
+    const tours = await Tour.find(query).sort({ createdAt: -1 });
+    
+    res.json({
+      success: true,
+      tours
+    });
+  } catch (error) {
+    console.error('Filter endpoint error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to fetch filtered tours'
+    });
+  }
+};
+
+exports.getPendingTours = async (req, res) => {
+  try {
+    const tours = await Tour.find({ status: 'pending' });
     res.json({
       success: true,
       tours
@@ -334,94 +389,14 @@ exports.createTour = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: 'Failed to fetch tours'
+      error: 'Failed to fetch pending tours'
     });
   }
 };
-exports.deleteTour =  async (req, res) => {
-    try {
-      const tour = await Tour.findById(req.params.id);
-      if (!tour) {
-        return res.status(404).json({
-          success: false,
-          error: 'Tour not found'
-        });
-      }
-  
-      // Delete associated images
-      tour.images.forEach(imagePath => {
-        try {
-          fs.unlinkSync(imagePath);
-        } catch (err) {
-          console.error('Error deleting image:', err);
-        }
-      });
-  
-      await Tour.findByIdAndDelete(req.params.id);
-      res.json({
-        success: true,
-        message: 'Tour deleted successfully'
-      });
-    } catch (error) {
-      res.status(500).json({
-        success: false,
-        error: 'Failed to delete tour'
-      });
-    }
-  };
-  exports.filterTours = async (req, res) => {
-    try {
-      const { category, tourType } = req.query;
-      console.log('Received filter request:', { category, tourType });
-  
-      let query = {};
-  
-      // Handle category filtering
-      if (category && category !== 'all') {
-        if (category === 'custom') {
-          query.customCategory = { $exists: true, $ne: '' };
-        } else {
-          // Use case-insensitive regex for better matching
-          query.packageCategories = {
-            $regex: new RegExp(category, 'i')
-          };
-        }
-      }
-  
-      // Handle tour type filtering
-      if (tourType && tourType !== 'all') {
-        query[`tourType.${tourType}`] = true;
-      }
-  
-      console.log('MongoDB query:', query);
-  
-      const tours = await Tour.find(query).sort({ createdAt: -1 });
-      
-      res.json({
-        success: true,
-        tours,
-        count: tours.length
-      });
-  
-    } catch (error) {
-      console.error('Filter endpoint error:', error);
-      res.status(500).json({
-        success: false,
-        error: 'Failed to fetch filtered tours',
-        details: error.message
-      });
-    }
-  };
-exports.getPendingTours = async (req, res) => {
-    const tours = await Tour.find({ status: 'pending' });
-    res.json({
-      tours
-    });
-  };
 
-  // Kaoser
+// Kaoser
 
-  // Increment views count
+// Increment views count
 // In controllers/tour.js
 // Increment views count
 exports.incrementViewCount = async (req, res) => {
@@ -591,6 +566,59 @@ exports.getSeatAvailability = async (req, res) => {
     res.status(500).json({
       success: false,
       error: 'Failed to get seat availability'
+    });
+  }
+};
+
+// Suggest tours
+exports.suggestTours = async (req, res) => {
+  try {
+    const { destinations } = req.query;
+    if (!destinations) {
+      return res.status(400).json({
+        success: false,
+        error: 'Destinations parameter is required'
+      });
+    }
+
+    const destinationList = Array.isArray(destinations) ? destinations : [destinations];
+    const tours = await Tour.find({
+      'destinations.name': { $in: destinationList },
+      status: 'approved'
+    });
+
+    res.json({
+      success: true,
+      tours
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: 'Failed to suggest tours'
+    });
+  }
+};
+
+// Get suggestions for a tour
+exports.getSuggestions = async (req, res) => {
+  try {
+    const { tourName } = req.params;
+    
+    // Find tours with similar names
+    const suggestions = await Tour.find({
+      name: { $regex: tourName, $options: 'i' },
+      status: 'approved'
+    }).limit(5);
+
+    res.json({
+      success: true,
+      suggestions
+    });
+  } catch (error) {
+    console.error('Error getting suggestions:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to get suggestions'
     });
   }
 };

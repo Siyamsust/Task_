@@ -44,6 +44,9 @@ const companySchema = new mongoose.Schema({
         type: Date,
         default: Date.now,
      },
+     review:{
+      type:String,
+     },
    resetToken:String,
   resetTokenExpiration :Date,
     ownerName: {

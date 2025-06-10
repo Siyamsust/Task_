@@ -267,3 +267,47 @@
   color: #3498db;
   font-size: 1.1rem;
 }
+
+.rejection-review {
+  margin: 15px 0;
+  padding: 15px;
+  background-color: #fff3f3;
+  border: 1px solid #ffcdd2;
+  border-radius: 4px;
+}
+
+.review-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  color: #d32f2f;
+}
+
+.review-header i {
+  margin-right: 8px;
+  font-size: 1.2em;
+}
+
+.review-header span {
+  font-weight: 600;
+  font-size: 1.1em;
+}
+
+.review-content {
+  color: #555;
+  line-height: 1.5;
+  font-size: 0.95em;
+  padding-left: 28px;
+}
+
+.review-content .no-review {
+  color: #666;
+  font-style: italic;
+  opacity: 0.8;
+}
+
+/* Update status styles to include rejected state */
+.status.rejected {
+  background-color: #d32f2f;
+  color: white;
+}
