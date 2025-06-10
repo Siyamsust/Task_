@@ -1,67 +1,4 @@
-/* CSS Variables for Light and Dark Themes */
-:root {
-  /* Light theme colors */
-  --bg-primary: #ffffff;
-  --bgg-secondary: #f8f9fa;
-  --bg-tertiary: #f5f5f5;
-  --text-primary: #333333;
-  --text-secondary: #666666;
-  --text-tertiary: #777777;
-  --shadow-light: rgba(0, 0, 0, 0.08);
-  --shadow-medium: rgba(0, 0, 0, 0.1);
-  --shadow-heavy: rgba(0, 0, 0, 0.15);
-  --accent-primary: #3498db;
-  --accent-secondary: #2980b9;
-  --accent-warning: #e67e22;
-  --accent-error: #e74c3c;
-  --overlay-light: rgba(255, 255, 255, 0.7);
-  --overlay-medium: rgba(255, 255, 255, 0.9);
-  --scrollbar-thumb: #cccccc;
-}
-
-/* Dark theme colors */
-[data-theme="dark"] {
-  --bg-primary: #1a1a1a;
-  --bgg-secondary: #2b2f32;
-  --bg-tertiary: #2d272a;
-  --text-primary: #ffffff;
-  --text-secondary: #cccccc;
-  --text-tertiary: #aaaaaa;
-  --shadow-light: rgba(0, 0, 0, 0.3);
-  --shadow-medium: rgba(0, 0, 0, 0.4);
-  --shadow-heavy: rgba(0, 0, 0, 0.6);
-  --accent-primary: #5dade2;
-  --accent-secondary: #3498db;
-  --accent-warning: #f39c12;
-  --accent-error: #e74c3c;
-  --overlay-light: rgba(0, 0, 0, 0.7);
-  --overlay-medium: rgba(0, 0, 0, 0.9);
-  --scrollbar-thumb: #555555;
-}
-
-/* Auto dark theme based on system preference */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg-primary: #1a1a1a;
-    --bg-secondary: #2d2d2d;
-    --bg-tertiary: #363636;
-    --text-primary: #ffffff;
-    --text-secondary: #cccccc;
-    --text-tertiary: #aaaaaa;
-    --shadow-light: rgba(0, 0, 0, 0.3);
-    --shadow-medium: rgba(0, 0, 0, 0.4);
-    --shadow-heavy: rgba(0, 0, 0, 0.6);
-    --accent-primary: #5dade2;
-    --accent-secondary: #3498db;
-    --accent-warning: #f39c12;
-    --accent-error: #e74c3c;
-    --overlay-light: rgba(0, 0, 0, 0.7);
-    --overlay-medium: rgba(0, 0, 0, 0.9);
-    --scrollbar-thumb: #555555;
-  }
-}
-
-/* PackageDetails.css - Updated without borders */
+/* PackageDetails.css - Updated with global theme */
 .package-details-container {
   max-width: 1200px;
   margin: 0 auto;
@@ -69,7 +6,7 @@
   display: grid;
   grid-template-columns: 1fr;
   gap: 2rem;
-  background-color: var(--bg-primary);
+  background-color: var(--card-bg);
   color: var(--text-primary);
   transition: background-color 0.3s ease, color 0.3s ease;
 }
@@ -86,9 +23,9 @@
 .loading-spinner {
   width: 50px;
   height: 50px;
-  border: 4px solid var(--bg-secondary);
+  border: 4px solid var(--background-secondary);
   border-radius: 50%;
-  border-top: 4px solid var(--accent-primary);
+  border-top: 4px solid var(--primary-color);
   animation: spin 1s linear infinite;
   margin-bottom: 1rem;
 }
@@ -104,7 +41,7 @@
   align-items: center;
   justify-content: center;
   height: 50vh;
-  color: var(--accent-error);
+  color: var(--error-color);
   text-align: center;
 }
 
@@ -115,10 +52,10 @@
 
 .gallery-section {
   grid-column: 1 / -1;
-  box-shadow: 0 4px 12px var(--shadow-light);
+  box-shadow: 0 4px 12px var(--shadow-color);
   border-radius: 12px;
   overflow: hidden;
-  background-color: var(--bg-primary);
+  background-color: var(--card-bg);
 }
 
 .main-content-section {
@@ -147,13 +84,13 @@
   }
 }
 
-/* PackageGallery.css - Updated without borders */
+/* PackageGallery.css - Updated with global theme */
 .image-gallery {
   display: flex;
   flex-direction: column;
   gap: 1rem;
   width: 100%;
-  background-color: var(--bg-primary);
+  background-color: var(--card-bg);
 }
 
 .main-image-container {
@@ -162,7 +99,7 @@
   height: 450px;
   overflow: hidden;
   border-radius: 8px;
-  background-color: var(--bg-tertiary);
+  background-color: var(--background-tertiary);
 }
 
 .main-image {
@@ -179,8 +116,8 @@
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  background-color:white;
-  color: black;
+  background-color: var(--text-white);
+  color: var(--text-primary);
   border: none;
   border-radius: 50%;
   width: 40px;
@@ -189,9 +126,8 @@
   opacity: 0.7;
   transition: opacity 0.3s ease, background-color 0.3s ease;
   z-index: 2;
-  backdrop-filter: blur(10px);
+  backdrop-filter: var(--backdrop-blur);
 }
-
 
 .prev {
   left: 15px;
@@ -208,7 +144,7 @@
   overflow-x: auto;
   padding-bottom: 10px;
   scrollbar-width: thin;
-  scrollbar-color: var(--scrollbar-thumb) transparent;
+  scrollbar-color: var(--border-color) transparent;
 }
 
 .image-thumbnails::-webkit-scrollbar {
@@ -216,12 +152,12 @@
 }
 
 .image-thumbnails::-webkit-scrollbar-thumb {
-  background-color: var(--scrollbar-thumb);
+  background-color: var(--border-color);
   border-radius: 6px;
 }
 
 .image-thumbnails::-webkit-scrollbar-track {
-  background-color: var(--bg-secondary);
+  background-color: var(--background-secondary);
 }
 
 .thumbnail {
@@ -242,7 +178,7 @@
 
 .thumbnail.active {
   opacity: 1;
-  box-shadow: 0 0 0 3px var(--accent-primary);
+  box-shadow: 0 0 0 3px var(--primary-color);
 }
 
 /* For smaller screens */
@@ -257,11 +193,11 @@
   }
 }
 
-/* BookingCard.css - Updated without borders */
+/* BookingCard.css - Updated with global theme */
 .booking-card {
-  background-color: var(--bg-primary);
+  background-color: var(--card-bg);
   border-radius: 12px;
-  box-shadow: 0 4px 16px var(--shadow-medium);
+  box-shadow: 0 4px 16px var(--shadow-hover);
   padding: 1.5rem;
   position: sticky;
   top: 2rem;
@@ -285,12 +221,12 @@
   align-items: center;
   gap: 8px;
   font-size: 0.95rem;
-  color: var(--accent-warning);
+  color: var(--warning-color);
   font-weight: 500;
 }
 
 .availability i {
-  color: var(--accent-warning);
+  color: var(--warning-color);
 }
 
 .date-info {
@@ -299,7 +235,7 @@
   gap: 12px;
   margin-bottom: 1.5rem;
   padding: 15px;
-  background-color: var(--bgg-secondary);
+  background-color: var(--background-secondary);
   border-radius: 8px;
   transition: background-color 0.3s ease;
 }
@@ -312,7 +248,7 @@
 
 .date-item i {
   font-size: 1.2rem;
-  color: var(--accent-primary);
+  color: var(--primary-color);
 }
 
 .date-item div {
@@ -321,8 +257,8 @@
 }
 
 #special-note {
-  background-color: var(--bg-secondary);
-  border-left: 4px solid var(--accent-warning);
+  background-color: var(--background-secondary);
+  border-left: 4px solid var(--warning-color);
   border-radius: 4px;
   color: var(--text-secondary);
   font-style: italic;
@@ -332,7 +268,7 @@
 
 .date-item span {
   font-size: 0.8rem;
-  color: var(--text-tertiary);
+  color: var(--text-muted);
 }
 
 .date-item p {
@@ -362,27 +298,25 @@
 }
 
 .book-now {
-  background-color: linear-gradient( #4f46e5, #7c3aed);
-  color: white;
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  color: var(--text-white);
 }
 
 .book-now:hover {
-  background-color: var(--accent-secondary);
-  box-shadow: 0 2px 8px rgba(52, 152, 219, 0.3);
+  background: linear-gradient(135deg, var(--primary-hover), var(--secondary-hover));
+  box-shadow: 0 2px 8px var(--border-hover);
 }
 
 .add-wishlist {
-  background-color: #dd4e9a;
-  color: white;
+  background-color: var(--error-color);
+  color: var(--text-white);
 }
-
-
 
 .booking-actions button i {
   font-size: 1rem;
 }
 
-/* PackageInfo.css - Updated without borders */
+/* PackageInfo.css - Updated with global theme */
 .package-info {
   padding: 1rem 0;
   color: var(--text-primary);
@@ -397,7 +331,7 @@
 }
 
 .package-categories {
-  color: var(--accent-primary);
+  color: var(--primary-color);
   font-weight: 500;
   margin-bottom: 1.5rem;
   font-size: 1rem;
@@ -424,7 +358,7 @@
   font-size: 1.4rem;
   margin-bottom: 1rem;
   padding-bottom: 0.5rem;
-  border-bottom: 2px solid var(--bg-secondary);
+  border-bottom: 2px solid var(--background-secondary);
   color: var(--text-primary);
   transition: color 0.3s ease;
 }
@@ -443,14 +377,14 @@
 
 .detail-item {
   padding: 0.8rem;
-  background-color: var(--bgg-secondary);
+  background-color: var(--background-secondary);
   border-radius: 8px;
   transition: background-color 0.3s ease;
 }
 
 .detail-item .label {
   font-size: 0.85rem;
-  color: var(--text-tertiary);
+  color: var(--text-muted);
   display: block;
   margin-bottom: 0.3rem;
   transition: color 0.3s ease;
@@ -465,8 +399,8 @@
 
 .special-note {
   padding: 1rem;
-  background-color: var(--bg-secondary);
-  border-left: 4px solid var(--accent-warning);
+  background-color: var(--background-secondary);
+  border-left: 4px solid var(--warning-color);
   border-radius: 4px;
   color: var(--text-secondary);
   font-style: italic;
@@ -475,12 +409,12 @@
 
 /* Dark theme specific styling for special note */
 [data-theme="dark"] .special-note {
-  background-color: rgba(243, 156, 18, 0.1);
+  background-color: var(--background-tertiary);
 }
 
 @media (prefers-color-scheme: dark) {
   .special-note {
-    background-color: rgba(243, 156, 18, 0.1);
+    background-color: var(--background-tertiary);
   }
 }
 
@@ -498,7 +432,7 @@
 
 .includes-list li:before {
   content: "✓";
-  color: #2ecc71;
+  color: var(--success-color);
   position: absolute;
   left: -1.2rem;
   font-weight: bold;
@@ -506,12 +440,12 @@
 
 /* Dark theme checkmark color */
 [data-theme="dark"] .includes-list li:before {
-  color: #58d68d;
+  color: var(--success-color);
 }
 
 @media (prefers-color-scheme: dark) {
   .includes-list li:before {
-    color: #58d68d;
+    color: var(--success-color);
   }
 }
 
@@ -523,15 +457,15 @@
 
 .destination-item {
   padding: 1rem;
-  background-color: var(--bgg-secondary);
+  background-color: var(--background-secondary);
   border-radius: 8px;
-  border-left: 4px solid var(--accent-primary);
+  border-left: 4px solid var(--primary-color);
   transition: all 0.3s ease;
 }
 
 .destination-item h3 {
   margin: 0 0 0.5rem 0;
-  color: var(--accent-primary);
+  color: var(--primary-color);
   transition: color 0.3s ease;
 }
 
@@ -546,8 +480,8 @@
   display: inline-block;
   padding: 0.3rem 0.7rem;
   font-size: 0.8rem;
-  background-color: rgba(254, 7, 7, 0.9);
-  color: white;
+  background-color: var(--error-color);
+  color: var(--text-white);
   border-radius: 20px;
   font-weight: 500;
   transition: all 0.3s ease;
@@ -555,7 +489,7 @@
 
 .company-section {
   padding: 1.5rem;
-  background-color: var(--bgg-secondary);
+  background-color: var(--background-secondary);
   border-radius: 8px;
   margin-top: 2rem;
   transition: all 0.3s ease;
@@ -571,13 +505,13 @@
   width: 60px;
   height: 60px;
   border-radius: 50%;
-  background-color: var(--accent-primary);
-  box-shadow: 0 2px 8px var(--shadow-light);
+  background-color: var(--primary-color);
+  box-shadow: 0 2px 8px var(--shadow-color);
   transition: box-shadow 0.3s ease;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
+  color: var(--text-white);
   font-size: 1.5rem;
   flex-shrink: 0;
 }
@@ -589,8 +523,8 @@
 }
 
 .company-details button {
-  background-color: #2ecc71;
-  color: white;
+  background-color: var(--success-color);
+  color: var(--text-white);
   border: none;
   border-radius: 4px;
   padding: 0.5rem 1rem;
@@ -603,26 +537,26 @@
 }
 
 .company-details button:hover {
-  background-color: #27ae60;
-  box-shadow: 0 2px 8px rgba(46, 204, 113, 0.3);
+  background-color: var(--success-hover);
+  box-shadow: 0 2px 8px var(--border-hover);
 }
 
 /* Dark theme specific button styling */
 [data-theme="dark"] .company-details button {
-  background-color: #58d68d;
+  background-color: var(--success-color);
 }
 
 [data-theme="dark"] .company-details button:hover {
-  background-color: #2ecc71;
+  background-color: var(--success-hover);
 }
 
 @media (prefers-color-scheme: dark) {
   .company-details button {
-    background-color: #58d68d;
+    background-color: var(--success-color);
   }
   
   .company-details button:hover {
-    background-color: #2ecc71;
+    background-color: var(--success-hover);
   }
 }
 
@@ -631,7 +565,7 @@
   position: fixed;
   top: 20px;
   right: 20px;
-  background-color: var(--bg-secondary);
+  background-color: var(--background-secondary);
   color: var(--text-primary);
   border: none;
   border-radius: 50%;
@@ -644,10 +578,10 @@
   font-size: 1.2rem;
   transition: all 0.3s ease;
   z-index: 1000;
-  box-shadow: 0 2px 8px var(--shadow-light);
+  box-shadow: 0 2px 8px var(--shadow-color);
 }
 
 .theme-toggle:hover {
-  background-color: var(--bg-tertiary);
+  background-color: var(--background-tertiary);
   transform: scale(1.1);
 }
