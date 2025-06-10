@@ -9,20 +9,20 @@ const PackageInfo = ({ tour,user,chats}) => {
   let userId,username,avatar
   if(user)
   { userId=user._id;
-     username = user.username;
+     username = user.name;
      avatar = user.avatar;
   }
   const companyName = tour.companyName;
 
   const companyId=tour.companyId;
- console.log(tour.companyName);
+ console.log(username);
   
   const handleChatClick = () => {
     const selectedData = chats.find(chat => chat.companyName === companyName);
     console.log(selectedData);
     let tempchat=selectedData;
     
-    if (tempchat===null) {
+    if (!tempchat) {
       tempchat = {
         _id: `temp_${companyId}`,
         companyName: companyName,

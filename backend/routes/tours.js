@@ -2,9 +2,9 @@ const express = require('express');
 const router = express.Router();
 const { upload } = require('../index.js');
 const tourController = require('../controllers/tour');
-//router.post('/api/tours', tourController.createTour);
-  // Update tour
-//router.put('/api/tours/:id', upload.array('newImages'), tourController.updateTour);
+
+
+// Tour routes
 router.get('/tours/approved', tourController.getApprovedTours);
 router.get('/tours/filter', tourController.filterTours);
 router.get('/pendingtours', tourController.getPendingTours);
@@ -13,14 +13,11 @@ router.get('/tours', tourController.getTours);
 router.get('/companytours/:companyId', tourController.getCompanyTours);
 router.delete('/tours/:id', tourController.deleteTour);
 router.patch('/tours/:id/status', tourController.updateTourStatus);
-module.exports = router; 
+
 
 // Suggest tours endpoint
 router.get('/suggest-tours', tourController.suggestTours);
 
-module.exports = router;
-const { getSuggestions } = require('../controllers/SuggestionController');
-
-router.get('/suggestions/:tourName', getSuggestions);
+router.get('/suggestions/:tourName', tourController.getSuggestions);
 
 module.exports = router;
