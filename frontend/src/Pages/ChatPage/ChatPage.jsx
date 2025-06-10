@@ -112,12 +112,14 @@ const ChatPage = () => {
                 socket={socket}
               />
             </div>
-            <ChatWindow 
-              chatType={chatType}
-              selectedChat={selectedChat || location.state?.selectedChat}
-              userId={userId}
-              socket={socket}
-            />
+            { (selectedChat&&
+              <ChatWindow 
+                chatType={chatType}
+                selectedChat={selectedChat || location.state?.selectedChat}
+                userId={userId}
+                socket={socket}
+              />
+            )}
           </>
         ) : (
           <div className="admin-chat-container">
