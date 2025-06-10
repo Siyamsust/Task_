@@ -8,10 +8,44 @@ const ExploreByCategory = () => {
   const { category } = useParams();
   const navigate = useNavigate();
   const { tours, loading, fetchTours } = useContext(ToursContext);
-  
+
   const [activeCategory, setActiveCategory] = useState(category || 'all');
   const [filteredTours, setFilteredTours] = useState([]);
- 
+  const [averageRatings, setAverageRatings] = useState({});
+  useEffect(() => {
+    const fetchRatings = async () => {
+      try {
+        const res = await fetch('http://localhost:4000/reviews');
+        const reviews = await res.json();
+
+        const ratingMap = {};
+        const countMap = {};
+
+        reviews.forEach(review => {
+          const tourId = review.tourId;
+          if (!ratingMap[tourId]) {
+            ratingMap[tourId] = 0;
+            countMap[tourId] = 0;
+          }
+          ratingMap[tourId] += review.rating;
+          countMap[tourId] += 1;
+        });
+
+        const averages = {};
+        for (const id in ratingMap) {
+          averages[id] = ratingMap[id] / countMap[id];
+        }
+
+        setAverageRatings(averages);
+      } catch (err) {
+        console.error("Error fetching reviews:", err);
+      }
+    };
+
+    if (tours && tours.length > 0) {
+      fetchRatings();
+    }
+  }, [tours]);
   const handleExploreNow = async (tourId) => {
     try {
       await fetch(`http://localhost:4000/api/tours/${tourId}/increment-view`, {
@@ -28,7 +62,7 @@ const ExploreByCategory = () => {
   useEffect(() => {
     console.log("Active Category:", activeCategory);
     console.log("All Tours:", tours);
-    
+
     if (activeCategory === 'all') {
       setFilteredTours(tours);
     } else {
@@ -36,21 +70,21 @@ const ExploreByCategory = () => {
       tours.forEach(tour => {
         console.log(`Tour "${tour.name}" categories:`, tour.packageCategories);
       });
-      
+
       const filtered = tours.filter(tour => {
         console.log(`Checking tour: ${tour.name}`);
         console.log(`Categories for this tour:`, tour.packageCategories);
-        
+
         // Check if packageCategories exists and has content
         if (!tour.packageCategories || tour.packageCategories.length === 0) {
           console.log("No categories found for this tour");
           return false;
         }
-        
+
         // Try this simplified approach that handles multiple potential formats
         const matchFound = tour.packageCategories.some(cat => {
           let categoryValue = cat;
-          
+
           // If it's a string that might be an array in string format
           if (typeof cat === 'string' && (cat.includes('[') || cat.includes(','))) {
             try {
@@ -58,8 +92,8 @@ const ExploreByCategory = () => {
               const cleanedStr = cat.replace(/[$$$$']/g, '');
               const possibleCategories = cleanedStr.split(',').map(c => c.trim());
               console.log(`Parsed categories from string: ${possibleCategories}`);
-              
-              return possibleCategories.some(c => 
+
+              return possibleCategories.some(c =>
                 c.toLowerCase() === activeCategory.toLowerCase()
               );
             } catch (e) {
@@ -72,11 +106,11 @@ const ExploreByCategory = () => {
             return categoryValue.toLowerCase() === activeCategory.toLowerCase();
           }
         });
-        
+
         console.log(`Match found for ${tour.name}: ${matchFound}`);
         return matchFound;
       });
-      
+
       console.log("Filtered tours:", filtered);
       setFilteredTours(filtered);
     }
@@ -100,7 +134,12 @@ const ExploreByCategory = () => {
       {loading ? (
         <div className="explore-loading">Loading...</div>
       ) : (
-        <ExplorePackageGrid packages={filteredTours} onExplore={handleExploreNow} />
+        // In your ExploreByCategory component, update the ExplorePackageGrid call:
+        <ExplorePackageGrid
+          packages={filteredTours}
+          onExplore={handleExploreNow}
+          averageRatings={averageRatings} // Add this line
+        />
       )}
     </div>
   );
@@ -115,8 +154,13 @@ const isTourCompleted = (startDate) => {
 };
 
 // Updated TourCard component with unique class names
-const ExploreTourCard = ({ tour, onExplore }) => {
-  const averageRating = tour.averageRating ?? tour.popularity?.rating?.average ?? 0;
+// Update your ExploreTourCard component to use the passed averageRating
+const ExploreTourCard = ({ tour, onExplore, averageRating }) => {
+  // Fix the rating calculation to ensure it's always a number
+  const displayRating = averageRating || tour.averageRating || tour.popularity?.rating || 0;
+  
+  // Ensure displayRating is a number before calling toFixed
+  const ratingValue = typeof displayRating === 'number' ? displayRating : 0;
 
   let categoriesDisplay = 'General';
   if (Array.isArray(tour.packageCategories)) {
@@ -142,7 +186,11 @@ const ExploreTourCard = ({ tour, onExplore }) => {
         <div className="explore-tour-details">
           <span>Price: <strong>${tour.price ?? 'N/A'}</strong></span>
           <span><i className="fas fa-tag"></i> {categoriesDisplay}</span>
-          <span><i className="fas fa-star"></i> {averageRating ? `${averageRating.toFixed(1)} / 5` : 'No Rating'}</span>
+          {/* Updated rating display with proper number check: */}
+          <span>
+            <i className="fas fa-star"></i> 
+            {ratingValue > 0 ? `${ratingValue.toFixed(1)} / 5` : 'No Rating'}
+          </span>
         </div>
         <div className="explore-tour-actions">
           <button onClick={() => onExplore && onExplore(tour._id)} className="explore-view-details-btn">
@@ -154,12 +202,18 @@ const ExploreTourCard = ({ tour, onExplore }) => {
   );
 };
 
-const ExplorePackageGrid = ({ packages, onExplore }) => {
+// Update your ExplorePackageGrid component to pass averageRatings
+const ExplorePackageGrid = ({ packages, onExplore, averageRatings }) => {
   return (
     <div className="explore-tour-row">
       {packages.length === 0 && <p className="explore-no-tours-message">No tours found.</p>}
       {packages.map(tour => (
-        <ExploreTourCard key={tour._id} tour={tour} onExplore={onExplore} />
+        <ExploreTourCard 
+          key={tour._id} 
+          tour={tour} 
+          onExplore={onExplore}
+          averageRating={averageRatings[tour._id]} // Add this line
+        />
       ))}
     </div>
   );

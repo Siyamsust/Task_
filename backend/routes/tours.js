@@ -13,12 +13,12 @@ router.get('/tours', tourController.getTours);
 router.get('/companytours/:companyId', tourController.getCompanyTours);
 router.delete('/tours/:id', tourController.deleteTour);
 router.patch('/tours/:id/status', tourController.updateTourStatus);
-module.exports = router; 
+
 
 // Suggest tours endpoint
 router.get('/suggest-tours', tourController.suggestTours);
 
-module.exports = router;
+
 const { getSuggestions } = require('../controllers/SuggestionController');
 
 router.get('/suggestions/:tourName', getSuggestions);

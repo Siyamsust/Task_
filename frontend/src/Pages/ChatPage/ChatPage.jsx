@@ -14,7 +14,8 @@ const ChatPage = () => {
   const [selectedChat, setSelectedChat] = useState(location.state?.Chat || null);
   const [chats, setChats] = useState([]);
   const { user } = useAuth();
-console.log(selectedChat);
+
+  console.log(selectedChat);
   const directChat = location.state?.directChat || false;
 
   useEffect(() => {
@@ -82,7 +83,7 @@ console.log(selectedChat);
           className={`type-btn ${chatType === 'comuse' ? 'active' : ''}`}
           onClick={() => {
             setChatType('comuse');
-            setSelectedChat(null);
+            setSelectedChat(null); // Clear selection when switching to companies
           }}
         >
           Tour Companies
@@ -91,7 +92,7 @@ console.log(selectedChat);
           className={`type-btn ${chatType === 'aduse' ? 'active' : ''}`}
           onClick={() => {
             setChatType('aduse');
-            setSelectedChat(adminChat);
+            setSelectedChat(adminChat); // Auto-select admin chat
           }}
         >
           Admin Support
@@ -111,14 +112,12 @@ console.log(selectedChat);
                 socket={socket}
               />
             </div>
-            { (
-              <ChatWindow 
-                chatType={chatType}
-                selectedChat={selectedChat || location.state?.selectedChat}
-                userId={userId}
-                socket={socket}
-              />
-            )}
+            <ChatWindow 
+              chatType={chatType}
+              selectedChat={selectedChat || location.state?.selectedChat}
+              userId={userId}
+              socket={socket}
+            />
           </>
         ) : (
           <div className="admin-chat-container">
