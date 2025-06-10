@@ -42,10 +42,7 @@
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.place-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 25px var(--shadow-hover);
-}
+
 
 .card-image-wrapper {
   height: 200px;

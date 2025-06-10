@@ -1,7 +1,7 @@
 .profile-info {
-  background: var(--card-bg, white);
+  background: var(--card-bg);
   border-radius: 15px;
-  box-shadow: var(--shadow-sm, 0 1px 3px rgba(0, 0, 0, 0.1));
+  box-shadow: 0 2px 10px var(--shadow-color);
   overflow: hidden;
   transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
@@ -9,7 +9,7 @@
 .profile-header {
   padding: 30px;
   text-align: center;
-  border-bottom: 1px solid var(--border-color, #e2e8f0);
+  border-bottom: 1px solid var(--border-color);
   transition: border-color 0.3s ease;
 }
 
@@ -34,8 +34,8 @@
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background: var(--primary-color, #3498db);
-  color: var(--button-text, white);
+  background: var(--primary-color);
+  color: var(--text-white);
   border: none;
   cursor: pointer;
   display: flex;
@@ -46,12 +46,12 @@
 
 .profile-header h2 {
   margin-bottom: 5px;
-  color: var(--text-primary, #333);
+  color: var(--text-primary);
   transition: color 0.3s ease;
 }
 
 .profile-header p {
-  color: var(--text-secondary, #666);
+  color: var(--text-secondary);
   transition: color 0.3s ease;
 }
 
@@ -70,15 +70,16 @@
   display: block;
   font-size: 1.5rem;
   font-weight: 600;
-  color: var(--primary-color, #3498db);
+  color: var(--primary-color);
   transition: color 0.3s ease;
 }
 
 .stat-label {
   font-size: 0.9rem;
-  color: var(--text-secondary, #666);
+  color: var(--text-secondary);
   transition: color 0.3s ease;
 }
+
 /* Optional: Subtle adjustments for dark mode */
 [data-theme='dark'] .profile-avatar img {
   border: 2px solid var(--border-color);
@@ -89,5 +90,5 @@
 }
 
 [data-theme='dark'] .profile-info {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 12px var(--shadow-color);
 }

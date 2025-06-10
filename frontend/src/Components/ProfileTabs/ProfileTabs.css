@@ -22,13 +22,13 @@
 
 .tab-btn:hover {
   color: var(--primary-color);
-  background-color: rgba(77, 171, 247, 0.1);
+  background-color: var(--border-hover);
 }
 
 .tab-btn.active {
   color: var(--primary-color);
   border-bottom: 2px solid var(--primary-color);
-  background-color: rgba(77, 171, 247, 0.05);
+  background-color: var(--overlay-light);
 }
 
 .tab-btn i {
@@ -41,11 +41,11 @@
 }
 
 [data-theme="dark"] .tab-btn:hover {
-  background-color: rgba(77, 171, 247, 0.15);
+  background-color: var(--border-hover);
 }
 
 [data-theme="dark"] .tab-btn.active {
-  background-color: rgba(77, 171, 247, 0.1);
+  background-color: var(--border-hover);
 }
 
 /* Responsive design */

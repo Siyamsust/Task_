@@ -1,49 +1,6 @@
-/* Dark mode variables */
-:root {
-  --light-gray: #f5f5f5;
-  --primary-color: #007bff;
-  --secondary-color: #0056b3;
-  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
-  --bg-primary: #ffffff;
-  --text-primary: #333333;
-  --text-secondary: #666666;
-  --text-color: #333333;
-  --border-color: #e0e0e0;
-  --input-border: #e2e8f0;
-  --input-bg: #ffffff;
-  --toggle-bg: #ccc;
-  --success-bg: #d4edda;
-  --success-color: #155724;
-  --success-border: #c3e6cb;
-  --error-bg: #f8d7da;
-  --error-color: #721c24;
-  --error-border: #f5c6cb;
-}
-
-[data-theme="dark"] {
-  --light-gray: #1a1a1a;
-  --primary-color: #4dabf7;
-  --secondary-color: #339af0;
-  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.3);
-  --bg-primary: #2d2d2d;
-  --text-primary: #ffffff;
-  --text-secondary: #b0b0b0;
-  --text-color: #ffffff;
-  --border-color: #404040;
-  --input-border: #404040;
-  --input-bg: #1a1a1a;
-  --toggle-bg: #555;
-  --success-bg: #1e4d2b;
-  --success-color: #4caf50;
-  --success-border: #2e7d32;
-  --error-bg: #4d1e1e;
-  --error-color: #f44336;
-  --error-border: #d32f2f;
-}
-
 /* Profile page styles */
 .profile-page {
-  background: var(--light-gray);
+  background: var(--background-secondary);
   min-height: calc(100vh - 70px);
   padding: 40px 20px;
   transition: background-color 0.3s ease;
@@ -58,9 +15,9 @@
 }
 
 .profile-content {
-  background: var(--bg-primary);
+  background: var(--card-bg);
   border-radius: 15px;
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 2px 10px var(--shadow-color);
   overflow: hidden;
   transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
@@ -95,13 +52,13 @@
 
 .tab-btn:hover {
   color: var(--primary-color);
-  background-color: rgba(77, 171, 247, 0.1);
+  background-color: var(--border-hover);
 }
 
 .tab-btn.active {
   color: var(--primary-color);
   border-bottom: 2px solid var(--primary-color);
-  background-color: rgba(77, 171, 247, 0.05);
+  background-color: var(--overlay-light);
 }
 
 .tab-btn i {
@@ -114,11 +71,11 @@
 }
 
 [data-theme="dark"] .tab-btn:hover {
-  background-color: rgba(77, 171, 247, 0.15);
+  background-color: var(--border-hover);
 }
 
 [data-theme="dark"] .tab-btn.active {
-  background-color: rgba(77, 171, 247, 0.1);
+  background-color: var(--border-hover);
 }
 
 /* Responsive design */
@@ -144,17 +101,17 @@
 }
 
 .settings-section {
-  background: var(--bg-primary);
+  background: var(--card-bg);
   border-radius: 12px;
   padding: 20px;
   margin-bottom: 30px;
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 2px 10px var(--shadow-color);
   transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .settings-section h3 {
   margin-bottom: 20px;
-  color: var(--text-color);
+  color: var(--text-primary);
   transition: color 0.3s ease;
 }
 
@@ -165,7 +122,7 @@
 .form-group label {
   display: block;
   margin-bottom: 8px;
-  color: var(--text-color);
+  color: var(--text-primary);
   font-weight: 500;
   transition: color 0.3s ease;
 }
@@ -173,23 +130,23 @@
 .form-group input {
   width: 100%;
   padding: 10px;
-  border: 1px solid var(--input-border);
+  border: 1px solid var(--border-color);
   border-radius: 8px;
   font-size: 1rem;
-  background: var(--input-bg);
-  color: var(--text-color);
+  background: var(--form-bg);
+  color: var(--text-primary);
   transition: all 0.3s ease;
 }
 
 .form-group input:focus {
   outline: none;
   border-color: var(--primary-color);
-  box-shadow: 0 0 0 3px rgba(77, 171, 247, 0.1);
+  box-shadow: 0 0 0 3px var(--border-hover);
 }
 
 .save-btn {
   background: var(--primary-color);
-  color: white;
+  color: var(--text-white);
   padding: 10px 20px;
   border: none;
   border-radius: 8px;
@@ -201,7 +158,7 @@
 .save-btn:hover {
   background: var(--secondary-color);
   transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(77, 171, 247, 0.3);
+  box-shadow: 0 4px 8px var(--border-hover);
 }
 
 .preferences {
@@ -220,14 +177,14 @@
 }
 
 .preference-item:hover {
-  background-color: rgba(77, 171, 247, 0.05);
+  background-color: var(--overlay-light);
 }
 
 .preference-text span {
   display: block;
   font-weight: 500;
   margin-bottom: 4px;
-  color: var(--text-color);
+  color: var(--text-primary);
   transition: color 0.3s ease;
 }
 
@@ -258,7 +215,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: var(--toggle-bg);
+  background-color: var(--border-color);
   transition: .4s;
   border-radius: 34px;
 }
@@ -270,10 +227,10 @@
   width: 20px;
   left: 3px;
   bottom: 3px;
-  background-color: white;
+  background-color: var(--text-white);
   transition: .4s;
   border-radius: 50%;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 4px var(--shadow-color);
 }
 
 input:checked + .slider {
@@ -285,7 +242,7 @@ input:checked + .slider:before {
 }
 
 .slider:hover {
-  box-shadow: 0 0 0 8px rgba(77, 171, 247, 0.1);
+  box-shadow: 0 0 0 8px var(--border-hover);
 }
 
 .message {
@@ -298,15 +255,15 @@ input:checked + .slider:before {
 }
 
 .message.success {
-  background-color: var(--success-bg);
+  background-color: var(--background-tertiary);
   color: var(--success-color);
-  border: 1px solid var(--success-border);
+  border: 1px solid var(--success-color);
 }
 
 .message.error {
-  background-color: var(--error-bg);
+  background-color: var(--background-tertiary);
   color: var(--error-color);
-  border: 1px solid var(--error-border);
+  border: 1px solid var(--error-color);
 }
 
 /* Dark mode specific enhancements for settings */
@@ -315,5 +272,5 @@ input:checked + .slider:before {
 }
 
 [data-theme="dark"] .preference-item:hover {
-  background-color: rgba(77, 171, 247, 0.1);
+  background-color: var(--border-hover);
 }

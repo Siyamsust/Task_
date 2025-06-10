@@ -2,7 +2,6 @@
 .popular-packages-container {
   width: 95%;
   min-height: 100vh;
-  background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
   transition: background-color 0.3s ease;
   margin: 0 auto;
 }
