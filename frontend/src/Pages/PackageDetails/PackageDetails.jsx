@@ -30,10 +30,13 @@ const PackageDetails = () => {
 
  },
 [user]);
+let use,userId;
 console.log(tour);
-const use=user.user;
+if(user)
+{ use=user.user;
 console.log(use);
-const userId=use._id;
+ userId=use._id;
+}
 const chatType='comuse';
 
 const fetchChats = async () => {

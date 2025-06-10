@@ -312,6 +312,22 @@ const ManageTours = () => {
                     )}
                   </div>
 
+                  {tour.status === 'rejected' && (
+                    <div className="rejection-review">
+                      <div className="review-header">
+                        <i className="fas fa-exclamation-circle"></i>
+                        <span>Rejection Review</span>
+                      </div>
+                      <div className="review-content">
+                        {tour.review ? (
+                          tour.review
+                        ) : (
+                          <span className="no-review">No review provided</span>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
                   <div className="tour-dates">
                     {tour.startDate && (
                       <p>

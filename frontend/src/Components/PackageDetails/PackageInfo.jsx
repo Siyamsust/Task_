@@ -6,10 +6,14 @@ import "./PackageInfo.css";
 const PackageInfo = ({ tour,user,chats}) => {
   const navigate = useNavigate();
   console.log(user);
-  const userId=user._id;
+  let userId,username,avatar
+  if(user)
+  { userId=user._id;
+     username = user.username;
+     avatar = user.avatar;
+  }
   const companyName = tour.companyName;
-  const username = user.username;
-  const avatar = user.avatar;
+
   const companyId=tour.companyId;
  console.log(tour.companyName);
   

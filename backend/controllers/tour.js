@@ -215,7 +215,9 @@ exports.createTour = async (req, res) => {
   exports.updateTourStatus = async (req, res) => {
     try {
       const { id } = req.params;
-      const { status } = req.body;
+      const { status, review } = req.body;
+
+      console.log('Received data:', { status, review }); // Debug log
 
       // Validate status
       if (!['approved', 'rejected', 'pending'].includes(status)) {
@@ -225,11 +227,25 @@ exports.createTour = async (req, res) => {
         });
       }
 
+      // Create update object
+      const updateData = { 
+        status: status
+      };
+
+      // Add review if status is rejected
+      if (status === 'rejected') {
+        updateData.review = review || 'No review provided';
+      }
+
+      console.log('Update data:', updateData); // Debug log
+
       const tour = await Tour.findByIdAndUpdate(
         id,
-        { status },
+        { $set: updateData },
         { new: true, runValidators: true }
       );
+
+      console.log('Updated tour:', tour); // Debug log
 
       if (!tour) {
         return res.status(404).json({
