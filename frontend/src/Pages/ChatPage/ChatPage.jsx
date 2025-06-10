@@ -111,7 +111,7 @@ console.log(selectedChat);
                 socket={socket}
               />
             </div>
-            { (
+            { (selectedChat&&
               <ChatWindow 
                 chatType={chatType}
                 selectedChat={selectedChat || location.state?.selectedChat}
