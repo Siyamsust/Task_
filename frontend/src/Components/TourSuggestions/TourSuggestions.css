@@ -35,10 +35,13 @@
 }
 
 .tour-suggestions-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    justify-items: center; /* Center the cards */
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px; /* Adds uniform spacing */
 }
+
+
 
 .suggestion-card {
     width: 280px;

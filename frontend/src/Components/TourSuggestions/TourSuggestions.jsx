@@ -13,6 +13,9 @@ const TourSuggestions = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
 
+  // Consistent user data access like in ProfileInfo
+  const userData = user?.user || user;
+
   // Fetch average ratings
   useEffect(() => {
     const fetchRatings = async () => {
@@ -205,7 +208,7 @@ const TourSuggestions = () => {
     <div className="tour-suggestions-section">
       <div className="tour-suggestions-header">
         <h2>
-          {user ? `Upcoming Tours for You, ${user.user?.name?.split(' ')[0] || 'Traveler'}` : 'Upcoming Tours'}
+          {userData ? `Upcoming Tours for You, ${userData.name?.split(' ')[0] || 'Traveler'}` : 'Upcoming Tours'}
         </h2>
         <p>Discover upcoming tours tailored to your interests and preferences</p>
       </div>
@@ -240,12 +243,7 @@ const TourSuggestions = () => {
                     {daysUntilStart} days left
                   </span>
                   <div className="suggestion-card-overlay">
-                    <button
-                      onClick={() => handleExploreNow(tour._id, tour.name)}
-                      className="suggestion-quick-view-btn"
-                    >
-                      Quick View
-                    </button>
+                    
                   </div>
                 </div>
                 
