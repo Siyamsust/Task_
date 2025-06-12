@@ -7,7 +7,6 @@ const authMiddleware = (req, res, next) => {
   console.log(token);
   
   if (!token) {
-    console.log("really");
     return res.status(401).json({ message: 'No token, authorization denied' });
   }
 

@@ -33,6 +33,7 @@ const Dashboard = () => {
   const [approvedCompanies, setApprovedCompanies] = useState([]);
   const [pendingPackages, setPendingPackages] = useState([]);
   const navigate = useNavigate();
+  const [adminToken, setAdminToken] = useState(localStorage.getItem('admin-token'));
 
   useEffect(() => {
     async function fetchDashboardData() {
@@ -68,51 +69,31 @@ const Dashboard = () => {
   useEffect(() => {
     async function fetchChartData() {
       setLoadingCharts(true);
-      // Fetch all tours
-      const toursRes = await fetch('http://localhost:4000/api/tours');
-      const toursData = await toursRes.json();
-      const tours = toursData.tours || [];
-      // Map tourId to companyId
-      const tourToCompany = {};
-      tours.forEach(t => { if (t._id && t.companyId) tourToCompany[t._id] = t.companyId; });
-      // Fetch all companies
-      const companiesRes = await fetch('http://localhost:4000/api/companies');
-      const companiesData = await companiesRes.json();
-      const companies = companiesData.companies || [];
-      const companyMap = {};
-      companies.forEach(c => { companyMap[c._id] = c.name; });
-      setCompanyMap(companyMap);
       // Fetch all bookings at once
       const bookingsRes = await fetch('http://localhost:4000/api/bookings/all');
       const bookingsData = await bookingsRes.json();
       const allBookings = bookingsData.bookings || [];
-      // Bar chart: revenue by month (last up to 12 months)
-      const now = new Date();
-      const months = [];
-      const monthlyRevenue = [];
-      for (let i = 11; i >= 0; i--) {
-        const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-        months.push(d);
-        monthlyRevenue.push(0);
-      }
+      // Bar chart: revenue by month (Jan-Dec)
+      const monthlyRevenue = Array(12).fill(0); 
       allBookings.forEach(b => {
         if (!b.createdAt || !b.totalAmount) return;
         const d = new Date(b.createdAt);
-        for (let i = 0; i < months.length; i++) {
-          const month = months[i];
-          if (d.getFullYear() === month.getFullYear() && d.getMonth() === month.getMonth()) {
-            monthlyRevenue[i] += b.totalAmount * 0.1;
-          }
-        }
+        const monthIdx = d.getMonth(); // 0 = Jan, 11 = Dec
+        monthlyRevenue[monthIdx] += b.totalAmount * 0.1;
       });
-      // Remove leading months with zero revenue (but always show at least 1 month)
-      let firstNonZero = monthlyRevenue.findIndex(v => v > 0);
-      if (firstNonZero === -1) firstNonZero = monthlyRevenue.length - 1;
-      const barLabels = months.slice(firstNonZero).map(m => m.toLocaleString('default', { month: 'short', year: '2-digit' }));
-      const barData = monthlyRevenue.slice(firstNonZero);
-      setRevenueByMonth(barData);
-      setBarLabels(barLabels);
+      setRevenueByMonth(monthlyRevenue);
+      setBarLabels([
+        'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+        'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+      ]);
       // Pie chart: top 10 companies by revenue last month
+      // Map tourId to companyId
+      const toursRes = await fetch('http://localhost:4000/api/tours');
+      const toursData = await toursRes.json();
+      const tours = toursData.tours || [];
+      const tourToCompany = {};
+      tours.forEach(t => { if (t._id && t.companyId) tourToCompany[t._id] = t.companyId; });
+      const now = new Date();
       const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
       const nextMonth = new Date(now.getFullYear(), now.getMonth(), 1);
       const companyRevenue = {};

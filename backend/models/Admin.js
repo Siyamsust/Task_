@@ -16,4 +16,22 @@ const adminSchema = new mongoose.Schema({
 
 const Admin = mongoose.model('Admin', adminSchema);
 
-module.exports = Admin;
+const adminProfileSchema = new mongoose.Schema({
+    adminId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Admin',
+        required: true,
+        unique: true
+    },
+    name: { type: String, required: true },
+    phone: { type: String },
+    address: { type: String },
+    nid: { type: String },
+    image: { type: String }, // store image path or URL
+    tradeLicenseNo: { type: String },
+    bankAccountNo: { type: String }
+}, { timestamps: true });
+
+const AdminProfile = mongoose.model('AdminProfile', adminProfileSchema);
+
+module.exports = { Admin, AdminProfile };
