@@ -26,6 +26,8 @@ const License = () => {
   const [requestLoading, setRequestLoading] = useState(false);
   const [requestError, setRequestError] = useState('');
   const [requestSuccess, setRequestSuccess] = useState('');
+  const [password, setPassword] = useState('');
+  const [passwordError, setPasswordError] = useState('');
 
   useEffect(() => {
     // Always fetch the latest company info on mount
@@ -91,10 +93,28 @@ const License = () => {
     setLoading(true);
     setError('');
     setSuccess('');
+    setPasswordError('');
     try {
+      // Verify password before saving
+      const token = localStorage.getItem('company-token');
+      const res = await fetch('http://localhost:4000/company/auth/verify-password', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ password })
+      });
+      const data = await res.json();
+      if (!data.success) {
+        setPasswordError(data.message || 'Incorrect password');
+        setLoading(false);
+        return;
+      }
       await updateCompany(form);
       setSuccess('Company info updated!');
       setEditMode(false);
+      setPassword('');
     } catch (err) {
       setError('Failed to update company info.');
     } finally {
@@ -133,6 +153,8 @@ const License = () => {
     doc.setFontSize(12);
     doc.text('Status: ' + (isApproved ? 'Verified' : isPending ? 'Pending' : isRejected ? 'Rejected' : 'Not Verified'), 14, y);
     y += 10;
+
+    // Only include fields shown in the form
     doc.setFontSize(14);
     doc.text('Basic Information', 14, y);
     y += 8;
@@ -145,23 +167,28 @@ const License = () => {
     addField('Email', form.email);
     addField('Phone', form.phone);
     addField('Address', form.address);
-    addField('Country', form.country);
-    addField('State', form.state);
-    addField('City', form.city);
-    addField('Postal Code', form.postalCode);
     addField('Website', form.website);
     addField('Description', form.description);
+
     y += 3;
     doc.setFontSize(14);
     doc.text('Business Details', 14, y);
     y += 8;
-    addField('Industry', form.industry);
-    addField('Company Size', form.companySize);
-    addField('Established Year', form.establishedYear);
     addField('Registration #', form.registrationNumber);
     addField('Tax ID', form.taxId);
     addField('License #', form.licenseNumber);
     addField('License Expiry', form.licenseExpiry ? (new Date(form.licenseExpiry).toLocaleDateString()) : '-');
+
+    y += 3;
+    doc.setFontSize(14);
+    doc.text('Documents', 14, y);
+    y += 8;
+    addField('Documents', form.documents && form.documents.length > 0
+      ? (Array.isArray(form.documents)
+          ? form.documents.map(d => d.name || d).join(', ')
+          : '-')
+      : '-');
+
     y += 3;
     doc.setFontSize(14);
     doc.text('Owner Information', 14, y);
@@ -173,25 +200,7 @@ const License = () => {
     addField('Owner National ID', form.ownerNationalId);
     addField('Owner DOB', form.ownerDob ? (new Date(form.ownerDob).toLocaleDateString()) : '-');
     addField('Owner Nationality', form.ownerNationality);
-    y += 3;
-    doc.setFontSize(14);
-    doc.text('Contact Person', 14, y);
-    y += 8;
-    addField('Contact Person', form.contactPerson);
-    addField('Contact Person Phone', form.contactPersonPhone);
-    addField('Contact Person Email', form.contactPersonEmail);
-    y += 3;
-    doc.setFontSize(14);
-    doc.text('Social Links', 14, y);
-    y += 8;
-    Object.keys(emptySocialLinks).forEach((key) => {
-      addField(key.charAt(0).toUpperCase() + key.slice(1), form.socialLinks?.[key]);
-    });
-    y += 3;
-    doc.setFontSize(14);
-    doc.text('Documents', 14, y);
-    y += 8;
-    addField('Documents', form.documents && form.documents.length > 0 ? form.documents.join(', ') : '-');
+
     doc.save('company_license_profile.pdf');
   };
 
@@ -249,27 +258,19 @@ const License = () => {
         <div className="section-title">Business Details</div>
         <div className="form-row">
           <label>Registration #:</label>
-          {editMode ? (
-            <input name="registrationNumber" value={form.registrationNumber || ''} onChange={handleChange} />
-          ) : show(company.company.registrationNumber)}
+          <span>{show(company.company.registrationNumber)}</span>
         </div>
         <div className="form-row">
           <label>Tax ID:</label>
-          {editMode ? (
-            <input name="taxId" value={form.taxId || ''} onChange={handleChange} />
-          ) : show(company.company.taxId)}
+          <span>{show(company.company.taxId)}</span>
         </div>
         <div className="form-row">
           <label>License #:</label>
-          {editMode ? (
-            <input name="licenseNumber" value={form.licenseNumber || ''} onChange={handleChange} />
-          ) : show(company.company.licenseNumber)}
+          <span>{show(company.company.licenseNumber)}</span>
         </div>
         <div className="form-row">
           <label>License Expiry:</label>
-          {editMode ? (
-            <input name="licenseExpiry" value={form.licenseExpiry || ''} onChange={handleChange} type="date" />
-          ) : show(company.company.licenseExpiry ? (new Date(company.company.licenseExpiry).toLocaleDateString()) : '')}
+          <span>{show(company.company.licenseExpiry ? (new Date(company.company.licenseExpiry).toLocaleDateString()) : '')}</span>
         </div>
         <div className="section-title">Documents</div>
         <div className="form-row">
@@ -277,12 +278,25 @@ const License = () => {
           {editMode ? (
             <input
               name="documents"
-              value={form.documents.join(', ')}
-              onChange={e => setForm(prev => ({ ...prev, documents: e.target.value.split(',').map(s => s.trim()) }))}
-              placeholder="Comma separated URLs or names"
+              type="file"
+              accept="application/pdf"
+              multiple
+              onChange={e => {
+                const files = Array.from(e.target.files);
+                // Only accept PDFs
+                const pdfFiles = files.filter(file => file.type === "application/pdf");
+                setForm(prev => ({
+                  ...prev,
+                  documents: pdfFiles
+                }));
+              }}
             />
           ) : (
-            <span>{company.company.documents && company.company.documents.length > 0 ? company.company.documents.join(', ') : <span className="empty-value">-</span>}</span>
+            <span>
+              {company.company.documents && company.company.documents.length > 0
+                ? company.company.documents.join(', ')
+                : <span className="empty-value">-</span>}
+            </span>
           )}
         </div>
         <div className="section-title">Owner Information</div>
@@ -338,10 +352,22 @@ const License = () => {
             ) : <span className="empty-value">-</span>
           )}
         </div>
-        <div className="form-row">
-          <label>License #:</label>
-          <input name="licenseNumber" value={form.licenseNumber || ''} readOnly style={{ background: '#f0f0f0', color: '#888' }} />
-        </div>
+        {editMode && (
+          <>
+            <div className="form-row">
+              <label>Password (for verification):</label>
+              <input
+                type="password"
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                placeholder="Enter your password"
+                required
+              />
+            </div>
+            {passwordError && <span className="error-msg">{passwordError}</span>}
+          </>
+        )}
+
         {editMode ? (
           <div className="form-actions">
             <button type="button" onClick={handleSave} disabled={loading}>Save</button>
@@ -359,11 +385,18 @@ const License = () => {
         <button
           className="request-license-btn"
           onClick={handleRequestLicense}
-          disabled={isPending || isApproved || requestLoading}
+          disabled={isPending || isApproved || requestLoading || editMode}
         >
           {isApproved ? 'Already Verified' : isPending ? 'Request Pending' : 'Request Verification'}
         </button>
-        <button className="download-pdf-btn" onClick={handleDownloadPDF} title="Download PDF">Download PDF</button>
+        <button
+          className="download-pdf-btn"
+          onClick={handleDownloadPDF}
+          title="Download PDF"
+          disabled={editMode}
+        >
+          Download PDF
+        </button>
 
         {requestError && <span className="error-msg">{requestError}</span>}
         {requestSuccess && <span className="success-msg">{requestSuccess}</span>}

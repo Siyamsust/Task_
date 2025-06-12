@@ -284,6 +284,20 @@ router.post('/register', async (req, res) => {
   router.patch('/update-info', authMiddleware, async (req, res) => {
     try {
       const companyId = req.user.companyId;
+      // Fetch current company
+      const currentCompany = await Company.findById(companyId);
+      if (!currentCompany) {
+        return res.status(404).json({ success: false, message: 'Company not found' });
+      }
+
+      // If trying to set verificationStatus to 'pending' and it's already pending, reject
+      if (
+        req.body.verificationStatus === 'pending' &&
+        currentCompany.verificationStatus === 'pending'
+      ) {
+        return res.status(400).json({ success: false, message: 'License request already pending.' });
+      }
+
       // List of fields that should not be updated
       const forbiddenFields = ['_id', 'verificationStatus', 'isVerified', 'createdAt', 'resetToken', 'resetTokenExpiration', '__v'];
       // Get all allowed fields from schema
@@ -301,6 +315,14 @@ router.post('/register', async (req, res) => {
       }
       if (Object.prototype.hasOwnProperty.call(req.body, 'documents') && req.body.documents) {
         updateData.documents = req.body.documents;
+      }
+      // Handle verificationStatus separately (allow only if not already pending)
+      if (
+        Object.prototype.hasOwnProperty.call(req.body, 'verificationStatus') &&
+        req.body.verificationStatus !== undefined &&
+        req.body.verificationStatus !== null
+      ) {
+        updateData.verificationStatus = req.body.verificationStatus;
       }
       // If no fields to update, return early
       if (Object.keys(updateData).length === 0) {
@@ -332,4 +354,22 @@ router.post('/register', async (req, res) => {
       res.status(500).json({ success: false, message: 'Failed to update status', error: error.message });
     }
   });
-  module.exports = router; 
+  // POST: Verify company password
+router.post('/verify-password', authMiddleware, async (req, res) => {
+  try {
+    const { password } = req.body;
+    const companyId = req.user.companyId;
+    const company = await Company.findById(companyId);
+    if (!company) {
+      return res.status(404).json({ success: false, message: 'Company not found' });
+    }
+    const isMatch = await bcrypt.compare(password, company.password);
+    if (!isMatch) {
+      return res.status(401).json({ success: false, message: 'Incorrect password' });
+    }
+    res.json({ success: true });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Server error', error: error.message });
+  }
+});
+  module.exports = router;

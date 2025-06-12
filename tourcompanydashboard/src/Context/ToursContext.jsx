@@ -60,6 +60,36 @@ export const ToursProvider = ({ children }) => {
     }
   };
 
+  const fetchToursWithBookings = useCallback(async () => {
+    try {
+      setLoading(true);
+      if (!company) throw new Error('No company logged in');
+      const companyId = company.company._id;
+      const response = await fetch(`http://localhost:4000/api/companytours/${companyId}`);
+      const data = await response.json();
+      if (!data.success) throw new Error(data.error);
+
+      const token = localStorage.getItem('company-token');
+      const toursWithBookings = await Promise.all(
+        data.tours.map(async (tour) => {
+          const res = await fetch(
+            `http://localhost:4000/api/bookings/tour/${tour._id}`,
+            { headers: { 'Authorization': `Bearer ${token}` } }
+          );
+          const bookingsData = await res.json();
+          const bookings = bookingsData.success ? bookingsData.bookings : [];
+          return { ...tour, bookings };
+        })
+      );
+      setTours(toursWithBookings);
+    } catch (err) {
+      setError(err.message);
+      console.error('Error fetching tours with bookings:', err);
+    } finally {
+      setLoading(false);
+    }
+  }, [company]);
+
   const deleteTour = async (tourId) => {
     try {
       const response = await fetch(`http://localhost:4000/api/tours/${tourId}`, {
@@ -115,7 +145,8 @@ export const ToursProvider = ({ children }) => {
     fetchTours,
     deleteTour,
     updateTourStatus,
-    fetchcompanyTours
+    fetchcompanyTours,
+    fetchToursWithBookings
   };
 
   return (
@@ -133,4 +164,4 @@ export const useTours = () => {
   return context;
 };
 
-export default ToursContext; 
+export default ToursContext;
