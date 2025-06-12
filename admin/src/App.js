@@ -13,6 +13,7 @@ import Signup from './components/Signup/Signup';
 import Settings from './components/settings/settings';
 import ProtectedRoute from './components/ProtectedRoute';
 import RegistrationRequest from './components/RegistrationRequests/RegistrationRequest';
+import PackageDetailsAndApprove from './components/PackageDetailsAndApprove/PackageDetailsAndApprove';
 import './App.css';
 
 function App() {
@@ -32,6 +33,7 @@ function App() {
               <Route path="/destination-search" element={<DestinationSearch />} />
               <Route path="/reports" element={<Reports />} />
               <Route path="/admin/registration-request/:id" element={<ProtectedRoute><RegistrationRequest /></ProtectedRoute>} />
+              <Route path='/admin/package-details/:id' element={<ProtectedRoute><PackageDetailsAndApprove /></ProtectedRoute>} />
             </Routes>
           </div>
         </div>

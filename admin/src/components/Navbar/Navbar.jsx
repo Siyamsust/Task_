@@ -46,7 +46,7 @@ const Navbar = () => {
      
         <li className="user-profile">
           <Icon icon="mdi:account" height={30}/>
-          <span>Admin User</span>
+          <span>Admin</span>
           <Link className="logout-btn" onClick={handleLogOut}>
             <i className="fas fa-sign-out-alt"></i>
             <span>Logout</span>

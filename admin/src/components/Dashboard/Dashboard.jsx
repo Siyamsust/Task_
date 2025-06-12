@@ -1,6 +1,6 @@
 import React from 'react';
 import './Dashboard.css';
-import {useState,useEffect} from 'react';
+import { useState, useEffect } from 'react';
 import Pendingtours from './PendingTours';
 import { Bar, Pie } from 'react-chartjs-2';
 import {
@@ -16,155 +16,157 @@ import {
 import { useNavigate } from 'react-router-dom';
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement);
 
-const DUMMY_COMPANIES = [
-  {
-    id: 'c1',
-    name: 'TravelXpress',
-    email: 'info@travelxpress.com',
-    phone: '+1 234 567 890',
-    address: '123 Main St, City',
-    status: 'pending',
-  },
-  {
-    id: 'c2',
-    name: 'AdventurePro',
-    email: 'contact@adventurepro.com',
-    phone: '+1 987 654 321',
-    address: '456 Elm St, City',
-    status: 'pending',
-  },
-];
-
 
 const Dashboard = () => {
-   const [pendingtours,setPendingtours]=useState([]);
-   const [tours, setTours] = useState([]);
-   const [bookingsData, setBookingsData] = useState({ totalBookings: 0, totalRevenue: 0 });
-   const [runningTrips, setRunningTrips] = useState(0);
-   const [revenueByMonth, setRevenueByMonth] = useState(Array(12).fill(0));
-   const [topCompanies, setTopCompanies] = useState([]);
-   const [companyMap, setCompanyMap] = useState({});
-   const [loadingCharts, setLoadingCharts] = useState(true);
-   const [upcomingTrips, setUpcomingTrips] = useState(0);
-   const [finishedTrips, setFinishedTrips] = useState(0);
-   const [barLabels, setBarLabels] = useState(["Jan"]);
-   const [pendingCompanies, setPendingCompanies] = useState([]);
-   const navigate = useNavigate();
+  const [pendingtours, setPendingtours] = useState([]);
+  const [tours, setTours] = useState([]);
+  const [bookingsData, setBookingsData] = useState({ totalBookings: 0, totalRevenue: 0 });
+  const [runningTrips, setRunningTrips] = useState(0);
+  const [revenueByMonth, setRevenueByMonth] = useState(Array(12).fill(0));
+  const [topCompanies, setTopCompanies] = useState([]);
+  const [companyMap, setCompanyMap] = useState({});
+  const [loadingCharts, setLoadingCharts] = useState(true);
+  const [upcomingTrips, setUpcomingTrips] = useState(0);
+  const [finishedTrips, setFinishedTrips] = useState(0);
+  const [barLabels, setBarLabels] = useState(["Jan"]);
+  const [pendingCompanies, setPendingCompanies] = useState([]);
+  const [approvedCompanies, setApprovedCompanies] = useState([]);
+  const [pendingPackages, setPendingPackages] = useState([]);
+  const navigate = useNavigate();
 
-   useEffect(() => {
-     async function fetchDashboardData() {
-       // Fetch all tours
-       const toursRes = await fetch('http://localhost:4000/api/tours');
-       const toursData = await toursRes.json();
-       const tours = toursData.tours || [];
-       setTours(tours);
-       // Fetch all bookings
-       const bookingsRes = await fetch('http://localhost:4000/api/bookings/all');
-       const bookingsData = await bookingsRes.json();
-       const allBookings = bookingsData.bookings || [];
-       // Calculate total revenue
-       const totalRevenue = allBookings.reduce((sum, b) => sum + (b.totalAmount || 0), 0) * 0.1;
-       setBookingsData((prev) => ({ ...prev, totalRevenue: Math.round(totalRevenue) }));
-       // Calculate upcoming and finished trips
-       const today = new Date();
-       let upcoming = 0;
-       let finished = 0;
-       tours.forEach(tour => {
-         if (tour.status !== 'approved' || !tour.startDate || !tour.endDate) return;
-         const start = new Date(tour.startDate);
-         const end = new Date(tour.endDate);
-         if (start > today) upcoming++;
-         if (end < today) finished++;
-       });
-       setUpcomingTrips(upcoming);
-       setFinishedTrips(finished);
-     }
-     fetchDashboardData();
-   }, []);
+  useEffect(() => {
+    async function fetchDashboardData() {
+      // Fetch all tours
+      const toursRes = await fetch('http://localhost:4000/api/tours');
+      const toursData = await toursRes.json();
+      const tours = toursData.tours || [];
+      setTours(tours);
+      // Fetch all bookings
+      const bookingsRes = await fetch('http://localhost:4000/api/bookings/all');
+      const bookingsData = await bookingsRes.json();
+      const allBookings = bookingsData.bookings || [];
+      // Calculate total revenue
+      const totalRevenue = allBookings.reduce((sum, b) => sum + (b.totalAmount || 0), 0) * 0.1;
+      setBookingsData((prev) => ({ ...prev, totalRevenue: Math.round(totalRevenue) }));
+      // Calculate upcoming and finished trips
+      const today = new Date();
+      let upcoming = 0;
+      let finished = 0;
+      tours.forEach(tour => {
+        if (tour.status !== 'approved' || !tour.startDate || !tour.endDate) return;
+        const start = new Date(tour.startDate);
+        const end = new Date(tour.endDate);
+        if (end > today) upcoming++;
+        if (end < today) finished++;
+      });
+      setUpcomingTrips(upcoming);
+      setFinishedTrips(finished);
+    }
+    fetchDashboardData();
+  }, []);
 
-   useEffect(() => {
-     async function fetchChartData() {
-       setLoadingCharts(true);
-       // Fetch all tours
-       const toursRes = await fetch('http://localhost:4000/api/tours');
-       const toursData = await toursRes.json();
-       const tours = toursData.tours || [];
-       // Map tourId to companyId
-       const tourToCompany = {};
-       tours.forEach(t => { if (t._id && t.companyId) tourToCompany[t._id] = t.companyId; });
-       // Fetch all companies
-       const companiesRes = await fetch('http://localhost:4000/api/companies');
-       const companiesData = await companiesRes.json();
-       const companies = companiesData.companies || [];
-       const companyMap = {};
-       companies.forEach(c => { companyMap[c._id] = c.name; });
-       setCompanyMap(companyMap);
-       // Fetch all bookings at once
-       const bookingsRes = await fetch('http://localhost:4000/api/bookings/all');
-       const bookingsData = await bookingsRes.json();
-       const allBookings = bookingsData.bookings || [];
-       // Bar chart: revenue by month (last up to 12 months)
-       const now = new Date();
-       const months = [];
-       const monthlyRevenue = [];
-       for (let i = 11; i >= 0; i--) {
-         const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-         months.push(d);
-         monthlyRevenue.push(0);
-       }
-       allBookings.forEach(b => {
-         if (!b.createdAt || !b.totalAmount) return;
-         const d = new Date(b.createdAt);
-         for (let i = 0; i < months.length; i++) {
-           const month = months[i];
-           if (d.getFullYear() === month.getFullYear() && d.getMonth() === month.getMonth()) {
-             monthlyRevenue[i] += b.totalAmount * 0.1;
-           }
-         }
-       });
-       // Remove leading months with zero revenue (but always show at least 1 month)
-       let firstNonZero = monthlyRevenue.findIndex(v => v > 0);
-       if (firstNonZero === -1) firstNonZero = monthlyRevenue.length - 1;
-       const barLabels = months.slice(firstNonZero).map(m => m.toLocaleString('default', { month: 'short', year: '2-digit' }));
-       const barData = monthlyRevenue.slice(firstNonZero);
-       setRevenueByMonth(barData);
-       setBarLabels(barLabels);
-       // Pie chart: top 10 companies by revenue last month
-       const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-       const nextMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-       const companyRevenue = {};
-       allBookings.forEach(b => {
-         if (!b.createdAt || !b.totalAmount) return;
-         const d = new Date(b.createdAt);
-         if (d >= lastMonth && d < nextMonth) {
-           const companyId = tourToCompany[b.tourId];
-           if (!companyId) return;
-           companyRevenue[companyId] = (companyRevenue[companyId] || 0) + b.totalAmount * 0.1;
-         }
-       });
-       const sortedCompanies = Object.entries(companyRevenue)
-         .sort((a, b) => b[1] - a[1])
-         .slice(0, 10)
-         .map(([companyId, revenue]) => ({
-           companyId,
-           name: companyMap[companyId] || 'Unknown',
-           revenue
-         }));
-       setTopCompanies(sortedCompanies);
-       setLoadingCharts(false);
-     }
-     fetchChartData();
-   }, []);
+  useEffect(() => {
+    async function fetchChartData() {
+      setLoadingCharts(true);
+      // Fetch all tours
+      const toursRes = await fetch('http://localhost:4000/api/tours');
+      const toursData = await toursRes.json();
+      const tours = toursData.tours || [];
+      // Map tourId to companyId
+      const tourToCompany = {};
+      tours.forEach(t => { if (t._id && t.companyId) tourToCompany[t._id] = t.companyId; });
+      // Fetch all companies
+      const companiesRes = await fetch('http://localhost:4000/api/companies');
+      const companiesData = await companiesRes.json();
+      const companies = companiesData.companies || [];
+      const companyMap = {};
+      companies.forEach(c => { companyMap[c._id] = c.name; });
+      setCompanyMap(companyMap);
+      // Fetch all bookings at once
+      const bookingsRes = await fetch('http://localhost:4000/api/bookings/all');
+      const bookingsData = await bookingsRes.json();
+      const allBookings = bookingsData.bookings || [];
+      // Bar chart: revenue by month (last up to 12 months)
+      const now = new Date();
+      const months = [];
+      const monthlyRevenue = [];
+      for (let i = 11; i >= 0; i--) {
+        const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+        months.push(d);
+        monthlyRevenue.push(0);
+      }
+      allBookings.forEach(b => {
+        if (!b.createdAt || !b.totalAmount) return;
+        const d = new Date(b.createdAt);
+        for (let i = 0; i < months.length; i++) {
+          const month = months[i];
+          if (d.getFullYear() === month.getFullYear() && d.getMonth() === month.getMonth()) {
+            monthlyRevenue[i] += b.totalAmount * 0.1;
+          }
+        }
+      });
+      // Remove leading months with zero revenue (but always show at least 1 month)
+      let firstNonZero = monthlyRevenue.findIndex(v => v > 0);
+      if (firstNonZero === -1) firstNonZero = monthlyRevenue.length - 1;
+      const barLabels = months.slice(firstNonZero).map(m => m.toLocaleString('default', { month: 'short', year: '2-digit' }));
+      const barData = monthlyRevenue.slice(firstNonZero);
+      setRevenueByMonth(barData);
+      setBarLabels(barLabels);
+      // Pie chart: top 10 companies by revenue last month
+      const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+      const nextMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+      const companyRevenue = {};
+      allBookings.forEach(b => {
+        if (!b.createdAt || !b.totalAmount) return;
+        const d = new Date(b.createdAt);
+        if (d >= lastMonth && d < nextMonth) {
+          const companyId = tourToCompany[b.tourId];
+          if (!companyId) return;
+          companyRevenue[companyId] = (companyRevenue[companyId] || 0) + b.totalAmount * 0.1;
+        }
+      });
+      const sortedCompanies = Object.entries(companyRevenue)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 10)
+        .map(([companyId, revenue]) => ({
+          companyId,
+          name: companyMap[companyId] || 'Unknown',
+          revenue
+        }));
+      setTopCompanies(sortedCompanies);
+      setLoadingCharts(false);
+    }
+    fetchChartData();
+  }, []);
 
-   useEffect(() => {
-     async function fetchPendingCompanies() {
-       const res = await fetch('http://localhost:4000/company/auth/companies');
-       const data = await res.json();
-       // Only companies with verificationStatus 'pending'
-       setPendingCompanies((data.companies || []).filter(c => c.verificationStatus === 'pending'));
-     }
-     fetchPendingCompanies();
-   }, []);
+  useEffect(() => {
+    async function fetchPendingCompanies() {
+      const res = await fetch('http://localhost:4000/company/auth/companies');
+      const data = await res.json();
+      // Only companies with verificationStatus 'pending'
+      setPendingCompanies((data.companies || []).filter(c => c.verificationStatus === 'pending'));
+    }
+    fetchPendingCompanies();
+  }, []);
+
+  useEffect(() => {
+    async function fetchApprovedCompanies() {
+      const res = await fetch('http://localhost:4000/company/auth/companies');
+      const data = await res.json();
+      // Only companies with verificationStatus 'approved'
+      setApprovedCompanies((data.companies || []).filter(c => c.verificationStatus === 'approved'));
+    }
+    fetchApprovedCompanies();
+  }, []);
+
+  useEffect(() => {
+    async function fetchPendingPackages() {
+      const toursRes = await fetch('http://localhost:4000/api/tours');
+      const toursData = await toursRes.json();
+      setPendingPackages((toursData.tours || []).filter(t => t.status === 'pending'));
+    }
+    fetchPendingPackages();
+  }, []);
 
   return (
     <div className="dashboard">
@@ -174,7 +176,7 @@ const Dashboard = () => {
           <p>{new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
         </div>
       </div>
-      
+
       <div className="analytics-overview">
         <div className="card primary-card">
           <div className="card-icon">
@@ -188,20 +190,20 @@ const Dashboard = () => {
             </p>
           </div>
         </div>
-        
+
         <div className="card success-card">
           <div className="card-icon">
-            <i className="fas fa-check-circle"></i>
+            <i className="fas fa-users"></i>
           </div>
           <div className="card-content">
-            <h3>Running Trips</h3>
-            <p className="card-value">{runningTrips}</p>
-            <p className="card-trend negative">
-              <i className="fas fa-arrow-down"></i>
+            <h3>Companies</h3>
+            <p className="card-value">{approvedCompanies.length}</p>
+            <p className="card-trend positive">
+              <i className="fas fa-arrow-up"></i>
             </p>
           </div>
         </div>
-        
+
         <div className="card info-card">
           <div className="card-icon">
             <i className="fas fa-dollar-sign"></i>
@@ -214,7 +216,7 @@ const Dashboard = () => {
             </p>
           </div>
         </div>
-        
+
         <div className="card warning-card">
           <div className="card-icon">
             <i className="fas fa-flag-checkered"></i>
@@ -228,7 +230,7 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
-      
+
       <div className="dashboard-content">
         {/* New Companies Section - Modern Card UI */}
         <div className="dashboard-section">
@@ -253,7 +255,36 @@ const Dashboard = () => {
                 </div>
               </div>
             ))}
-            {pendingCompanies.length === 0 && <div style={{padding: '1rem', color: '#888'}}>No pending registration requests.</div>}
+            {pendingCompanies.length === 0 && <div style={{ padding: '1rem', color: '#888' }}>No pending registration requests.</div>}
+          </div>
+        </div>
+        {/* New Packages Section - Modern Card UI */}
+        <div className="dashboard-section" style={{ marginTop: 0 }}>
+          <div className="section-header">
+            <h3><i className="fas fa-box"></i> New Packages Waiting For Approval</h3>
+          </div>
+          <div className="modern-card-list">
+            {pendingPackages.map(pkg => (
+              <div key={pkg._id} className="modern-card package-modern-card">
+                <div className="modern-card-info">
+                  <h4>{pkg.name}</h4>
+                  <p className="modern-card-company">Company: {companyMap[pkg.companyId] || 'Unknown'}</p>
+                  <p className="modern-card-dates">
+                    {pkg.startDate ? `Start: ${new Date(pkg.startDate).toLocaleDateString()}` : ''}
+                    {pkg.endDate ? ` | End: ${new Date(pkg.endDate).toLocaleDateString()}` : ''}
+                  </p>
+                </div>
+                <div className="modern-card-actions">
+                  <button
+                    className="modern-btn view"
+                    onClick={() => navigate(`/admin/package-details/${pkg._id}`)}
+                  >
+                    View Details
+                  </button>
+                </div>
+              </div>
+            ))}
+            {pendingPackages.length === 0 && <div style={{ padding: '1rem', color: '#888' }}>No pending packages.</div>}
           </div>
         </div>
         {/* Revenue Bar Chart Section */}
