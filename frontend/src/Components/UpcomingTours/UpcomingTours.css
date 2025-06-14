@@ -1,43 +1,10 @@
-/* UpcomingTours.css */
-:root {
-  /* Light theme */
-  --upcoming-background-primary: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
-  --upcoming-background-secondary: #f8f9fa;
-  --upcoming-card-bg: white;
-  --upcoming-text-primary: #333333;
-  --upcoming-text-secondary: #666666;
-  --upcoming-border-color: #dddddd;
-  --upcoming-shadow-color: rgba(0, 0, 0, 0.1);
-  --upcoming-accent-color: rgb(86, 119, 130);
-  --upcoming-accent-text: white;
-  --upcoming-primary-color: #3498db;
-  --upcoming-success-color: #27ae60;
-  --upcoming-warning-color: #f39c12;
-}
-
-[data-theme='dark'] {
-  /* Dark theme */
-  --upcoming-background-primary: ##1a1a1a;
-  --upcoming-background-secondary: #1a1a1a;
-  --upcoming-card-bg: #2d3748;
-  --upcoming-text-primary: #f0f0f0;
-  --upcoming-text-secondary: #cccccc;
-  --upcoming-border-color: #4a5568;
-  --upcoming-shadow-color: rgba(0, 0, 0, 0.3);
-  --upcoming-accent-color: #38a169;
-  --upcoming-accent-text: white;
-  --upcoming-primary-color: #4299e1;
-  --upcoming-success-color: #38a169;
-  --upcoming-warning-color: #ed8936;
-}
-
-/* Main Container */
+/* Main Container */ 
 .upcoming-tours-container {
   max-width: 1400px;
   margin: 0 auto;
-  background-color: var(--upcoming-background-primary, white);
+  background-color: var(--background-primary);
   transition: background-color 0.3s ease;
-  padding: 10px;
+  padding: 20px;
 }
 
 /* Loading Container */
@@ -46,18 +13,19 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 10px 10px;
-  color: var(--upcoming-text-secondary, #666);
+  padding: 60px 20px;
+  color: var(--text-secondary);
+  min-height: 300px;
 }
 
 .upcoming-loading-spinner {
   width: 40px;
   height: 40px;
-  border: 4px solid var(--upcoming-border-color, #ddd);
-  border-top: 4px solid var(--upcoming-accent-color, green);
+  border: 4px solid var(--border-color);
+  border-top: 4px solid var(--primary-color);
   border-radius: 50%;
   animation: upcoming-spin 1s linear infinite;
-  margin-bottom: 10px;
+  margin-bottom: 20px;
 }
 
 @keyframes upcoming-spin {
@@ -76,25 +44,25 @@
   justify-content: center;
   align-items: center;
   min-height: 380px;
-  padding: 20px 10px;
+  padding: 40px 20px;
 }
 
 .upcoming-no-tours-content {
   text-align: center;
-  color: var(--upcoming-text-secondary, #666);
+  color: var(--text-secondary);
   max-width: 500px;
 }
 
 .upcoming-no-tours-content i {
   font-size: 4rem;
-  color: var(--upcoming-accent-color, green);
+  color: var(--primary-color);
   margin-bottom: 20px;
   opacity: 0.7;
 }
 
 .upcoming-no-tours-content h3 {
   font-size: 1.8rem;
-  color: var(--upcoming-text-primary, #333);
+  color: var(--text-primary);
   margin-bottom: 15px;
   transition: color 0.3s ease;
 }
@@ -105,59 +73,56 @@
   margin: 0;
 }
 
-/* Tour Cards Container */
-.upcoming-tour-scroll-container {
-  overflow-x: auto;
-  padding: 20px 0;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: thin;
-  scrollbar-color: var(--upcoming-accent-color, green) var(--upcoming-border-color, #ddd);
+/* Tours Grid - Responsive Flexbox Layout */
+.upcoming-tours-grid {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
 }
 
-.upcoming-tour-scroll-container::-webkit-scrollbar {
-  height: 6px;
-}
-
-.upcoming-tour-scroll-container::-webkit-scrollbar-track {
-  background: var(--upcoming-border-color, #ddd);
-}
-
-.upcoming-tour-scroll-container::-webkit-scrollbar-thumb {
-  background: var(--upcoming-accent-color, green);
-  border-radius: 3px;
-}
-
+/* Main Row Grid Container */
 .upcoming-tour-row {
   display: flex;
+  flex-wrap: wrap;
   gap: 20px;
-  padding: 10px;
-  min-width: max-content;
+  justify-content: center;
+}
+
+/* Optional Scroll Container if horizontal scroll is intended */
+.upcoming-tour-scroll-container {
+  width: 100%;
+  overflow-x: hidden;
 }
 
 /* Tour Card */
 .upcoming-tour-card {
-  background: var(--upcoming-card-bg, white);
-  border-radius: 15px;
-  box-shadow: 0 4px 15px var(--upcoming-shadow-color, rgba(0,0,0,0.1));
+  background: var(--card-bg);
+  border-radius: 16px;
+  box-shadow: 0 4px 15px var(--shadow-color);
   overflow: hidden;
   transition: all 0.3s ease;
-  width: 280px;
-  flex-shrink: 0;
+  border: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
   position: relative;
-  border: 1px solid var(--upcoming-border-color, #ddd);
- 
+
+  width: 280px;
+  flex: 0 0 auto;
 }
 
 .upcoming-tour-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 25px var(--upcoming-shadow-color, rgba(0,0,0,0.15));
+  transform: translateY(-8px);
+  box-shadow: 0 12px 30px var(--shadow-hover);
 }
 
 /* Tour Image */
 .upcoming-tour-image {
   position: relative;
-  height: 200px;
+  height: 220px;
   overflow: hidden;
+  flex-shrink: 0;
 }
 
 .upcoming-tour-image img {
@@ -173,85 +138,85 @@
 
 .upcoming-tour-tag {
   position: absolute;
-  top: 15px;
-  right: 15px;
-  background: var(--upcoming-warning-color, #f39c12);
-  color: white;
-  padding: 6px 12px;
+  top: 16px;
+  right: 16px;
+  background: var(--warning-color);
+  color: var(--text-white);
+  padding: 8px 14px;
   border-radius: 20px;
   font-size: 0.85rem;
   font-weight: 600;
-  box-shadow: 0 2px 8px rgba(243, 156, 18, 0.3);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  z-index: 2;
 }
 
 /* Tour Info */
 .upcoming-tour-info {
-  padding: 20px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
 }
 
 .upcoming-tour-info h3 {
-  color: var(--upcoming-text-primary, #333);
-  font-size: 1rem;
-  margin-bottom: 15px;
+  color: var(--text-primary);
+  font-size: 1.25rem;
+  margin-bottom: 16px;
   font-weight: 700;
   line-height: 1.3;
   transition: color 0.3s ease;
-  word-wrap: break-word;
-  hyphens: auto;
 
   display: -webkit-box;
-  -webkit-line-clamp: 1;
+  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-
 /* Tour Details */
 .upcoming-tour-details {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  margin-bottom: 20px;
+  gap: 12px;
+  margin-bottom: 24px;
+  flex-grow: 1;
 }
 
 .upcoming-tour-details span {
   display: flex;
   align-items: center;
-  gap: 8px;
-  color: var(--upcoming-text-secondary, #666);
+  gap: 10px;
+  color: var(--text-secondary);
   font-size: 0.95rem;
   transition: color 0.3s ease;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .upcoming-tour-details span i {
-  width: 16px;
-  color: var(--upcoming-accent-color, green);
+  width: 18px;
+  color: var(--primary-color);
   font-size: 0.9rem;
   flex-shrink: 0;
+  text-align: center;
 }
 
 .upcoming-tour-details span strong {
-  color: var(--upcoming-text-primary, #333);
+  color: var(--text-primary);
   font-weight: 600;
   transition: color 0.3s ease;
 }
 
 /* Tour Actions */
 .upcoming-tour-actions {
-  margin-top: 20px;
+  margin-top: auto;
 }
 
 .upcoming-view-details-btn {
   width: 100%;
-  background: linear-gradient( #4f46e5, #7c3aed);
-  color: var(--upcoming-accent-text, white);
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  color: var(--text-white);
   border: none;
-  padding: 12px 20px;
-  border-radius: 8px;
+  padding: 14px 20px;
+  border-radius: 10px;
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
@@ -260,12 +225,13 @@
   justify-content: center;
   gap: 10px;
   transition: all 0.3s ease;
-  position: relative;
-  overflow: hidden;
 }
 
-
-
+.upcoming-view-details-btn:hover {
+  background: linear-gradient(135deg, var(--primary-hover), var(--secondary-hover));
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(79, 70, 229, 0.4);
+}
 
 .upcoming-view-details-btn i {
   transition: transform 0.3s ease;
@@ -273,181 +239,51 @@
 }
 
 .upcoming-view-details-btn:hover i {
-  transform: translateX(3px);
+  transform: translateX(4px);
 }
 
-/* Responsive Design */
-@media (max-width: 1200px) {
-  .upcoming-tours-container {
-    padding: 15px;
-  }
-  
-  .upcoming-tour-row {
-    gap: 15px;
-  }
-  
-  .upcoming-tour-card {
-    width: 320px;
-  }
+/* Responsive Design – cleaned up to preserve fixed card width */
+
+/* All the following breakpoints are commented out or removed because they adjust width/flex:
+
+@media (min-width: 1400px) { ... }
+@media (min-width: 1200px) and (max-width: 1399px) { ... }
+@media (min-width: 992px) and (max-width: 1199px) { ... }
+@media (min-width: 768px) and (max-width: 991px) { ... }
+@media (max-width: 767px) { ... }
+@media (max-width: 480px) { ... }
+
+You can keep styles for other parts like image height/text size if needed.
+*/
+
+/* Animation for cards */
+.upcoming-tour-card {
+  animation: fadeInUp 0.6s ease-out forwards;
 }
 
-@media (max-width: 768px) {
-  .upcoming-tours-container {
-    padding: 10px;
-  }
-
-  .upcoming-tour-scroll-container {
-    padding: 10px 0;
-  }
-
-  .upcoming-tour-row {
-    gap: 15px;
-    padding: 5px;
-  }
-
-  .upcoming-tour-card {
-    width: 280px;
-  }
-
-  .upcoming-tour-image {
-    height: 180px;
-  }
-
-  .upcoming-tour-info {
-    padding: 15px;
-  }
-
-  .upcoming-tour-info h3 {
-    font-size: 1.2rem;
-  }
-
-  .upcoming-no-tours-content i {
-    font-size: 3rem;
-  }
-
-  .upcoming-no-tours-content h3 {
-    font-size: 1.5rem;
-  }
-
-  .upcoming-tour-details {
-    gap: 6px;
-  }
-
-  .upcoming-tour-details span {
-    font-size: 0.9rem;
-  }
-
-  .upcoming-view-details-btn {
-    padding: 10px 16px;
-    font-size: 0.9rem;
-  }
+.upcoming-tour-card:nth-child(2) {
+  animation-delay: 0.1s;
 }
 
-@media (max-width: 480px) {
-  .upcoming-tour-card {
-    width: 260px;
-  }
-
-  .upcoming-tour-image {
-    height: 160px;
-  }
-
-  .upcoming-tour-tag {
-    font-size: 0.8rem;
-    padding: 5px 10px;
-  }
-
-  .upcoming-tour-info {
-    padding: 12px;
-  }
-
-  .upcoming-tour-info h3 {
-    font-size: 1.1rem;
-  }
-
-  .upcoming-tour-details span {
-    font-size: 0.85rem;
-  }
-
-  .upcoming-view-details-btn {
-    padding: 8px 12px;
-    font-size: 0.85rem;
-  }
-
-  .upcoming-no-tours-content {
-    padding: 20px;
-  }
-
-  .upcoming-no-tours-content i {
-    font-size: 2.5rem;
-  }
-
-  .upcoming-no-tours-content h3 {
-    font-size: 1.3rem;
-  }
-
-  .upcoming-no-tours-content p {
-    font-size: 1rem;
-  }
+.upcoming-tour-card:nth-child(3) {
+  animation-delay: 0.2s;
 }
 
-/* Dark mode specific adjustments */
-[data-theme='dark'] .upcoming-tour-image img {
-  filter: brightness(0.9);
+.upcoming-tour-card:nth-child(4) {
+  animation-delay: 0.3s;
 }
 
-[data-theme='dark'] .upcoming-tour-card {
-  border-color: var(--upcoming-border-color, #4a5568);
+.upcoming-tour-card:nth-child(5) {
+  animation-delay: 0.4s;
 }
 
-[data-theme='dark'] .upcoming-view-details-btn:hover {
-  box-shadow: 0 4px 15px rgba(66, 153, 225, 0.4);
-}
-
-/* Additional utility classes for upcoming tours */
-.upcoming-tours-container .upcoming-tour-card:first-child {
-  animation: upcoming-slideInLeft 0.6s ease-out;
-}
-
-.upcoming-tours-container .upcoming-tour-card:nth-child(2) {
-  animation: upcoming-slideInLeft 0.8s ease-out;
-}
-
-.upcoming-tours-container .upcoming-tour-card:nth-child(3) {
-  animation: upcoming-slideInLeft 1s ease-out;
-}
-
-@keyframes upcoming-slideInLeft {
+@keyframes fadeInUp {
   from {
     opacity: 0;
-    transform: translateX(-30px);
+    transform: translateY(30px);
   }
   to {
     opacity: 1;
-    transform: translateX(0);
+    transform: translateY(0);
   }
-}
-
-/* Scrollbar styling for different browsers */
-.upcoming-tour-scroll-container {
-  scrollbar-width: thin;
-  scrollbar-color: var(--upcoming-accent-color, green) var(--upcoming-border-color, #ddd);
-}
-
-.upcoming-tour-scroll-container::-webkit-scrollbar {
-  height: 8px;
-}
-
-.upcoming-tour-scroll-container::-webkit-scrollbar-track {
-  background: var(--upcoming-border-color, #ddd);
-  border-radius: 4px;
-}
-
-.upcoming-tour-scroll-container::-webkit-scrollbar-thumb {
-  background: var(--upcoming-accent-color, green);
-  border-radius: 4px;
-}
-
-.upcoming-tour-scroll-container::-webkit-scrollbar-thumb:hover {
-  background: var(--upcoming-success-color, #27ae60);
 }
