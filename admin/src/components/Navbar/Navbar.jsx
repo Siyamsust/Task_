@@ -2,7 +2,6 @@ import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import './Navbar.css';
-import { Icon } from '@iconify/react';
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -31,6 +30,12 @@ const Navbar = () => {
           </Link>
         </li>
         <li>
+          <Link to="/admin/companies">
+            <i className="fas fa-check-circle"></i>
+            <span>Companies</span>
+          </Link>
+        </li>
+        <li>
           <Link to="/admin-support">
             <i className="fas fa-headset"></i>
             <span>Admin Support</span>
@@ -45,17 +50,11 @@ const Navbar = () => {
         </li>
      
         <li className="user-profile">
-          <Icon icon="mdi:account" height={30}/>
-          <span>Admin</span>
           <Link className="logout-btn" onClick={handleLogOut}>
             <i className="fas fa-sign-out-alt"></i>
             <span>Logout</span>
           </Link>
         </li>
-        <div className="weather-info">
-          <Icon icon="mdi:sun" />
-          <span>19°C Haze</span>
-        </div>
       </ul>
     </nav>
   );

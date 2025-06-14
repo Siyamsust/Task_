@@ -69,6 +69,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 // Routes
 app.use('/company/auth', companyRoutes);
+app.use('/api', companyRoutes); // Add this line for company routes
 app.use('/user/auth', authRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api/wishlist', wishlistRoutes);

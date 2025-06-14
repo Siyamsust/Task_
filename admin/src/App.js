@@ -14,6 +14,7 @@ import Settings from './components/settings/settings';
 import ProtectedRoute from './components/ProtectedRoute';
 import RegistrationRequest from './components/RegistrationRequests/RegistrationRequest';
 import PackageDetailsAndApprove from './components/PackageDetailsAndApprove/PackageDetailsAndApprove';
+import Companies from './components/Companies/Companies';
 import './App.css';
 
 function App() {
@@ -34,6 +35,7 @@ function App() {
               <Route path="/reports" element={<Reports />} />
               <Route path="/admin/registration-request/:id" element={<ProtectedRoute><RegistrationRequest /></ProtectedRoute>} />
               <Route path='/admin/package-details/:id' element={<ProtectedRoute><PackageDetailsAndApprove /></ProtectedRoute>} />
+              <Route path='/admin/companies' element={<ProtectedRoute><Companies /></ProtectedRoute>} />
             </Routes>
           </div>
         </div>
