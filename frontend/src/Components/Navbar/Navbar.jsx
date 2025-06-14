@@ -14,6 +14,12 @@ const Navbar = () => {
   const handleLogout = () => {
     logout();
     navigate('/');
+    setIsMenuOpen(false);
+  };
+
+  const handleNavigation = (path) => {
+    navigate(path);
+    setIsMenuOpen(false);
   };
 
   const getSurname = (fullName) => {
@@ -48,36 +54,94 @@ const Navbar = () => {
     <nav className="navbar">
       <div className="nav-container">
         <Link to="/" className="nav-logo">
-          <i className="fas fa-globe-americas"></i> Task
+          <i className="fas fa-globe-americas"></i> 
+          <span className="logo-text">Task</span>
         </Link>
 
         <div className={`nav-menu ${isMenuOpen ? 'active' : ''}`}>
-          <button className="nav-item" onClick={() => navigate('/')}>
-            <i className="fas fa-home"></i> Home
+          <button 
+            className="nav-item" 
+            onClick={() => handleNavigation('/')}
+            title="Home"
+          >
+            <i className="fas fa-home"></i> 
+            <span className="nav-text">Home</span>
           </button>
-          <button className="nav-item" onClick={() => navigate('/populartours')}>
-            <i className="fas fa-fire"></i> Popular
+          <button 
+            className="nav-item" 
+            onClick={() => handleNavigation('/populartours')}
+            title="Popular Tours"
+          >
+            <i className="fas fa-fire"></i> 
+            <span className="nav-text">Popular</span>
           </button>
-          <button className="nav-item" onClick={() => navigate('/explore')}>
-            <i className="fas fa-compass"></i> Explore
+          <button 
+            className="nav-item" 
+            onClick={() => handleNavigation('/explore')}
+            title="Explore"
+          >
+            <i className="fas fa-compass"></i> 
+            <span className="nav-text">Explore</span>
           </button>
-         
-          <button className="nav-item" onClick={() => navigate('/review')}>
-            <i className="fas fa-envelope"></i> Review
+          <button 
+            className="nav-item" 
+            onClick={() => handleNavigation('/review')}
+            title="Reviews"
+          >
+            <i className="fas fa-envelope"></i> 
+            <span className="nav-text">Review</span>
           </button>
-          <button className="nav-item" onClick={() => navigate('/weather')}>
-            <i className="fas fa-cloud-sun"></i> Weather
+          <button 
+            className="nav-item" 
+            onClick={() => handleNavigation('/weather')}
+            title="Weather"
+          >
+            <i className="fas fa-cloud-sun"></i> 
+            <span className="nav-text">Weather</span>
           </button>
-          <button className="nav-item" onClick={() => navigate('/hotels-and-restaurants')}>
-            <i className="fas fa-utensils"></i> Hotel & Restaurants
-          </button>
+          
+          {/* Mobile auth items - only visible in mobile menu */}
+          <div className="nav-auth-mobile">
+            <button
+              className="theme-toggle-btn mobile"
+              onClick={() => {
+                toggleTheme();
+                setIsMenuOpen(false);
+              }}
+              title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
+            >
+              {theme === 'light' ? (
+                <><i className="fas fa-moon"></i> <span>Dark Mode</span></>
+              ) : (
+                <><i className="fas fa-sun"></i> <span>Light Mode</span></>
+              )}
+            </button>
+
+            {user ? (
+              <>
+                <button className="profile-btn mobile" onClick={() => handleNavigation('/profile')}>
+                  <i className="fas fa-user"></i>
+                  <span>{getSurname(user.user?.name) || 'Profile'}</span>
+                </button>
+                <button onClick={handleLogout} className="logout-btn mobile">
+                  <i className="fas fa-sign-out-alt"></i>
+                  <span>Logout</span>
+                </button>
+              </>
+            ) : (
+              <button className="login-btn mobile" onClick={() => handleNavigation('/login')}>
+                <i className="fas fa-sign-in-alt"></i>
+                <span>Login</span>
+              </button>
+            )}
+          </div>
         </div>
 
         <div className="nav-auth">
           <button
-            className="theme-toggle-btn"
+            className="theme-toggle-btn desktop"
             onClick={toggleTheme}
-            aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
+            title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
           >
             {theme === 'light' ? (
               <i className="fas fa-moon"></i>
@@ -88,25 +152,38 @@ const Navbar = () => {
 
           {user ? (
             <>
-              <button className="profile-btn" onClick={() => navigate('/profile')}>
+              <button 
+                className="profile-btn desktop" 
+                onClick={() => navigate('/profile')}
+                title="Profile"
+              >
                 <i className="fas fa-user"></i>
-                <span>{getSurname(user.user?.name) || 'Profile'}</span>
+                <span className="auth-text">{getSurname(user.user?.name) || 'Profile'}</span>
               </button>
-              <button onClick={handleLogout} className="logout-btn">
+              <button 
+                onClick={handleLogout} 
+                className="logout-btn desktop"
+                title="Logout"
+              >
                 <i className="fas fa-sign-out-alt"></i>
-                <span>Logout</span>
+                <span className="auth-text">Logout</span>
               </button>
             </>
           ) : (
-            <button className="login-btn" onClick={() => navigate('/login')}>
+            <button 
+              className="login-btn desktop" 
+              onClick={() => navigate('/login')}
+              title="Login"
+            >
               <i className="fas fa-sign-in-alt"></i>
-              <span>Login</span>
+              <span className="auth-text">Login</span>
             </button>
           )}
 
           <button
             className="menu-toggle"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
+            title="Toggle menu"
           >
             <i className={`fas ${isMenuOpen ? 'fa-times' : 'fa-bars'}`}></i>
           </button>

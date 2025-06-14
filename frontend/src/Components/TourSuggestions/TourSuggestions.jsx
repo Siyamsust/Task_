@@ -189,8 +189,8 @@ const TourSuggestions = () => {
     return (
       <div className="tour-suggestions-section">
         <div className="tour-suggestions-header">
-          <h2>Upcoming Tours for You</h2>
-          <p>Discovering upcoming tours based on your interests...</p>
+          <h2> Tours for You</h2>
+          <p>Discovering tours based on your interests...</p>
         </div>
         <div className="tour-suggestions-loading">
           <div className="loading-spinner"></div>
@@ -208,9 +208,9 @@ const TourSuggestions = () => {
     <div className="tour-suggestions-section">
       <div className="tour-suggestions-header">
         <h2>
-          {userData ? `Upcoming Tours for You, ${userData.name?.split(' ')[0] || 'Traveler'}` : 'Upcoming Tours'}
+          {userData ? `Tours for You, ${userData.name?.split(' ')[0] || 'Traveler'}` : 'Upcoming Tours'}
         </h2>
-        <p>Discover upcoming tours tailored to your interests and preferences</p>
+        <p>Discover tours tailored to your interests and preferences</p>
       </div>
 
       <div className="tour-suggestions-container">

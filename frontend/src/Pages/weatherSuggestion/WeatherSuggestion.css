@@ -200,6 +200,13 @@
   font-size: 1.2rem;
   color: var(--text-secondary);
 }
+.city-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+}
+
 
 /* Responsive Design */
 @media (max-width: 768px) {
