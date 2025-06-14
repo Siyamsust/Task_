@@ -78,7 +78,23 @@ const Dashboard = () => {
         : 0;
       return { name: tour.name || tour.title || 'Untitled', revenue };
     });
-    const popularPackages = [...packageRevenue]
+    // Popular packages: top 3 by revenue
+    // Attach bookings, price, and rating info for display
+    const popularPackages = [...tours]
+      .map(tour => {
+        const bookings = Array.isArray(tour.bookings) ? tour.bookings.length : 0;
+        const revenue = Array.isArray(tour.bookings)
+          ? tour.bookings.reduce((sum, b) => sum + (b.totalAmount || 0), 0)
+          : 0;
+        return {
+          _id: tour._id,
+          name: tour.name || tour.title || 'Untitled',
+          bookings,
+          price: tour.price || 0,
+          rating: tour.popularity?.rating?.average || 'N/A',
+          revenue
+        };
+      })
       .sort((a, b) => b.revenue - a.revenue)
       .slice(0, 3);
     const recentFeedback = tours.flatMap(t => t.reviews || []).slice(0, 5);
@@ -213,12 +229,12 @@ const Dashboard = () => {
               <div key={pkg.name + '-' + idx} className="package-item">
                 <div className="package-info">
                   <h3>{pkg.name}</h3>
-                  <p>Bookings: {pkg.popularity?.bookings || 0}</p>
-                  <p>Rating: {pkg.popularity?.rating?.average || 'N/A'}/5.0</p>
-                  <p>Revenue: ${(pkg.price * (pkg.popularity?.bookings || 0)).toLocaleString()}</p>
+                  <p>Bookings: {pkg.bookings || 0}</p>
+                  <p>Rating: {pkg.rating}/5.0</p>
+                  <p>Revenue: ${(pkg.price * (pkg.bookings || 0)).toLocaleString()}</p>
                 </div>
                 <div className="package-chart">
-                  <div className="chart-bar" style={{ height: `${(pkg.popularity?.bookings || 0) / (stats.popularPackages[0]?.popularity?.bookings || 1) * 100}%` }}></div>
+                  <div className="chart-bar" style={{ height: `${(pkg.bookings || 0) / (stats.popularPackages[0]?.bookings || 1) * 100}%` }}></div>
                 </div>
               </div>
             ))}
