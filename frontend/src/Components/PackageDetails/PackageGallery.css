@@ -129,18 +129,7 @@
   backdrop-filter: var(--backdrop-blur);
 }
 
-.nav-button:hover {
-  opacity: 1;
-  background-color: var(--border-hover);
-}
 
-.prev {
-  left: 15px;
-}
-
-.next {
-  right: 15px;
-}
 
 .image-thumbnails {
   display: flex;
