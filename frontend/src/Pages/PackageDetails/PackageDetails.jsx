@@ -6,11 +6,13 @@ import PackageInfo from '../../Components/PackageDetails/PackageInfo';
 import BookingCard from '../../Components/PackageDetails/BookingCard';
 import { useAuth } from '../../Context/AuthContext';
 import './PackageDetails.css';
+import socket from '../../socket'
 import axios from 'axios';
+
 
 const PackageDetails = () => {
   const { id } = useParams();
-  const {selectedChat,setSelectedChat}=useState(null);
+  
   const { tours, loading, error, fetchTourById } = useContext(ToursContext);
   const [isloading, setIsloading] = useState(false);
   const [chats, setChats] = useState([]);
@@ -21,6 +23,7 @@ const PackageDetails = () => {
   const [reviews, setReviews] = useState([]);
   const [loadingReviews, setLoadingReviews] = useState(false);
   const [errorReviews, setErrorReviews] = useState(null);
+  const [avSeats, setAvSeats] = useState(null);
  const {user}=useAuth();
  useEffect(()=>{
    if(user){
@@ -100,31 +103,35 @@ useEffect(() => {
     const tourStartDate = new Date(startDate);
     return tourStartDate < now;
   };
-
-  useEffect(() => {
-    const getTour = async () => {
-      try {
-        setLocalLoading(true);
-        const data = await fetchTourById(id);
-        setTour(data);
-        setLocalError(null);
-        setActiveImage(0);
-        
-        // Fetch reviews if tour is completed
-        if (isTourCompleted(data.startDate)) {
-          await fetchReviews(data._id);
-        }
-      } catch (err) {
-        setLocalError('Failed to load tour details.');
-      } finally {
-        setLocalLoading(false);
+  const getTour = async () => {
+    try {
+      setLocalLoading(true);
+      const data = await fetchTourById(id);
+      setTour(data);
+      
+      setLocalError(null);
+      setActiveImage(0);
+      
+      // Fetch reviews if tour is completed
+      if (isTourCompleted(data.startDate)) {
+        await fetchReviews(data._id);
       }
-    };
-
+    } catch (err) {
+      setLocalError('Failed to load tour details.');
+    } finally {
+      setLocalLoading(false);
+    }
+  };
+  console.log(avSeats);
+  useEffect(() => {
     if (id) {
       getTour();
+      
     }
   }, [id]);
+
+
+    // Cleanup socket listener on component unmount
 
   if (localLoading) {
     return (
@@ -247,6 +254,7 @@ console.log(tour);
             startDate={tour.startDate}
             endDate={tour.endDate}
             tourId={tour._id}
+            socket={socket}
           />
         </div>
       )}

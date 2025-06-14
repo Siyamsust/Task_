@@ -3,10 +3,37 @@ import axios from 'axios';
 import { useAuth } from '../../Context/AuthContext';
 import { useNavigate } from 'react-router-dom'; // Corrected import
 
-const BookingCard = ({ price, availableSeats, startDate, endDate, tourId }) => {
+const BookingCard = ({ price, availableSeats: initialSeats, startDate, endDate, tourId, socket }) => {
   const [message, setMessage] = useState('');
+  const [availableSeats, setAvailableSeats] = useState(initialSeats);
   const { user } = useAuth(); 
   const navigate = useNavigate(); // Corrected hook
+
+  // Update available seats when initialSeats prop changes
+  useEffect(() => {
+    setAvailableSeats(initialSeats);
+  }, [initialSeats]);
+
+  // Handle socket events for seat updates
+  useEffect(() => {
+    if (socket) {
+      socket.on('book', (data) => {
+        console.log('Booking event received:', data);
+        if (data.action === 'krlam' && data.booking && data.booking.tourId === tourId) {
+          const newSeats = availableSeats - data.booking.travelers;
+          if (newSeats >= 0) {
+            setAvailableSeats(newSeats);
+          }
+        }
+      });
+    }
+
+    return () => {
+      if (socket) {
+        socket.off('book');
+      }
+    };
+  }, [socket, tourId, availableSeats]);
 
   useEffect(() => {
     if (message) {

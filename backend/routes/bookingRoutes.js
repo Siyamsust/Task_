@@ -83,7 +83,8 @@ router.post('/add', authMiddleware, async (req, res) => {
       paymentMethod,
       cardHolder,
       cardNumber,
-      totalAmount
+      totalAmount,
+      userId
     } = req.body;
 
     // Validate required fields
@@ -134,7 +135,7 @@ router.post('/add', authMiddleware, async (req, res) => {
       cardHolder: cardHolder || '',
       cardLastFour: cardNumber ? cardNumber.slice(-4) : null,
       totalAmount: totalAmount || 0,
-      userId: req.user?.id || null
+      userId: req.userId || null
     };
 
     const booking = new Booking(bookingData);
@@ -143,12 +144,19 @@ router.post('/add', authMiddleware, async (req, res) => {
     // Get the socket instance and emit the event
     const io = socketIO.getIO();
     if (io) {
+      // Emit booking event
       io.emit('book', {
         action: 'krlam',
-        booking: {
-          ...booking.toObject(),
-          bookingReference: booking.bookingReference
-        }
+        booking: booking,
+        tourId: tourId,
+        availableSeats: booking.tourId.availableSeats
+      });
+
+      // Emit seats update event
+      io.emit('seatsUpdated', {
+        tourId: tourId,
+        availableSeats: booking.tourId.availableSeats,
+        travelers: booking.travelers
       });
     }
 

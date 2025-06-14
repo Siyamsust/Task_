@@ -7,6 +7,7 @@ import ContactInfoForm from './ContactInfoForm';
 import PaymentInfoForm from './PaymentInfoForm';
 import OrderSummary from './OrderSummary';
 import './Checkout.css';
+import socket from '../../socket';
 
 const Checkout = () => {
   const [step, setStep] = useState(1);
@@ -97,7 +98,8 @@ const Checkout = () => {
           paymentMethod: formData.paymentMethod,
           cardHolder: formData.cardHolder,
           cardNumber: formData.cardNumber,
-          totalAmount: totalAmount
+          totalAmount: totalAmount,
+          userId:user?.user?._id,
         })
       });
 
@@ -122,6 +124,14 @@ const Checkout = () => {
         const updatedTour = await updateResponse.json();
         if (updateTour) {
           updateTour(updatedTour.tour);
+        }
+        // Emit socket event for real-time seat update
+        if (socket) {
+          socket.emit('seatsUpdated', {
+            tourId: tourId,
+            availableSeats: updatedTour.tour.availableSeats,
+            travelers: requestedTravelers
+          });
         }
       }
 
