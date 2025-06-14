@@ -41,9 +41,11 @@ const Dashboard = () => {
   const stats = useMemo(() => {
     if (!tours || tours.length === 0) return null;
     const now = new Date();
-    const activePackages = tours.filter(t => new Date(t.startDate) <= now && new Date(t.endDate) >= now).length;
-    const completedTours = tours.filter(t => new Date(t.endDate) < now).length;
-    // Gather all bookings for this company's tours
+    // Always show Jan-Dec for the current year
+    const monthlyRevenueData = Array(12).fill(0);
+    const monthlyLabels = Array.from({ length: 12 }, (_, i) =>
+      new Date(0, i).toLocaleString('default', { month: 'short' })
+    );
     let allBookings = [];
     let allCustomerEmails = new Set();
     let allRatings = [];
@@ -52,48 +54,33 @@ const Dashboard = () => {
         allBookings = allBookings.concat(tour.bookings);
         tour.bookings.forEach(b => {
           if (b.email) allCustomerEmails.add(b.email);
+          // Assign revenue to the correct month of the current year
+          if (b.bookingDate) {
+            const d = new Date(b.bookingDate);
+            if (d.getFullYear() === now.getFullYear()) {
+              monthlyRevenueData[d.getMonth()] += b.totalAmount || 0;
+            }
+          }
         });
       }
       if (tour.popularity?.rating?.average) {
         allRatings.push(tour.popularity.rating.average);
       }
     });
-    // Lifetime revenue: sum of all bookings' totalAmount
+    const activePackages = tours.filter(t => new Date(t.startDate) <= now && new Date(t.endDate) >= now).length;
+    const completedTours = tours.filter(t => new Date(t.endDate) < now).length;
     const lifetimeRevenue = allBookings.reduce((sum, b) => sum + (b.totalAmount || 0), 0);
-    // Average rating
     const customerRating = allRatings.length > 0 ? (allRatings.reduce((a, b) => a + b, 0) / allRatings.length).toFixed(2) : 'N/A';
-    // New bookings: count of all bookings
     const newBookings = allBookings.length;
-    // Bar chart: revenue for last 12 months
-    const monthlyRevenueData = Array(12).fill(0);
-    const monthlyLabels = [];
-    const nowMonth = now.getMonth();
-    const nowYear = now.getFullYear();
-    for (let i = 11; i >= 0; i--) {
-      const d = new Date(nowYear, nowMonth - i, 1);
-      monthlyLabels.push(d.toLocaleString('default', { month: 'short', year: '2-digit' }));
-    }
-    allBookings.forEach(b => {
-      if (!b.createdAt) return;
-      const d = new Date(b.createdAt);
-      // Find the index in the last 12 months
-      const monthsAgo = (nowYear - d.getFullYear()) * 12 + (nowMonth - d.getMonth());
-      if (monthsAgo >= 0 && monthsAgo < 12) {
-        monthlyRevenueData[11 - monthsAgo] += b.totalAmount || 0;
-      }
-    });
-    // Pie chart: revenue by package (for this company)
     const packageRevenue = tours.map(tour => {
       const revenue = Array.isArray(tour.bookings)
         ? tour.bookings.reduce((sum, b) => sum + (b.totalAmount || 0), 0)
         : 0;
       return { name: tour.name || tour.title || 'Untitled', revenue };
     });
-    // Popular packages: top 3 by revenue
     const popularPackages = [...packageRevenue]
       .sort((a, b) => b.revenue - a.revenue)
       .slice(0, 3);
-    // Recent feedback: flatten all reviews
     const recentFeedback = tours.flatMap(t => t.reviews || []).slice(0, 5);
     return {
       activePackages,
@@ -147,7 +134,7 @@ const Dashboard = () => {
     responsive: true,
     plugins: {
       legend: { position: 'top' },
-      title: { display: true, text: 'Lifetime Revenue Overview' }
+      title: { display: true, text: 'Revenue across the year' }
     }
   };
 
@@ -222,8 +209,8 @@ const Dashboard = () => {
         <div className="dashboard-card popular-packages">
           <h2>Popular Packages</h2>
           <div className="package-list">
-            {stats.popularPackages.map(pkg => (
-              <div key={pkg._id} className="package-item">
+            {stats.popularPackages.map((pkg, idx) => (
+              <div key={pkg.name + '-' + idx} className="package-item">
                 <div className="package-info">
                   <h3>{pkg.name}</h3>
                   <p>Bookings: {pkg.popularity?.bookings || 0}</p>
@@ -241,7 +228,7 @@ const Dashboard = () => {
           <h2>Recent Feedback</h2>
           <div className="feedback-list">
             {stats.recentFeedback.map((feedback, idx) => (
-              <div key={feedback._id || idx} className="feedback-item">
+              <div key={(feedback._id || feedback.name || 'feedback') + '-' + idx} className="feedback-item">
                 <div className="feedback-header">
                   <h3>{feedback.name}</h3>
                   <div className="feedback-rating">

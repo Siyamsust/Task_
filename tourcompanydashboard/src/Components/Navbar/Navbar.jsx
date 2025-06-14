@@ -98,12 +98,12 @@ const Navbar = () => {
           <FaUserCircle />
           {showProfile && (
             <div className="profile-dropdown">
-              <Link to="/profile">
+              {/* <Link to="/profile">
                 <FaUserCircle /> Profile
               </Link>
               <Link to="/settings">
                 <FaCog /> Settings
-              </Link>
+              </Link> */}
               <button onClick={handleLogout}>
                 <FaSignOutAlt /> Logout
               </button>

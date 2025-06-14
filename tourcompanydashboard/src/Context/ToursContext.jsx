@@ -8,7 +8,7 @@ export const ToursProvider = ({ children }) => {
   const [tours, setTours] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const { company } = useAuth();
+  const { company, authLoading } = useAuth(); // <-- get authLoading
 
   useEffect(() => {
     if (company) {
@@ -20,7 +20,7 @@ export const ToursProvider = ({ children }) => {
   const fetchcompanyTours = useCallback(async () => {
     try {
       setLoading(true);
-      if (!company) {
+      if (authLoading || !company) {
         throw new Error('No company logged in');
       }
       const companyId = company.company._id;
@@ -39,7 +39,7 @@ export const ToursProvider = ({ children }) => {
     } finally {
       setLoading(false);
     }
-  }, [company]);
+  }, [company, authLoading]);
 
   const fetchTours = async () => {
     try {
@@ -135,8 +135,10 @@ export const ToursProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    fetchcompanyTours();
-  }, [fetchcompanyTours]);
+    if (!authLoading && company) {
+      fetchToursWithBookings(); // Always fetch tours with bookings for dashboard
+    }
+  }, [fetchToursWithBookings, authLoading, company]);
 
   const value = {
     tours,
