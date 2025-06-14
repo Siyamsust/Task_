@@ -1,19 +1,37 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { User, Mail, Phone, MapPin, Users } from 'lucide-react';
 import './ContactInfoForm.css';
+import socket from '../../socket';
 
 const ContactInfoForm = ({ formData, handleChange, handleSubmitContactInfo, selectedTour }) => {
-  // Calculate maximum travelers based on tour type
-  const getMaxTravelers = () => {
-    if (selectedTour) {
-      return selectedTour?.availableSeats || 0;
-    } else {
-      // For individual tours, allow up to 10 travelers
-      return 10;
-    }
-  };
+  const [maxTravelers, setMaxTravelers] = useState(selectedTour?.availableSeats || 0);
 
-  const maxTravelers = getMaxTravelers();
+  // Update maxTravelers when selectedTour changes
+  useEffect(() => {
+    setMaxTravelers(selectedTour?.availableSeats || 0);
+  }, [selectedTour]);
+
+  // Handle socket events for seat updates
+  useEffect(() => {
+    if (socket) {
+      socket.on('book', (data) => {
+        console.log('Booking event received in ContactInfoForm:', data);
+        if (data.action === 'krlam' && data.booking && data.booking.tourId === selectedTour?._id) {
+          const newMaxTravelers = maxTravelers - data.booking.travelers;
+          if (newMaxTravelers >= 0) {
+            setMaxTravelers(newMaxTravelers);
+          }
+        }
+      });
+    }
+
+    return () => {
+      if (socket) {
+        socket.off('book');
+      }
+    };
+  }, [socket, selectedTour?._id, maxTravelers]);
+
   const isGroupTour = selectedTour?.tourType?.group;
 
   return (

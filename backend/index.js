@@ -193,7 +193,7 @@ app.use('/api/tours', tourRoutes);
 const { recommendTours } = require('./utils/tourRecommender');
 
 // Example: selected destinations by user
-const selected = ['Cox’s Bazar', 'Saint Martin'];
+const selected = ['Coxs Bazar', 'Saint Martin'];
 
 recommendTours(selected, (recommended) => {
   console.log('📌 Recommended Tours:', recommended);
