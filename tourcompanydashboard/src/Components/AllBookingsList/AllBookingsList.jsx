@@ -11,58 +11,79 @@ const AllBookingsList = () => {
   const [toursWithStats, setToursWithStats] = useState([]);
   const [statsLoading, setStatsLoading] = useState(false);
 
+  const fetchTourStats = async () => {
+    if (!tours || tours.length === 0) {
+      setToursWithStats([]);
+      return;
+    }
+    setStatsLoading(true);
+    const token = localStorage.getItem('company-token');
+    try {
+      const toursStats = await Promise.all(
+        tours.map(async (tour) => {
+          // Fetch bookings for this tour
+          const res = await fetch(
+            `http://localhost:4000/api/bookings/tour/${tour._id}`,
+            {
+              headers: {
+                'Authorization': `Bearer ${token}`,
+              },
+            }
+          );
+          const data = await res.json();
+          const bookings = data.success ? data.bookings : [];
+          const bookingCount = bookings.length;
+          const totalRevenue = bookings.reduce(
+            (sum, b) => sum + (b.totalAmount || 0),
+            0
+          );
+          return { ...tour, bookingCount, totalRevenue, bookings };
+        })
+      );
+      setToursWithStats(toursStats);
+    } catch (err) {
+      console.error('Error fetching tour stats:', err);
+      setToursWithStats([]);
+    }
+    setStatsLoading(false);
+  };
+
   // Fetch bookings for each tour and compute stats
   useEffect(() => {
-    const fetchTourStats = async () => {
-      if (!tours || tours.length === 0) {
-        setToursWithStats([]);
-        return;
-      }
-      setStatsLoading(true);
-      const token = localStorage.getItem('company-token');
-      try {
-        const toursStats = await Promise.all(
-          tours.map(async (tour) => {
-            // Fetch bookings for this tour
-            const res = await fetch(
-              `http://localhost:4000/api/bookings/tour/${tour._id}`,
-              {
-                headers: {
-                  'Authorization': `Bearer ${token}`,
-                },
-              }
-            );
-            const data = await res.json();
-            const bookings = data.success ? data.bookings : [];
-            const bookingCount = bookings.length;
-            const totalRevenue = bookings.reduce(
-              (sum, b) => sum + (b.totalAmount || 0),
-              0
-            );
-            return { ...tour, bookingCount, totalRevenue, bookings };
-          })
-        );
-        setToursWithStats(toursStats);
-      } catch (err) {
-        setToursWithStats([]);
-      }
-      setStatsLoading(false);
-    };
-
     if (view === 'tours' && tours && tours.length > 0) {
       fetchTourStats();
     }
   }, [tours, view]);
 
+  // Handle socket events for real-time updates
   useEffect(() => {
     if (socket) {
-      socket.on('book', data => {
+      socket.on('book', async (data) => {
+        console.log('Booking event received:', data);
         if (data.action === 'krlam') {
-          fetchAllBookings();
+          // Fetch fresh tour data
+          await fetchToursWithBookings();
+          // Update tour stats
+          await fetchTourStats();
         }
       });
+
+      socket.on('seatsUpdated', async (data) => {
+        console.log('Seats update event received:', data);
+        // Fetch fresh tour data
+        await fetchToursWithBookings();
+        // Update tour stats
+        await fetchTourStats();
+      });
     }
-  }, [socket]);
+
+    return () => {
+      if (socket) {
+        socket.off('book');
+        socket.off('seatsUpdated');
+      }
+    };
+  }, [socket, fetchToursWithBookings,fetchTourStats]);
 
   const fetchAllBookings = async () => {
     try {
