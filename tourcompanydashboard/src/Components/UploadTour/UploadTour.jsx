@@ -17,8 +17,8 @@ const comapnyName=company.company.name;
     packageCategories: [],
     customCategory: '',
     tourType: {
-      single: false,
-      group: false
+      single: false, // Remove this line if not needed elsewhere
+      group: true
     },
     duration: {
       days: '',
@@ -311,19 +311,13 @@ const comapnyName=company.company.name;
           <div className="tour-type-section">
             <h3>Tour Type</h3>
             <div className="checkbox-group">
-              <label>
-                <input
-                  type="checkbox"
-                  checked={tourDetails.tourType.single}
-                  onChange={() => handleTourTypeChange('single')}
-                />
-                Single
-              </label>
+              {/* Remove Single option */}
               <label>
                 <input
                   type="checkbox"
                   checked={tourDetails.tourType.group}
-                  onChange={() => handleTourTypeChange('group')}
+                  onChange={() => {}}
+                  disabled
                 />
                 Group
               </label>
