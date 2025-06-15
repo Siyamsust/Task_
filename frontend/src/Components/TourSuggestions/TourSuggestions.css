@@ -56,11 +56,7 @@
     flex-direction: column;
 }
 
-.suggestion-card:hover {
-    transform: translateY(-8px) scale(1.01);
-    box-shadow: 0 12px 30px var(--shadow-hover);
-    border-color: var(--border-hover);
-}
+
 
 .suggestion-card-image {
     position: relative;
@@ -109,24 +105,8 @@
     transition: all 0.3s ease;
 }
 
-.suggestion-card-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.7);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    backdrop-filter: var(--backdrop-blur);
-}
 
-.suggestion-card:hover .suggestion-card-overlay {
-    opacity: 1;
-}
+
 
 .suggestion-quick-view-btn {
     background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
