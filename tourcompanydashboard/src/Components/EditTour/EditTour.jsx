@@ -26,6 +26,19 @@ const EditTour = () => {
     'Other'
   ];
 
+  const weatherConditions = [
+    'Sunny',
+    'Partly Cloudy',
+    'Cloudy',
+    'Rainy',
+    'Stormy',
+    'Snowy',
+    'Foggy',
+    'Hot',
+    'Cold',
+    'Mild'
+  ];
+
   const [tourDetails, setTourDetails] = useState({
     name: '',
     packageCategories: [],
@@ -62,7 +75,12 @@ const EditTour = () => {
     includes: [''],
     excludes: [''],
     specialNote: '',
-    cancellationPolicy: ''
+    cancellationPolicy: '',
+    weather: {
+      city: '',
+      condition: '',
+      temp: ''
+    }
   });
 
   useEffect(() => {
@@ -87,7 +105,8 @@ const EditTour = () => {
           transportation: tour.transportation || { type: '', details: '' },
           destinations: tour.destinations || [{ name: '', description: '', stayDuration: '' }],
           includes: tour.includes || [''],
-          excludes: tour.excludes || ['']
+          excludes: tour.excludes || [''],
+          weather: tour.weather || { city: '', condition: '', temp: '' }
         });
       } else {
         throw new Error(data.error || 'Failed to fetch tour details');
@@ -256,6 +275,17 @@ const EditTour = () => {
     setTourDetails({
       ...tourDetails,
       images: updatedImages
+    });
+  };
+
+  const handleWeatherChange = (e) => {
+    const { name, value } = e.target;
+    setTourDetails({
+      ...tourDetails,
+      weather: {
+        ...(tourDetails.weather || { city: '', condition: '', temp: '' }),
+        [name]: value
+      }
     });
   };
 
@@ -528,6 +558,37 @@ const EditTour = () => {
         </div>
 
         <div className="form-section">
+          <h2>Weather Information</h2>
+          <div className="weather-section">
+            <input
+              type="text"
+              name="city"
+              placeholder="Weather City/Location"
+              value={tourDetails.weather?.city || ''}
+              onChange={handleWeatherChange}
+            />
+            <select
+              name="condition"
+              value={tourDetails.weather?.condition || ''}
+              onChange={handleWeatherChange}
+            >
+              <option value="">Select Weather Condition</option>
+              {weatherConditions.map((condition) => (
+                <option key={condition} value={condition}>{condition}</option>
+              ))}
+            </select>
+            <input
+              type="number"
+              name="temp"
+              placeholder="Average Temperature (°C)"
+              value={tourDetails.weather?.temp || ''}
+              onChange={handleWeatherChange}
+              step="0.1"
+            />
+          </div>
+        </div>
+
+        <div className="form-section">
           <h2>Images</h2>
           <div className="file-upload">
             <input
@@ -563,4 +624,4 @@ const EditTour = () => {
   );
 };
 
-export default EditTour; 
+export default EditTour;

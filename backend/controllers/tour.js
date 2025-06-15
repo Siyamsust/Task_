@@ -318,6 +318,22 @@ exports.updateTour = async (req, res) => {
     tourData.maxGroupSize = parseInt(tourData.maxGroupSize) || 0;
     tourData.availableSeats = parseInt(tourData.availableSeats) || 0;
 
+    // Normalize packageCategories like in createTour
+    if (req.body.packageCategories) {
+      if (typeof req.body.packageCategories === 'string') {
+        try {
+          tourData.packageCategories = JSON.parse(req.body.packageCategories);
+        } catch (e) {
+          tourData.packageCategories = req.body.packageCategories
+            .split(',')
+            .map(cat => cat.trim().toLowerCase());
+        }
+      }
+      if (!Array.isArray(tourData.packageCategories)) {
+        tourData.packageCategories = [tourData.packageCategories];
+      }
+    }
+
     // Remove fields that shouldn't be updated directly
     delete tourData.existingImages;
     delete tourData.newImages;

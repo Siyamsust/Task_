@@ -56,6 +56,12 @@
   opacity: 1;
 }
 
+.nav-links a.active {
+  background-color: #2563eb;
+  color: #fff;
+  opacity: 1;
+}
+
 .nav-links i {
   margin-right: 12px;
   width: 20px;
@@ -124,7 +130,8 @@
 
 /* Active link styles */
 .nav-links a.active {
-  background-color: var(--accent-color);
+  background-color: #2563eb;
+  color: #fff;
   opacity: 1;
 }
 
@@ -142,4 +149,3 @@
   margin-right: 10px;
   color: #FFD700;
 }
-  
