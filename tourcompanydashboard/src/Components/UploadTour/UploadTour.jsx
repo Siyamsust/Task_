@@ -12,6 +12,7 @@ const UploadTour = () => {
   }, [company]);
 const companyId=company.company._id;
 const companyName=company.company.name;
+console.log(companyName);
   const [tourDetails, setTourDetails] = useState({
     name: '',
     packageCategories: [],

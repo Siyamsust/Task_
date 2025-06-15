@@ -1,3 +1,10 @@
+body {
+  font-family: 'Roboto', sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f4f7f6;
+}
+
 .navbar {
   display: flex;
   align-items: center;
@@ -14,6 +21,15 @@
   color: #3498db;
   margin: 0;
   font-size: 1.8rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.verified-icon {
+  color: #007bff;
+  font-size: 0.5em;
+  margin-left: 4px;
 }
 
 .navbar-links {
