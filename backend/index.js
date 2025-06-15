@@ -8,7 +8,6 @@ const cors = require('cors');
 const path = require('path');
 const fs = require('fs');
 const http = require('http');
-const socketIO = require('socket.io');
 const chatRoutes = require('./routes/chatRoutes');
 const authRoutes = require('./routes/authRoutes');
 const wishlistRoutes = require('./routes/wishlistRoutes');
@@ -23,12 +22,10 @@ const adminAuth = require('./middleware/adminAuth');
 const weatherRoute = require('./routes/weatherRoutes'); 
 //Admin Section
 const adminAuthRoutes = require('./routes/adminauth');
-// <-- register route
-
-
 
 const app = express();
 const server = http.createServer(app);
+const PORT = process.env.PORT || 4000;
 
 // Define allowed origins
 const allowedOrigins = [
@@ -39,6 +36,9 @@ const allowedOrigins = [
   'http://localhost:3004'
 ];
 
+// Initialize socket.io
+const socketInit = require('./socket').init(server);
+
 // Updated CORS configuration
 app.use(cors({
   origin: function(origin, callback) {
@@ -48,18 +48,8 @@ app.use(cors({
       callback(new Error('Not allowed by CORS'));
     }
   },
-  methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
   credentials: true
 }));
-
-// Socket.IO configuration with CORS
-const io = require('socket.io')(server, {
-  cors: {
-    origin: allowedOrigins,
-    methods: ["GET", "POST"],
-    credentials: true
-  }
-});
 
 // Middleware
 app.use(express.json());
@@ -87,10 +77,6 @@ app.get('/api/test', (req, res) => {
   console.log('Test route hit');
   res.json({ message: 'API is working' });
 });
-
-const PORT = process.env.PORT || 4000;
-
-
 
 // Configure multer for image upload
 const storage = multer.diskStorage({
@@ -176,9 +162,6 @@ app.get('/api/tours/:id/seat-availability', tourController.getSeatAvailability);
 app.patch('/api/tours/:id/release-seats', tourController.releaseSeats);
 
 
-
-
-
 app.use(errorHandler);
 // ✅ Make sure this matches your filename
 
@@ -204,13 +187,12 @@ recommendTours(selected, (recommended) => {
 app.get('/', (req, res) => {
   res.send('Backend is running!');
 });
+
 mongoose.connect(process.env.MONGODB_URI || "mongodb+srv://kaoser614:0096892156428@cluster0.2awol.mongodb.net/")
   .then(result => {
-    const server = http.createServer(app);
-    const io = require('./socket').init(server);
-    
     server.listen(PORT, () => {
       console.log(`Server is running on port ${PORT}`);
+      console.log('Socket.IO server initialized');
     });
   })
   .catch(err => {

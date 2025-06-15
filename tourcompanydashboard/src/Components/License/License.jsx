@@ -28,6 +28,29 @@ const License = () => {
   const [requestSuccess, setRequestSuccess] = useState('');
   const [password, setPassword] = useState('');
   const [passwordError, setPasswordError] = useState('');
+  const [status, setStatus] = useState('Not Verified');
+
+  useEffect(() => {
+    // Join company-specific socket room on mount
+    if (company?.company?._id) {
+      console.log('Joining company room:', company.company._id);
+      socket.emit('join_company', company.company._id);
+    }
+
+    // Listen for license responses
+    socket.on('license_response', (data) => {
+      console.log('Received license response:', data);
+      if (data.companyId === company?.company?._id) {
+        console.log('Updating status to:', data.verificationStatus);
+        setStatus(data.verificationStatus);
+      }
+    });
+
+    // Cleanup socket listener on unmount
+    return () => {
+      socket.off('license_response');
+    };
+  }, [company?.company?._id]);
 
   useEffect(() => {
     // Always fetch the latest company info on mount
@@ -53,12 +76,56 @@ const License = () => {
     // eslint-disable-next-line
   }, []);
 
+  // On mount, fetch initial status from DB
+  useEffect(() => {
+    const fetchStatus = async () => {
+      try {
+        const res = await fetch('http://localhost:4000/company/auth/companies');
+        const data = await res.json();
+        const myCompany = (data.companies || []).find(c => c._id === company?.company?._id);
+        if (myCompany) {
+          if (myCompany.verificationStatus === 'pending') setStatus('Pending');
+          else if (myCompany.verificationStatus === 'approved') setStatus('Approved');
+          else if (myCompany.verificationStatus === 'rejected') setStatus('Rejected');
+          else setStatus('Not Verified');
+        } else {
+          setStatus('Not Verified');
+        }
+      } catch {
+        setStatus('Not Verified');
+      }
+    };
+    if (company?.company?._id) fetchStatus();
+  }, [company?.company?._id]);
+
+  // Listen for license_response from admin and update status immediately
+  useEffect(() => {
+    console.log('License.jsx - Socket connected:', socket.connected); // Debug socket connection
+    if (!company?.company?._id) return;
+    const handleLicenseResponse = (data) => {
+      console.log('Received license_response:', data); // Debug received event
+      if (data.companyId === company.company._id) {
+        if (data.verificationStatus === 'approved') setStatus('Approved');
+        else if (data.verificationStatus === 'rejected') setStatus('Rejected');
+        else if (data.verificationStatus === 'pending') setStatus('Pending');
+        else setStatus('Not Verified');
+        setForm((prev) => ({
+          ...prev,
+          verificationStatus: data.verificationStatus
+        }));
+      }
+    };
+    socket.on('license_response', handleLicenseResponse);
+    return () => {
+      socket.off('license_response', handleLicenseResponse);
+    };
+  }, [company?.company?._id]);
+
   // Status logic
-  const status = form.verificationStatus;
-  const isPending = status === 'pending';
-  const isApproved = status === 'approved';
-  const isRejected = status === 'rejected';
-  const isNotVerified = !status || (status !== 'pending' && status !== 'approved' && status !== 'rejected');
+  const isPending = status === 'Pending';
+  const isApproved = status === 'Approved';
+  const isRejected = status === 'Rejected';
+  const isNotVerified = !status || (status !== 'Pending' && status !== 'Approved' && status !== 'Rejected');
 
   if (!company) return <div className="license-container">No company data found.</div>;
 
@@ -128,6 +195,7 @@ const License = () => {
     setRequestSuccess('');
     try {
       await updateCompany({ ...form, verificationStatus: 'pending' });
+      setStatus('Pending'); // Instantly update status to Pending
       socket.emit('license_request', {
         action: 'license_request',
         company: { ...company.company, ...form, verificationStatus: 'pending' }
@@ -209,8 +277,12 @@ const License = () => {
       <h2>Company License & Profile</h2>
       <div className="license-status">
         <span>Status: </span>
-        <span className={isApproved ? 'verified' : isPending ? 'pending' : isRejected ? 'not-verified' : 'not-verified'}>
-          {isApproved ? 'Verified' : isPending ? 'Pending' : isRejected ? 'Rejected' : 'Not Verified'}
+        <span className={
+          status === 'Approved' ? 'verified' :
+          status === 'Pending' ? 'pending' :
+          status === 'Rejected' ? 'not-verified' : 'not-verified'
+        }>
+          {status}
         </span>
       </div>
       <form className="license-form" onSubmit={e => e.preventDefault()}>
@@ -377,7 +449,7 @@ const License = () => {
           </div>
         ) : (
           <div className="form-actions">
-            <button type="button" onClick={handleEdit} disabled={isPending || isApproved}>Edit Info</button>
+            <button type="button" onClick={handleEdit} disabled={status === 'Pending' || status === 'Approved'}>Edit Info</button>
           </div>
         )}
       </form>
@@ -385,9 +457,9 @@ const License = () => {
         <button
           className="request-license-btn"
           onClick={handleRequestLicense}
-          disabled={isPending || isApproved || requestLoading || editMode}
+          disabled={status === 'Pending' || status === 'Approved' || requestLoading || editMode}
         >
-          {isApproved ? 'Already Verified' : isPending ? 'Request Pending' : 'Request Verification'}
+          {status === 'Approved' ? 'Already Verified' : status === 'Pending' ? 'Request Pending' : 'Request Verification'}
         </button>
         <button
           className="download-pdf-btn"
@@ -397,7 +469,6 @@ const License = () => {
         >
           Download PDF
         </button>
-
         {requestError && <span className="error-msg">{requestError}</span>}
         {requestSuccess && <span className="success-msg">{requestSuccess}</span>}
       </div>

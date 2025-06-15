@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import './RegistrationRequest.css';
+import socket from '../../socket';
 
 const emptySocialLinks = {
   facebook: '',
@@ -20,6 +21,7 @@ const RegistrationRequest = () => {
   const [actionLoading, setActionLoading] = useState(false);
 
   useEffect(() => {
+    console.log('Socket connected:', socket.connected); // Debug socket connection
     async function fetchCompany() {
       setLoading(true);
       setError('');
@@ -54,6 +56,12 @@ const RegistrationRequest = () => {
       if (!res.ok || !data.success) throw new Error(data.message || 'Failed to update status');
       setSuccess(`Company ${status === 'approved' ? 'approved' : 'declined'} successfully.`);
       setCompany(data.company);
+      // Emit socket event to the company with status and isVerified
+      socket.emit('license_response', {
+        companyId: company._id,
+        verificationStatus: status
+      });
+      console.log('Emitted license_response:', { companyId: company._id, verificationStatus: status }); // Debug emit
       setTimeout(() => navigate('/'), 1200);
     } catch (err) {
       setError('Failed to update status.');
