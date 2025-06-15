@@ -296,6 +296,7 @@ const SearchFilter = () => {
   };
 
   // Filter and sort tours
+  // Updated sorting logic in the useEffect where filtering and sorting happens
   useEffect(() => {
     if (!tours.length) return;
 
@@ -328,14 +329,24 @@ const SearchFilter = () => {
         case 'newest':
           return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
         case 'rating':
-          return (b.rating || 0) - (a.rating || 0);
+          // Updated to use calculated average ratings from reviews
+          const ratingA = averageRatings[a._id] || 0;
+          const ratingB = averageRatings[b._id] || 0;
+          // Sort by rating descending (highest first)
+          if (ratingB !== ratingA) {
+            return ratingB - ratingA;
+          }
+          // If ratings are equal, sort by review count (more reviews first)
+          const countA = reviewCounts[a._id] || 0;
+          const countB = reviewCounts[b._id] || 0;
+          return countB - countA;
         default:
           return (a.price || 0) - (b.price || 0);
       }
     });
 
     setFilteredTours(result);
-  }, [tours, searchQuery, priceRange, selectedTourTypes, selectedDurations, selectedStatuses, sortOption]);
+  }, [tours, searchQuery, priceRange, selectedTourTypes, selectedDurations, selectedStatuses, sortOption, averageRatings, reviewCounts]); // Added averageRatings and reviewCounts to dependencies
 
   // Generate star rating display
   // Update this function to handle decimal ratings and show count
@@ -454,7 +465,7 @@ const SearchFilter = () => {
                 <label
                   key={option.id}
                   className="tour-search-filter-option"
-                 
+
                 >
                   <input
                     type="checkbox"
@@ -475,7 +486,7 @@ const SearchFilter = () => {
                 <label
                   key={option.id}
                   className="tour-search-filter-option"
-                  
+
                 >
                   <input
                     type="checkbox"
