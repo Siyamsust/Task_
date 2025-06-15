@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import {
   FaHome,
@@ -28,28 +28,62 @@ const Navbar = () => {
   const profileRef = useRef(null);
   const navigate = useNavigate();
 
-  // Fetch company details
-  useEffect(() => {
-    if (company && company.company) {
-      setCompanyDetails(company.company);
-      console.log("Company details updated:", company.company);
+  // Function to fetch company details from the backend
+  const fetchCompanyDetails = useCallback(async (id) => {
+    if (!id) return;
+    try {
+      const response = await fetch(`http://localhost:4000/api/company/${id}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          // You might need an Authorization header here if this route is protected
+          // 'Authorization': `Bearer ${yourAuthToken}`,
+        },
+      });
+      const data = await response.json();
+      console.log(data);
+      if (data.success) {
+        setCompanyDetails(data.company);
+        console.log("Fetched company details from API:", data.company);
+      } else {
+        console.error("Failed to fetch company details:", data.message);
+      }
+    } catch (error) {
+      console.error("Error fetching company details:", error);
     }
-  }, [company]);
+  }, []); // Empty dependency array means this function is created once
 
+  // Initial fetch of company details when the auth 'company' object changes
+  useEffect(() => {
+    if (company && company.company && company.company._id) {
+      fetchCompanyDetails(company.company._id);
+    } else {
+      console.log("Company object or ID not available from auth context.", company);
+    }
+  }, [company, fetchCompanyDetails]);
+
+  // Handle socket connections and events
   useEffect(() => {
     if (socket) {
       socket.on('veri', (data) => {
         console.log('Verification update received:', data);
         if (data.action === 'done' && data.company) {
-          setCompanyDetails(prev => ({
-            ...prev,
-            isVerified: data.company.isVerified,
-            verificationStatus: data.company.verificationStatus
-          }));
+          // Re-fetch company details to get the most accurate state
+          const currentCompanyId = companyDetails?._id || (company && company.company && company.company._id);
+          if (currentCompanyId) {
+            fetchCompanyDetails(currentCompanyId);
+          } else {
+            console.warn("Could not determine company ID to re-fetch details after socket update.");
+          }
         }
       });
+
+      // Clean up event listeners on component unmount
+      return () => {
+        socket.off('veri');
+      };
     }
-  }, [socket]); // Dependency array includes 'socket' to re-run if socket changes
+  }, [socket, fetchCompanyDetails, company, companyDetails]); // Add dependencies for fetchCompanyDetails, company, and companyDetails
 
   const notifications = [
     { id: 1, text: 'New booking request', time: '5 min ago' },

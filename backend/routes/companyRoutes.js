@@ -9,16 +9,34 @@ const sibApiV3Sdk = require('sib-api-v3-sdk');
 const defaultClient = sibApiV3Sdk.ApiClient.instance;
 const apiKey = defaultClient.authentications['api-key'];
 // Make sure this matches your .env file variable name
-apiKey.apiKey = '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'; // Changed from SENDINBLUE_API_KEY to API_KEY
+apiKey.apiKey = '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'; 
 const transEmail = new sibApiV3Sdk.TransactionalEmailsApi();
 
-// Register User
+
 const sender = {
   name: 'Siyam',
-  email: 'ahamedsiyam43@gmail.com' // This must be a verified sender in Sendinblue
+  email: 'ahamedsiyam43@gmail.com'
 };
-// Register a new company
-// Register User
+
+router.get('/company/:id', async (req, res) => {
+  try {
+    const { id } = req.params; 
+    if (!id) {
+      return res.status(400).json({ success: false, message: 'Company ID is required' });
+    }
+
+    const company = await Company.findById(id);
+    if (!company) {
+      return res.status(404).json({ success: false, message: 'Company not found' });
+    }
+
+    res.status(200).json({ success: true, company });
+  } catch (error) {
+    console.error('Error fetching company by ID:', error); 
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
 router.post('/register', async (req, res) => {
     try {
       const { name, email, password } = req.body;
