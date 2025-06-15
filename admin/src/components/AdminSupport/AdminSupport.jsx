@@ -229,8 +229,6 @@ const AdminSupport = () => {
                   <img src={activeChat.logo || avatar} alt={activeChat.userName || activeChat.companyName} className="chat-avatar" />
                   <div>
                     <h3>{activeChat.userName || activeChat.companyName}</h3>
-                    <span className="status-indicator online"></span>
-                    <span className="status-text"> Online</span>
                   </div>
                 </div>
                 <div className="chat-actions">
@@ -278,9 +276,9 @@ const AdminSupport = () => {
               )}
 
               <form className="message-input" onSubmit={handleSendMessage} ref={messageInputRef}> {/* Ref to measure input height */}
-                <button type="button" className="attachment-btn">
+                {/* <button type="button" className="attachment-btn">
                   <i className="fas fa-paperclip"></i>
-                </button>
+                </button> */}
                 <input
                   type="text"
                   placeholder="Type a message..."
@@ -304,4 +302,4 @@ const AdminSupport = () => {
   );
 };
 
-export default AdminSupport; 
+export default AdminSupport;
