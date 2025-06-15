@@ -12,8 +12,6 @@ const { buffer } = require('stream/consumers');
 // Sendinblue API config (Best Practice)
 const defaultClient = sibApiV3Sdk.ApiClient.instance;
 const apiKey = defaultClient.authentications['api-key'];
-// Make sure this matches your .env file variable name
-
 apiKey.apiKey = process.env.SENDINBLUE_API_KEY; // Accessing from environment variable
 const transEmail = new sibApiV3Sdk.TransactionalEmailsApi();
 
