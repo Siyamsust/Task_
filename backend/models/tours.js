@@ -129,7 +129,7 @@ const tourSchema = new mongoose.Schema({
     ref: 'company'
   },
   companyName: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: String,
     ref: 'company'
   },
   createdAt: {
