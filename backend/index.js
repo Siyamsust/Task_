@@ -16,7 +16,7 @@ const bookingRoutes = require('./routes/bookingRoutes');
 const errorHandler = require('./middleware/errorHandler');
 const toursRoutes = require('./routes/tours');
 const tourController = require('./controllers/tour');
-
+const getSuggestions  = require('./controllers/SuggestionController');
 const reviewRoutes = require('./routes/reviewRoutes');
 const companyRoutes = require('./routes/companyRoutes');
 const adminAuth = require('./middleware/adminAuth');
@@ -73,7 +73,7 @@ app.use('/api', companyRoutes); // Add this line for company routes
 app.use('/user/auth', authRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api/wishlist', wishlistRoutes);
-
+app.use('/Suggestion/:tourName',getSuggestions.getSuggestions);
 app.use('/api/bookings', bookingRoutes);
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
