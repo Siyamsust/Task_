@@ -163,6 +163,27 @@ const Dashboard = () => {
     }
     fetchPendingPackages();
   }, []);
+  useEffect(() => {
+    const handleTourApprovalRequest = (data) => {
+      setPendingPackages(prev => {
+        if (!prev.some(tour => tour._id === data.tourId)) {
+          const newTour = {
+            _id: data.tourId,
+            name: data.tourName,
+            companyName: data.companyName,
+            companyId: data.companyId,
+            status: 'pending',
+            price: data.price,
+            timestamp: data.timestamp
+          };
+          return [...prev, newTour];
+        }
+        return prev;
+      });
+    };
+    socket.on('tour_approval_request', handleTourApprovalRequest);
+    return () => socket.off('tour_approval_request', handleTourApprovalRequest);
+  }, []);
 
   return (
     <div className="dashboard">

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import './PackageDetailsAndApprove.css';
+import socket from '../../socket';
 
 const PackageDetailsAndApprove = () => {
   const { id } = useParams();
@@ -24,17 +25,35 @@ const PackageDetailsAndApprove = () => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ status: 'approved' })
     });
+    // Emit socket event
+    socket.emit('tour_status_update', {
+      tourId: id,
+      status: 'approved',
+      companyId: tour.companyId,
+      tourName: tour.name,
+      timestamp: new Date()
+    });
+    console.log("Emited from admin, approved")
     navigate('/');
   };
 
   const handleReject = async () => {
-    // Optionally, you can prompt for a review message
     const review = window.prompt('Enter a reason for rejection (optional):', '');
     await fetch(`http://localhost:4000/api/tours/${id}/status`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ status: 'rejected', review })
     });
+    // Emit socket event
+    socket.emit('tour_status_update', {
+      tourId: id,
+      status: 'rejected',
+      review,
+      companyId: tour.companyId,
+      tourName: tour.name,
+      timestamp: new Date()
+    });
+      console.log("Emited from admin, rejected")
     navigate('/');
   };
 

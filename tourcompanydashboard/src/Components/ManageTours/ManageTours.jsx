@@ -1,15 +1,42 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTours } from '../../Context/ToursContext';
+import socket from '../../socket';
+import { useAuth } from '../../Context/AuthContext';
 import './ManageTours.css';
 
 const ManageTours = () => {
+  const { company } = useAuth();
   const { tours: allTours, loading, error, deleteTour, updateTourStatus, fetchcompanyTours } = useTours();
   const [filteredTours, setFilteredTours] = useState([]);
   const [activeCategory, setActiveCategory] = useState('all');
   const [activeTourType, setActiveTourType] = useState('all');
   const [filterLoading, setFilterLoading] = useState(false);
   const navigate = useNavigate();
+
+  // Verify socket connection
+  useEffect(() => {
+    // Log socket connection status
+    console.log('Socket connected:', socket.connected);
+
+    socket.on('connect', () => {
+      console.log('Socket connected successfully');
+    });
+
+    socket.on('disconnect', () => {
+      console.log('Socket disconnected');
+    });
+
+    socket.on('connect_error', (error) => {
+      console.error('Socket connection error:', error);
+    });
+
+    return () => {
+      socket.off('connect');
+      socket.off('disconnect');
+      socket.off('connect_error');
+    };
+  }, []);
 
   const packageCategories = [
     'Adventure',
@@ -101,11 +128,92 @@ const ManageTours = () => {
   };
 
   const handleStatusUpdate = async (tourId, status) => {
-    const result = await updateTourStatus(tourId, status);
-    if (!result.success) {
-      alert(result.error || 'Failed to update status');
+    try {
+      console.log('Starting status update for tour:', tourId);
+      const result = await updateTourStatus(tourId, status);
+      
+      if (result.success) {
+        if (status === 'pending') {
+          // Find the tour details
+          const tourDetails = filteredTours.find(tour => tour._id === tourId);
+          if (tourDetails) {
+            // Prepare event data
+            const eventData = {
+              tourId,
+              companyId: company.company._id,
+              companyName: company.company.name,
+              tourName: tourDetails.name,
+              price: tourDetails.price,
+              status: 'pending',
+              timestamp: new Date()
+            };
+            
+            // Log and emit the socket event
+            console.log('Socket connected status:', socket.connected);
+            console.log('Emitting tour_approval_request:', eventData);
+            
+            socket.emit('tour_approval_request', eventData, (error) => {
+              if (error) {
+                console.error('Error emitting event:', error);
+              } else {
+                console.log('Event emitted successfully');
+              }
+            });
+          } else {
+            console.error('Could not find tour details for ID:', tourId);
+          }
+        }
+      } else {
+        console.error('Status update failed:', result.error);
+        alert(result.error || 'Failed to update status');
+      }
+    } catch (error) {
+      console.error('Error updating status:', error);
+      alert('Failed to update status');
     }
   };
+
+  // Add socket listener for status updates from admin
+  useEffect(() => {
+    const handleTourStatusUpdate = (data) => {
+      if (data.companyId === company.company._id) {
+        setFilteredTours(prev =>
+          prev.map(tour =>
+            tour._id === data.tourId
+              ? { ...tour, status: data.status, review: data.review }
+              : tour
+          )
+        );
+        // Optionally, show a notification
+        alert(
+          data.status === 'approved'
+            ? `Tour "${data.tourName}" has been approved!`
+            : `Tour "${data.tourName}" has been rejected. ${data.review ? `Reason: ${data.review}` : ''}`
+        );
+        // Optionally, refresh tours from server
+        fetchcompanyTours();
+      }
+    };
+    socket.on('tour_status_update', handleTourStatusUpdate);
+    return () => socket.off('tour_status_update', handleTourStatusUpdate);
+  }, [company.company._id, fetchcompanyTours]);
+
+  // Join company-specific room on mount
+  useEffect(() => {
+    const joinRoom = () => {
+      if (company?.company?._id) {
+        socket.emit('join_company_room', company.company._id);
+        console.log('Joined company room:', company.company._id);
+      }
+    };
+    // Join on mount (if already connected)
+    joinRoom();
+    // Also join on every socket connect event
+    socket.on('connect', joinRoom);
+    return () => {
+      socket.off('connect', joinRoom);
+    };
+  }, [company?.company?._id]);
 
   const formatDate = (dateString) => {
     if (!dateString) return 'N/A';

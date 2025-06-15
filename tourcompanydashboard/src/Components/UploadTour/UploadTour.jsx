@@ -1,4 +1,5 @@
 import React, { useState ,useEffect} from 'react';
+import { useNavigate } from 'react-router-dom';
 import './UploadTour.css';  // Import the CSS file for styling
 import { useAuth } from '../../Context/AuthContext';
 
@@ -12,6 +13,7 @@ const UploadTour = () => {
   }, [company]);
 const companyId=company.company._id;
 const companyName=company.company.name;
+const navigate = useNavigate();
 console.log(companyName);
   const [tourDetails, setTourDetails] = useState({
     name: '',
@@ -254,6 +256,7 @@ console.log(companyName);
       if (response.ok) {
         alert('Tour uploaded successfully');
         console.log(result);
+        navigate('manage-tours'); // Redirect to manage tours page
       } else {
         alert(`Failed to upload tour: ${result.error}`);
       }
