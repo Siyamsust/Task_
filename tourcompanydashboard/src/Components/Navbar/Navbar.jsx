@@ -10,30 +10,58 @@ import {
   FaUserCircle,
   FaCog,
   FaBell,
-  FaSignOutAlt
+  FaSignOutAlt,
+  FaCheckCircle
 } from 'react-icons/fa';
+import socket from '../../socket'
 import { useAuth } from '../../Context/AuthContext';
 import './Navbar.css';
 import { useNavigate } from 'react-router-dom';
+
 const Navbar = () => {
   const location = useLocation();
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
   const { company, logout } = useAuth();
+  const [companyDetails, setCompanyDetails] = useState(null);
   const notificationRef = useRef(null);
   const profileRef = useRef(null);
   const navigate = useNavigate();
+
+  // Fetch company details
+  useEffect(() => {
+    if (company && company.company) {
+      setCompanyDetails(company.company);
+      console.log("Company details updated:", company.company);
+    }
+  }, [company]);
+
+  useEffect(() => {
+    if (socket) {
+      socket.on('veri', (data) => {
+        console.log('Verification update received:', data);
+        if (data.action === 'done' && data.company) {
+          setCompanyDetails(prev => ({
+            ...prev,
+            isVerified: data.company.isVerified,
+            verificationStatus: data.company.verificationStatus
+          }));
+        }
+      });
+    }
+  }, [socket]); // Dependency array includes 'socket' to re-run if socket changes
+
   const notifications = [
     { id: 1, text: 'New booking request', time: '5 min ago' },
     { id: 2, text: 'Tour package approved', time: '1 hour ago' },
     { id: 3, text: 'New customer review', time: '2 hours ago' }
   ];
-  const companyDetails = company.company;
-  console.log("company", companyDetails)
+
   const handleLogout = () => {
     logout();
     navigate('/');
   }
+
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (notificationRef.current && !notificationRef.current.contains(event.target)) {
@@ -53,7 +81,12 @@ const Navbar = () => {
   return (
     <nav className="navbar">
       <div className="navbar-brand">
-        <h1>{companyDetails.name}</h1>
+        <h1>
+          {companyDetails?.name}
+          {companyDetails?.isVerified && (
+            <FaCheckCircle className="verified-icon" title="Verified Company" />
+          )}
+        </h1>
       </div>
 
       <div className="navbar-links">

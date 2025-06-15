@@ -2,6 +2,7 @@ import React from 'react';
 import './Dashboard.css';
 import { useState, useEffect } from 'react';
 import Pendingtours from './PendingTours';
+import socket from '../../socket'
 import { Bar, Pie } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -119,16 +120,27 @@ const Dashboard = () => {
     }
     fetchChartData();
   }, []);
-
+  async function fetchPendingCompanies() {
+    const res = await fetch('http://localhost:4000/company/auth/companies');
+    const data = await res.json();
+    // Only companies with verificationStatus 'pending'
+    setPendingCompanies((data.companies || []).filter(c => c.verificationStatus === 'pending'));
+  }
   useEffect(() => {
-    async function fetchPendingCompanies() {
-      const res = await fetch('http://localhost:4000/company/auth/companies');
-      const data = await res.json();
-      // Only companies with verificationStatus 'pending'
-      setPendingCompanies((data.companies || []).filter(c => c.verificationStatus === 'pending'));
-    }
+   
     fetchPendingCompanies();
   }, []);
+  useEffect( ()=>{
+    if(socket){
+      console.log('here');
+      socket.on('verif',async(data)=>{
+        if(data.action==='pen')
+        {
+          await fetchPendingCompanies()
+        }
+      })
+    }
+  })
 
   useEffect(() => {
     async function fetchApprovedCompanies() {
@@ -249,7 +261,7 @@ const Dashboard = () => {
               <div key={pkg._id} className="modern-card package-modern-card">
                 <div className="modern-card-info">
                   <h4>{pkg.name}</h4>
-                  <p className="modern-card-company">Company: {companyMap[pkg.companyId] || 'Unknown'}</p>
+                  <p className="modern-card-company">Company: {pkg.companyName || 'Unknown'}</p>
                   <p className="modern-card-dates">
                     {pkg.startDate ? `Start: ${new Date(pkg.startDate).toLocaleDateString()}` : ''}
                     {pkg.endDate ? ` | End: ${new Date(pkg.endDate).toLocaleDateString()}` : ''}

@@ -13,7 +13,7 @@ const { buffer } = require('stream/consumers');
 const defaultClient = sibApiV3Sdk.ApiClient.instance;
 const apiKey = defaultClient.authentications['api-key'];
 // Make sure this matches your .env file variable name
-apiKey.apiKey = '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'; // Changed from SENDINBLUE_API_KEY to API_KEY
+apiKey.apiKey = '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'; // Changed from SENDINBLUE_API_KEY to API_KEY
 const transEmail = new sibApiV3Sdk.TransactionalEmailsApi();
 
 // Register User

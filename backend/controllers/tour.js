@@ -1,7 +1,7 @@
 const Tour = require('../models/tours');
 
 const fs = require('fs');
-
+const socketIO = require('../socket');
 
 exports.createTour = async (req, res) => {
   try {
@@ -16,8 +16,10 @@ exports.createTour = async (req, res) => {
       // ✅ Add weather parsing
       weather: JSON.parse(req.body.weather || '{}'),
       companyId: req.body.companyId,
-      companyName:req.body.companyName  // Fixed typo: was 'comapnyId'
+      companyName: req.body.companyName  // Make sure this is explicitly set
     };
+    console.log("new name: "+req.body.companyName);
+    console.log("Tour data before saving:", tourData); // Debug log
 
     // Process packageCategories
     if (req.body.packageCategories) {
@@ -68,15 +70,17 @@ exports.createTour = async (req, res) => {
 
     // Create new tour
     const newTour = new Tour(tourData);
+    
     await newTour.validate();
     const savedTour = await newTour.save();
-
+    
     res.status(201).json({
       success: true,
       message: 'Tour created successfully',
       tour: savedTour
     });
-    
+    const io=require('../socket').getIO();
+    io.emit()
   } catch (error) {
     console.error('Error creating tour:', error);
     res.status(400).json({
