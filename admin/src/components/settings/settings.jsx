@@ -371,7 +371,7 @@ const Settings = () => {
         </form>
       </div>
 
-      <div className="settings-section">
+      {/* <div className="settings-section">
         <h3>Notification Settings</h3>
         <form onSubmit={handleNotificationSettings}>
           <div className="form-group checkbox">
@@ -414,7 +414,7 @@ const Settings = () => {
             Save Notification Settings
           </button>
         </form>
-      </div>
+      </div> */}
     </div>
   );
 };
