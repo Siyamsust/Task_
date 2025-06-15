@@ -14,7 +14,7 @@ const SearchFilter = () => {
   const [averageRatings, setAverageRatings] = useState({});
   // Get initial filters from URL params
   const initialQuery = searchParams.get('query') || '';
-  const initialPriceMax = parseInt(searchParams.get('priceMax') || '100000');
+  const initialPriceMax = parseInt(searchParams.get('priceMax') || '1000');
   const initialTourTypes = searchParams.getAll('tourType') || [];
   const initialDurations = searchParams.getAll('duration') || [];
   const initialStatuses = searchParams.getAll('status') || [];
@@ -208,7 +208,7 @@ const SearchFilter = () => {
   // Reset all filters
   const resetFilters = () => {
     setSearchQuery('');
-    setPriceRange(100000);
+    setPriceRange(1000);
     setSelectedTourTypes([]);
     setSelectedDurations([]);
     setSelectedStatuses([]);
@@ -389,7 +389,7 @@ const SearchFilter = () => {
 
   // Format price
   const formatPrice = (price) => {
-    return '৳' + (price || 0).toLocaleString();
+    return '$' + (price || 0).toLocaleString();
   };
 
   // Format date
@@ -446,14 +446,14 @@ const SearchFilter = () => {
               <input
                 type="range"
                 className="tour-search-price-slider"
-                min="0"
-                max="200000"
-                step="1000"
+                min="1"
+                max="1000"
+                step="1"
                 value={priceRange}
                 onChange={handlePriceChange}
               />
               <div className="tour-search-price-values">
-                <span>৳0</span> - <span>৳{priceRange.toLocaleString()}</span>
+                <span>$1</span> - <span>${priceRange.toLocaleString()}</span>
               </div>
             </div>
           </div>
