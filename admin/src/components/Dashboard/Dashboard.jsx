@@ -70,12 +70,12 @@ const Dashboard = () => {
   useEffect(() => {
     async function fetchChartData() {
       setLoadingCharts(true);
-      // Fetch all bookings at once
+      // Fetch all bookings
       const bookingsRes = await fetch('http://localhost:4000/api/bookings/all');
       const bookingsData = await bookingsRes.json();
       const allBookings = bookingsData.bookings || [];
       // Bar chart: revenue by month (Jan-Dec)
-      const monthlyRevenue = Array(12).fill(0); 
+      const monthlyRevenue = Array(12).fill(0);
       allBookings.forEach(b => {
         if (!b.createdAt || !b.totalAmount) return;
         const d = new Date(b.createdAt);
@@ -87,32 +87,35 @@ const Dashboard = () => {
         'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
         'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
       ]);
-      // Pie chart: top 10 companies by revenue last month
-      // Map tourId to companyId
+      // Fetch all tours
       const toursRes = await fetch('http://localhost:4000/api/tours');
       const toursData = await toursRes.json();
       const tours = toursData.tours || [];
-      const tourToCompany = {};
-      tours.forEach(t => { if (t._id && t.companyId) tourToCompany[t._id] = t.companyId; });
-      const now = new Date();
-      const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-      const nextMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+      // Fetch all companies
+      const companiesRes = await fetch('http://localhost:4000/company/auth/companies');
+      const companiesData = await companiesRes.json();
+      const companies = companiesData.companies || [];
+      // Build maps for fast lookup
+      const tourIdToCompanyId = {};
+      const companyIdToName = {};
+      tours.forEach(t => { if (t._id && t.companyId) tourIdToCompanyId[t._id] = t.companyId; });
+      companies.forEach(c => { if (c._id && c.name) companyIdToName[c._id] = c.name; });
+      setCompanyMap(companyIdToName);
+      // Calculate revenue per company
       const companyRevenue = {};
       allBookings.forEach(b => {
-        if (!b.createdAt || !b.totalAmount) return;
-        const d = new Date(b.createdAt);
-        if (d >= lastMonth && d < nextMonth) {
-          const companyId = tourToCompany[b.tourId];
-          if (!companyId) return;
-          companyRevenue[companyId] = (companyRevenue[companyId] || 0) + b.totalAmount * 0.1;
-        }
+        if (!b.tourId || !b.totalAmount) return;
+        const companyId = tourIdToCompanyId[b.tourId];
+        if (!companyId) return;
+        companyRevenue[companyId] = (companyRevenue[companyId] || 0) + b.totalAmount * 0.1;
       });
+      // Sort and get top 10
       const sortedCompanies = Object.entries(companyRevenue)
         .sort((a, b) => b[1] - a[1])
         .slice(0, 10)
         .map(([companyId, revenue]) => ({
           companyId,
-          name: companyMap[companyId] || 'Unknown',
+          name: companyIdToName[companyId] || 'Unknown',
           revenue
         }));
       setTopCompanies(sortedCompanies);

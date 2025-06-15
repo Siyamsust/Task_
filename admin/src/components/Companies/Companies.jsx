@@ -10,6 +10,7 @@ import {
   FaInfoCircle,
   FaTimes
 } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
 import './Companies.css';
 
 const Companies = () => {
@@ -18,6 +19,7 @@ const Companies = () => {
   const [error, setError] = useState(null);
   const [selectedCompany, setSelectedCompany] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchCompanies();
@@ -48,6 +50,10 @@ const Companies = () => {
   };
 
   const handleShowDetails = (company) => {
+    if (company.verificationStatus && company.verificationStatus.toLowerCase() === 'pending') {
+      navigate(`/admin/registration-request/${company._id}`);
+      return;
+    }
     setSelectedCompany(company);
     setShowModal(true);
   };
