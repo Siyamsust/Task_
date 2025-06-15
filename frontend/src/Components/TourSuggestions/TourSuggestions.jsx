@@ -4,7 +4,7 @@ import { ToursContext } from '../../Context/ToursContext';
 import { useAuth } from '../../Context/AuthContext';
 import './TourSuggestions.css';
 
-const TourSuggestions = () => {
+const TourSuggestions = ({ weatherCity }) => {
   const [suggestions, setSuggestions] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -12,6 +12,7 @@ const TourSuggestions = () => {
   const { tours } = useContext(ToursContext);
   const { user } = useAuth();
   const navigate = useNavigate();
+  console.log('Weather City:', weatherCity);
 
   // Consistent user data access like in ProfileInfo
   const userData = user?.user || user;
@@ -50,11 +51,9 @@ const TourSuggestions = () => {
     fetchRatings();
   }, []);
 
-  // Helper function to check if tour is upcoming (matches UpcomingTours logic)
+  // Helper function to check if a tour is upcoming
   const isTourUpcoming = (startDate) => {
-    if (!startDate) return false; // If no start date, don't consider it upcoming
-    
-    // Same logic as UpcomingTours component
+    if (!startDate) return false;
     const oneDayFromNow = new Date();
     oneDayFromNow.setDate(oneDayFromNow.getDate() + 1);
     oneDayFromNow.setHours(0, 0, 0, 0); // Start of day
@@ -63,99 +62,71 @@ const TourSuggestions = () => {
     return tourStartDate >= oneDayFromNow;
   };
 
-  // Filter tours to get only upcoming ones (same logic as UpcomingTours)
-  const getUpcomingTours = (toursList) => {
-    return toursList.filter(tour => 
-      tour.status === 'approved' && isTourUpcoming(tour.startDate)
-    );
-  };
-
   // Fetch suggestions based on user's recent activity or popular tours
   useEffect(() => {
     const fetchSuggestions = async () => {
-      if (!tours || tours.length === 0) return;
-
+      if (!tours || tours.length === 0 || !weatherCity) return;
+      const recentViews = JSON.parse(localStorage.getItem('recentTourViews') || '[]');
+      console.log('console'+recentViews);
+      let allSuggestedTours=new Set();
+      if (recentViews.length > 0) {
+      console.log(recentViews);
+        // Get suggestions based on recent views
+        for (const tourName of recentViews.slice(0, 3)) { // Use last 3 viewed tours
+              suggestions.forEach(name => allSuggestedTours.add(tourName));
+        }
+      }
       setLoading(true);
       setError(null);
 
       try {
-        // First filter to get only upcoming tours (same as UpcomingTours)
-        const upcomingTours = getUpcomingTours(tours);
-        
-        if (upcomingTours.length === 0) {
-          setSuggestions([]);
-          setLoading(false);
-          return;
-        }
+        const response = await fetch(`http://localhost:4000/Suggestion/${encodeURIComponent(weatherCity)}`);
+        if (response.ok) {
+          const suggestedData = await response.json();
+          console.log('Suggested data:', suggestedData);
 
-        // Get user's recent tour views from localStorage or use popular tours
-        const recentViews = JSON.parse(localStorage.getItem('recentTourViews') || '[]');
-        let suggestedTourNames = new Set();
+          // Flatten all tours from suggestions into a single array
+           allSuggestedTours = suggestedData.reduce((acc, suggestion) => {
+            return [...acc, ...suggestion.tours];
+          }, []);
+          console.log(allSuggestedTours);
+          // Remove duplicates based on tour ID and ensure tours are upcoming
+          const uniqueTours = Array.from(
+            new Map(
+              allSuggestedTours
+                .filter(tour => isTourUpcoming(tour.startDate))
+                .map(tour => [tour._id, tour])
+            ).values()
+          );
 
-        if (recentViews.length > 0) {
-          // Get suggestions based on recent views
-          for (const tourName of recentViews.slice(0, 3)) { // Use last 3 viewed tours
-            try {
-              const response = await fetch(`http://localhost:4000/api/suggestions/${encodeURIComponent(tourName)}`);
-              if (response.ok) {
-                const suggestions = await response.json();
-                suggestions.forEach(name => suggestedTourNames.add(name));
-              }
-            } catch (err) {
-              console.error(`Error fetching suggestions for ${tourName}:`, err);
-            }
-          }
-        }
-
-        // If no suggestions from recent views, get popular upcoming tours
-        if (suggestedTourNames.size === 0) {
-          const popularUpcomingTours = upcomingTours
-            .filter(tour => tour.popularity && (tour.popularity.views > 5 || tour.popularity.bookings > 0))
+          // Sort by confidence (if available) and limit to 6
+          const sortedTours = uniqueTours
             .sort((a, b) => {
-              const scoreA = (a.popularity.bookings * 0.7) + (a.popularity.views * 0.3);
-              const scoreB = (b.popularity.bookings * 0.7) + (b.popularity.views * 0.3);
-              return scoreB - scoreA;
+              const confidenceA = suggestedData.find(s => s.tours.some(t => t._id === a._id))?.confidence || 0;
+              const confidenceB = suggestedData.find(s => s.tours.some(t => t._id === b._id))?.confidence || 0;
+              return confidenceB - confidenceA;
             })
-            .slice(0, 6)
-            .map(tour => tour.name);
+            .slice(0, 6);
 
-          popularUpcomingTours.forEach(name => suggestedTourNames.add(name));
+          setSuggestions(sortedTours);
+        } else {
+          throw new Error('Failed to fetch suggestions');
         }
-
-        // Convert tour names to upcoming tour objects only
-        const suggestedTours = Array.from(suggestedTourNames)
-          .map(name => upcomingTours.find(tour => tour.name === name))
-          .filter(tour => tour) // Remove any undefined tours
-          .slice(0, 6); // Limit to 6 suggestions
-
-        // If we don't have enough suggested tours, fill with random upcoming tours
-        if (suggestedTours.length < 6) {
-          const remainingSlots = 6 - suggestedTours.length;
-          const existingTourIds = new Set(suggestedTours.map(tour => tour._id));
-          
-          const additionalTours = upcomingTours
-            .filter(tour => !existingTourIds.has(tour._id))
-            .sort((a, b) => new Date(a.startDate) - new Date(b.startDate)) // Sort by start date like UpcomingTours
-            .slice(0, remainingSlots);
-          
-          suggestedTours.push(...additionalTours);
-        }
-
-        setSuggestions(suggestedTours);
       } catch (err) {
         console.error('Error fetching suggestions:', err);
         setError('Failed to load suggestions');
-        
-        // Fallback to upcoming tours only
-        const fallbackTours = getUpcomingTours(tours).slice(0, 6);
-        setSuggestions(fallbackTours);
+        // Fallback to upcoming tours
+        const upcomingTours = tours
+          .filter(tour => tour.status === 'approved' && isTourUpcoming(tour.startDate))
+          .slice(0, 6);
+        setSuggestions(upcomingTours);
       } finally {
         setLoading(false);
       }
     };
 
     fetchSuggestions();
-  }, [tours]);
+  }, [tours, weatherCity]);
 
   const handleExploreNow = async (tourId, tourName) => {
     try {
@@ -208,9 +179,9 @@ const TourSuggestions = () => {
     <div className="tour-suggestions-section">
       <div className="tour-suggestions-header">
         <h2>
-          {userData ? `Tours for You, ${userData.name?.split(' ')[0] || 'Traveler'}` : 'Upcoming Tours'}
+          {weatherCity ? `Upcoming Tours in ${weatherCity} and nearby areas` : 'Upcoming Tours'}
         </h2>
-        <p>Discover tours tailored to your interests and preferences</p>
+        <p>Discover upcoming tours tailored to your interests and preferences</p>
       </div>
 
       <div className="tour-suggestions-container">

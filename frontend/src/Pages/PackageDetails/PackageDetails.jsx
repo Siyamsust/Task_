@@ -7,6 +7,7 @@ import BookingCard from '../../Components/PackageDetails/BookingCard';
 import { useAuth } from '../../Context/AuthContext';
 import './PackageDetails.css';
 import socket from '../../socket'
+import TourSuggestions from '../../Components/TourSuggestions/TourSuggestions';
 import axios from 'axios';
 
 
@@ -25,6 +26,7 @@ const PackageDetails = () => {
   const [errorReviews, setErrorReviews] = useState(null);
   const [avSeats, setAvSeats] = useState(null);
  const {user}=useAuth();
+ const [weatherCity, setWeatherCity] = useState('');
  useEffect(()=>{
    if(user){
     console.log(user);
@@ -34,12 +36,14 @@ const PackageDetails = () => {
  },
 [user]);
 let use,userId;
+//const city=tour.weather.city
 console.log(tour);
 if(user)
 { use=user.user;
 console.log(use);
  userId=use._id;
 }
+console.log(tour)
 const chatType='comuse';
 
 const fetchChats = async () => {
@@ -130,9 +134,13 @@ useEffect(() => {
     }
   }, [id]);
 
-
-    // Cleanup socket listener on component unmount
-
+  useEffect(() => {
+    if (tour && tour.weather) {
+      setWeatherCity(tour.weather.city);
+      
+    }
+  }, [tour]);
+  console.log(weatherCity);
   if (localLoading) {
     return (
       <div className="loading-container">
@@ -238,7 +246,15 @@ console.log(tour);
 
       {/* Main Content Section */}
       <div className="main-content-section">
-        <PackageInfo tour={tour} companyId={tour.companyId} user={use} chatType={chatType} compnayName={tour.compnayName} chats={chats}/>
+        <PackageInfo 
+          tour={tour} 
+          companyId={tour.companyId} 
+          user={use} 
+          chatType={chatType} 
+          compnayName={tour.compnayName} 
+          chats={chats}
+          weatherCity={weatherCity}
+        />
       </div>
 
       {/* Conditional Rendering: Booking Card or Reviews */}
@@ -255,10 +271,16 @@ console.log(tour);
             endDate={tour.endDate}
             tourId={tour._id}
             socket={socket}
+            weatherCity={weatherCity}
           />
         </div>
+        
       )}
+      <section id="tour-suggestions" className="tour-suggestions">
+            <TourSuggestions weatherCity={weatherCity} />
+          </section>
     </div>
+    
   );
 };
 
