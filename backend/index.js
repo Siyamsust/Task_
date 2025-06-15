@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const express = require('express');
 const mongoose = require("mongoose");
 const bodyParser = require('body-parser');
@@ -24,8 +26,6 @@ const adminAuthRoutes = require('./routes/adminauth');
 // <-- register route
 
 
-
-require('dotenv').config();
 
 const app = express();
 const server = http.createServer(app);
@@ -150,7 +150,7 @@ app.use('/api/admin', adminAuth, adminAuthRoutes);
 //     console.log('MongoDB query:', query); // Debug log
 
 //     const tours = await Tour.find(query).sort({ createdAt: -1 });
-//     console.log('Found tours:', tours.length); // Debug log
+//     console.log('Found tours:', tours.length);
 
 //     res.json({
 //       success: true,

@@ -5,11 +5,13 @@ const authMiddleware = require('../middleware/authMiddleware');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
+
 const sibApiV3Sdk = require('sib-api-v3-sdk');
 const defaultClient = sibApiV3Sdk.ApiClient.instance;
 const apiKey = defaultClient.authentications['api-key'];
 // Make sure this matches your .env file variable name
-apiKey.apiKey = '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'; 
+console.log("Sendinblue API Key from env (companyRoutes):", process.env.SENDINBLUE_API_KEY); // Debugging line
+apiKey.apiKey = process.env.SENDINBLUE_API_KEY; // Accessing from environment variable
 const transEmail = new sibApiV3Sdk.TransactionalEmailsApi();
 
 
