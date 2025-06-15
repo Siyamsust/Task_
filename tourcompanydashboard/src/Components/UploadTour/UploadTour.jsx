@@ -11,7 +11,8 @@ const UploadTour = () => {
     }
   }, [company]);
 const companyId=company.company._id;
-const comapnyName=company.company.name;
+const companyName=company.company.name;
+console.log(companyName);
   const [tourDetails, setTourDetails] = useState({
     name: '',
     packageCategories: [],
@@ -237,7 +238,7 @@ const comapnyName=company.company.name;
     formData.append('cancellationPolicy', tourDetails.cancellationPolicy);
     formData.append('weather', JSON.stringify(tourDetails.weather));
     formData.append('companyId',companyId);
-    formData.append('companyName',comapnyName);
+    formData.append('companyName',companyName);
     
     tourDetails.images.forEach((image) => {
       formData.append('images', image);

@@ -5,20 +5,38 @@ const authMiddleware = require('../middleware/authMiddleware');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
+
 const sibApiV3Sdk = require('sib-api-v3-sdk');
 const defaultClient = sibApiV3Sdk.ApiClient.instance;
 const apiKey = defaultClient.authentications['api-key'];
-// Make sure this matches your .env file variable name
-apiKey.apiKey = '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'; // Changed from SENDINBLUE_API_KEY to API_KEY
+apiKey.apiKey = process.env.SENDINBLUE_API_KEY; // Accessing from environment variable
 const transEmail = new sibApiV3Sdk.TransactionalEmailsApi();
 
-// Register User
+
 const sender = {
   name: 'Siyam',
-  email: 'ahamedsiyam43@gmail.com' // This must be a verified sender in Sendinblue
+  email: 'ahamedsiyam43@gmail.com'
 };
-// Register a new company
-// Register User
+
+router.get('/company/:id', async (req, res) => {
+  try {
+    const { id } = req.params; 
+    if (!id) {
+      return res.status(400).json({ success: false, message: 'Company ID is required' });
+    }
+
+    const company = await Company.findById(id);
+    if (!company) {
+      return res.status(404).json({ success: false, message: 'Company not found' });
+    }
+
+    res.status(200).json({ success: true, company });
+  } catch (error) {
+    console.error('Error fetching company by ID:', error); 
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
 router.post('/register', async (req, res) => {
     try {
       const { name, email, password } = req.body;
@@ -92,7 +110,9 @@ router.post('/register', async (req, res) => {
         company: {
           _id: company._id,
           name: company.name,
-          email: company.email
+          email: company.email,
+          isVerified: company.isVerified,
+          verificationStatus: company.verificationStatus
         }
       });
     } catch (error) {
@@ -331,6 +351,11 @@ router.post('/register', async (req, res) => {
       // Update the company
       const company = await Company.findByIdAndUpdate(companyId, updateData, { new: true });
       if (!company) return res.status(404).json({ message: 'Company not found' });
+      const io=require('../socket').getIO();
+      io.emit('verif',{
+        action:'pen',
+        company:company
+      });
       res.json({ success: true, company });
     } catch (error) {
       res.status(500).json({ success: false, message: 'Failed to update company info', error: error.message });
@@ -348,9 +373,18 @@ router.post('/register', async (req, res) => {
       // If no companyId, return error
       if (!companyId) return res.status(400).json({ message: 'No companyId provided' });
       const company = await Company.findByIdAndUpdate(companyId, updateData, { new: true });
+      console.log(company);
       if (!company) return res.status(404).json({ message: 'Company not found' });
+      
       res.json({ success: true, company });
-    } catch (error) {
+      const io=require('../socket').getIO();
+      io.emit('veri',{
+        action:'done',
+        company:company
+      });
+    } 
+    
+    catch (error) {
       res.status(500).json({ success: false, message: 'Failed to update status', error: error.message });
     }
   });

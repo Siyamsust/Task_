@@ -1,8 +1,16 @@
-import React from 'react';
+import {React,useEffect} from 'react';
 import { Link } from 'react-router-dom';
 import './Footer.css';
+import { useAuth} from '../../Context/AuthContext';
 
 const Footer = () => {
+  const { user } = useAuth();
+
+  useEffect(() => {
+    if (user) {
+      console.log("Current logged in user:", user);
+    }
+  }, [user]);
   return (
     <footer className="footer" id="contact-section">
       <div className="footer-content">
@@ -23,7 +31,7 @@ const Footer = () => {
           <ul>
             <li><Link to="/faq">FAQ</Link></li>
             <li><Link to="/terms">Terms & Conditions</Link></li>
-            <li><Link to="/chat">Customer Support</Link></li>
+            {user&&<li><Link to="/chat">Customer Support</Link></li>}
           </ul>
         </div>
 
